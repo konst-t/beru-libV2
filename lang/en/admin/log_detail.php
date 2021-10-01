@@ -1,0 +1,23 @@
+<?
+$MESS["IPL_MA_DETAIL"] = "Details";
+$MESS["IPL_MA_DETAIL_TITLE"] = "Detailed record information";
+$MESS["IPL_MA_LOG_DETAIL_TITLE"] = "Log entry details";
+$MESS["IPL_MA_LIST"] = "List";
+$MESS["IPL_MA_LIST_TITLE"] = "Return to the list of log entries";
+$MESS["IPL_MA_DELETE"] = "Delete";
+$MESS["IPL_MA_DELETE_TITLE"] = "Deleting an entry from the list";
+$MESS["IPL_MA_DELETE_CONFIRM"] = "Do you really want to delete this entry?";
+$MESS["IPL_MA_PRIFILE"] = "Profile";
+$MESS["IPL_MA_TIME"] = "Time";
+$MESS["IPL_MA_TYPE_IC"] = "Incoming";
+$MESS["IPL_MA_TYPE_OG"] = "Outgoing";
+$MESS["IPL_MA_STATE_OK"] = "Successful";
+$MESS["IPL_MA_STATE_RJ"] = "Rejected";
+$MESS["IPL_MA_STATE_EX"] = "Processing not finished";
+$MESS["IPL_MA_STATE_DF"] = "Deferred";
+$MESS["IPL_MA_STATE"] = "State";
+$MESS["IPL_MA_TYPE"] = "Type";
+$MESS["IPL_MA_REQUEST"] = "Request";
+$MESS["IPL_MA_RESPOND"] = "Response";
+$MESS["IPL_MA_STATUS"] = "Status";
+$MESS["IPL_MA_ERROR"] = "Error";

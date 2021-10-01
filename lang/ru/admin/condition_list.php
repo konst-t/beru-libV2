@@ -1,0 +1,43 @@
+<?
+$MESS["IPL_MA_LIST_TITLE"] = "Условия";
+$MESS["IPL_MA_ACCESS_DENIED"] = "Доступ к модулю запрещен";
+$MESS["SAVED"] = "Изменения успешно сохранены";
+$MESS["IPL_MA_SAVE_ERROR_UPDATE"] = "Ошибка обновления";
+$MESS["IPL_MA_SAVE_ERROR_DELETE"] = "Ошибка удаления";
+$MESS["IPL_MA_YES"] = "Да";
+$MESS["IPL_MA_NO"] = "Нет";
+$MESS["IPL_MA_CAPTION_ACTIVE"] = "Активность";
+$MESS["IPL_MA_CAPTION_SORT"] = "Сортировка";
+$MESS["IPL_MA_ALL"] = "(все)";
+$MESS["IPL_MA_IY"] = "Включение в YML";
+$MESS["IPL_MA_DV"] = "Доставка";
+$MESS["IPL_MA_CAPTION_TYPE"] = "Тип";
+$MESS["IPL_MA_CAPTION_DESCRIPTION"] = "Описание";
+$MESS["IPL_MA_COND_ADD"] = "Добавить условие";
+$MESS["IPL_MA_COND_ADD_TITLE"] = "Добавить новое условие в профиль";
+$MESS["IPL_MA_IN_FID_COND"] = "Вхождение в YML";
+$MESS["IPL_MA_DELIVERY_COND"] = "Доставка";
+$MESS["IPL_MA_PROFILE_SETTINGS"] = "Настройки профиля";
+$MESS["IPL_MA_PROFILE_SETTINGS_TITLE"] = "Основные настройки профиля";
+$MESS["IPL_MA_ACCORDANCES"] = "Соответствие полей";
+$MESS["IPL_MA_ACCORDANCES_TITLE"] = "Соответствие полей и свойств товаров";
+$MESS["IPL_MA_DELETE_CONF"] = "Вы уверены, что хотите удалить элемент?";
+
+$MESS["IBLOCK_FIELDS_ID"] = "ID элемента";
+$MESS["IBLOCK_FIELDS_CODE"] = "Символьный код";
+$MESS["IBLOCK_FIELDS_XML_ID"] = "Внешний код";
+$MESS["IBLOCK_FIELDS_NAME"] = "Название элемента";
+$MESS["IBLOCK_FIELDS_SORT"] = "Индекс сортировки";
+$MESS["IBLOCK_FIELDS_PREVIEW_PICTURE"] = "Картинка для анонса";
+$MESS["IBLOCK_FIELDS_PREVIEW_TEXT"] = "Описание для анонса";
+$MESS["IBLOCK_FIELDS_DETAIL_PICTURE"] = "Детальная картинка";
+$MESS["IBLOCK_FIELDS_DETAIL_TEXT"] = "Детальное описание";
+$MESS["IBLOCK_FIELDS_DETAIL_PAGE_URL"] = "Детальный URL";
+
+$MESS["IPL_MA_STORES"] = "Наличие на складе";
+$MESS["IPL_MA_COMMON_PROPS"] = "Общие свойства";
+$MESS["IPL_MA_PROD_PROPS"] = "Свойства товара";
+$MESS["IPL_MA_OFFER_PROPS"] = "Свойства предложения";
+$MESS["IPL_MA_ELEMENT_FIELDS"] = "Поля элемента";
+$MESS["IPL_MA_MIN_DISCOUNT_PRICE"] = "Минимальная цена со скидкой";
+$MESS["IPL_MA_PRICES"] = "Тип цены";

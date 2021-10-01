@@ -1,0 +1,34 @@
+<?
+$MESS["JANUARY"] = "января";
+$MESS["FEBUARY"] = "февраля";
+$MESS["MARCH"] = "марта";
+$MESS["APRIL"] = "апреля";
+$MESS["MAY"] = "мая";
+$MESS["JUNE"] = "июня";
+$MESS["JULY"] = "июля";
+$MESS["AUGUST"] = "августа";
+$MESS["SEPTEMBER"] = "сентября";
+$MESS["OCTOBER"] = "октября";
+$MESS["NOVEMBER"] = "ноября";
+$MESS["DECEMBER"] = "декабря";
+
+$MESS["TITLE"] = "Акт приема-передачи Отправлений";
+$MESS["YEAR_SHORT"] = "г.";
+$MESS["CUSTONER"] = "Заказчик:";
+$MESS["EXECUTER"] = "Исполнитель (Доставщик): ООО &laquo;Яндекс.Маркет&raquo;";
+$MESS["TEXT"] = "Настоящий акт составлен в том, что в указанную выше дату (Дата приема Отправлений)<br>Отправитель передал, а Исполнитель (Доставщик) принял следующие Отправления:";
+$MESS["NUM"] = "№";
+$MESS["SHOP_NUM"] = "№ Отправления в системе Заказчика";
+$MESS["MARKET_NUM"] = "№ Отправления в системе Исполнителя";
+$MESS["COST"] = "Объявленная ценность, руб.";
+$MESS["WEIGHT"] = "Вес, кг.";
+$MESS["QUANTITY"] = "Кол-во мест, шт.";
+$MESS["SHIPMENT_GIVE_OUT"] = "Отправление передал (Заказчик)";
+$MESS["SHIPMENT_ACCEPT"] = "Отправление принял (Исполнитель/Доставщик)";
+$MESS["SIGNATURE"] = "подпись";
+$MESS["DECODING"] = "расшифровка";
+$MESS["LS"] = "МП";
+$MESS["SHIPMENT_GIVE_OUT_SHORT"] = "Передал";
+$MESS["SHIPMENT_ACCEPT_SHORT"] = "Принял";
+$MESS["PAGE"] = "Страница";
+$MESS["PAGE_OF"] = "из";

@@ -1,0 +1,22 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+.idea
+/.idea
+
+Thumbs.db
+.DS_Store
+
+*.log
+*.txt
+*.csv
+*.gz
+*.zip
+*.rar
+*.tar
+*.tar.gz.*
+*.tgz
+*.xml
+*.doc
+*.docx
+*.xls
+*.xlsx

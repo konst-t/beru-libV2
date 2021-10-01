@@ -1,0 +1,23 @@
+<?
+$MESS["IPL_MA_DETAIL"] = "Детали";
+$MESS["IPL_MA_DETAIL_TITLE"] = "Детальная информация записи";
+$MESS["IPL_MA_LOG_DETAIL_TITLE"] = "Детали записи лога";
+$MESS["IPL_MA_LIST"] = "Список";
+$MESS["IPL_MA_LIST_TITLE"] = "Вернуться к списку записей лога";
+$MESS["IPL_MA_DELETE"] = "Удалить";
+$MESS["IPL_MA_DELETE_TITLE"] = "Удаление записи из списка";
+$MESS["IPL_MA_DELETE_CONFIRM"] = "Вы действительно хотите удалить эту запись?";
+$MESS["IPL_MA_PRIFILE"] = "Профиль";
+$MESS["IPL_MA_TIME"] = "Время";
+$MESS["IPL_MA_TYPE_IC"] = "Входящий";
+$MESS["IPL_MA_TYPE_OG"] = "Исходящий";
+$MESS["IPL_MA_STATE_OK"] = "Успешно";
+$MESS["IPL_MA_STATE_RJ"] = "Отклонен";
+$MESS["IPL_MA_STATE_EX"] = "Обработка не закончена";
+$MESS["IPL_MA_STATE_DF"] = "Отложен";
+$MESS["IPL_MA_STATE"] = "Состояние";
+$MESS["IPL_MA_TYPE"] = "Тип";
+$MESS["IPL_MA_REQUEST"] = "Запрос";
+$MESS["IPL_MA_RESPOND"] = "Ответ";
+$MESS["IPL_MA_STATUS"] = "Статус";
+$MESS["IPL_MA_ERROR"] = "Ошибка";

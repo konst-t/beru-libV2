@@ -1,0 +1,19 @@
+<?
+$MESS["IPL_MA_LIST_TITLE"] = "Лог запросов";
+$MESS["IPL_MA_STATE_OK"] = "Успешно";
+$MESS["IPL_MA_STATE_RJ"] = "Отклонен";
+$MESS["IPL_MA_STATE_EX"] = "Обработка не закончена";
+$MESS["IPL_MA_STATE_DF"] = "Отложен";
+$MESS["IPL_MA_ALL"] = "(все)";
+$MESS["IPL_MA_CAPTION_STATE"] = "Состояние";
+$MESS["IPL_MA_DELETE_CONF"] = "Вы уверены, что хотите удалить элемент?";
+$MESS["IPL_MA_CAPTION_TIME"] = "Дата";
+$MESS["IPL_MA_CAPTION_PROFILE"] = "Профиль";
+$MESS["IPL_MA_CLEAN"] = "Очистить лог";
+$MESS["IPL_MA_CLEAN_TITLE"] = "Удалить все сообщения лога";
+$MESS["IPL_MA_DETAIL"] = "Подробно";
+$MESS["IPL_MA_SAVE_ERROR_DELETE"] = "Ошибка удаления";
+$MESS["IPL_MA_CAPTION_TYPE"] = "Тип";
+$MESS["IPL_MA_TYPE_IC"] = "Входящий";
+$MESS["IPL_MA_TYPE_OG"] = "Исходящий";
+$MESS["IPL_MA_CLEAR_CONFIRM"] = "Вы действительно хотите удалить все записи лога?";

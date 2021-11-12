@@ -185,7 +185,7 @@ class TaskTable extends Main\Entity\DataManager
 			if ($task["TYPE"]=="US") {
 				self::sendShown($task);
 			}
-			exec("wget -b -q -O - https://".Option::get(self::$moduleID,"domen")."/bitrix/services/iplogic/mkpapi/task.php"); 
+			exec("wget --no-check-certificate -b -q -O - https://".Option::get(self::$moduleID,"domen")."/bitrix/services/iplogic/mkpapi/task.php"); 
 			//die();
 		}
 		else {
@@ -362,13 +362,13 @@ class TaskTable extends Main\Entity\DataManager
 				TaskTable::scheduleFeedGeneration($task["PROFILE_ID"]);
 				$i++;
 				if($i >= $step_size) {
-					exec("wget -b -q -O - https://".Option::get(self::$moduleID,"domen")."/bitrix/services/iplogic/mkpapi/feed_products.php?param=".$task["ID"]);
+					exec("wget --no-check-certificate -b -q -O - https://".Option::get(self::$moduleID,"domen")."/bitrix/services/iplogic/mkpapi/feed_products.php?param=".$task["ID"]);
 					return self::scheduleFeedProductsRefresh($task["PROFILE_ID"]);
 				}
 			}
 		}
 		if ($i < $step_size && $i > 0) {
-			exec("wget -b -q -O - https://".Option::get(self::$moduleID,"domen")."/bitrix/services/iplogic/mkpapi/feed_products.php?param=".$task["ID"]);
+			exec("wget --no-check-certificate -b -q -O - https://".Option::get(self::$moduleID,"domen")."/bitrix/services/iplogic/mkpapi/feed_products.php?param=".$task["ID"]);
 			return self::scheduleFeedProductsRefresh($task["PROFILE_ID"]);
 		}
 		if($i == 0) {
@@ -384,13 +384,13 @@ class TaskTable extends Main\Entity\DataManager
 					$i++;
 				}
 				if($i >= $step_size) {
-					exec("wget -b -q -O - https://".Option::get(self::$moduleID,"domen")."/bitrix/services/iplogic/mkpapi/feed_products.php?param=".$task["ID"]);
+					exec("wget --no-check-certificate -b -q -O - https://".Option::get(self::$moduleID,"domen")."/bitrix/services/iplogic/mkpapi/feed_products.php?param=".$task["ID"]);
 					return self::scheduleFeedProductsRefresh($task["PROFILE_ID"]);
 				}
 			}
 		}
 		if ($i < $step_size && $i > 0) {
-			exec("wget -b -q -O - https://".Option::get(self::$moduleID,"domen")."/bitrix/services/iplogic/mkpapi/feed_products.php?param=".$task["ID"]);
+			exec("wget --no-check-certificate -b -q -O - https://".Option::get(self::$moduleID,"domen")."/bitrix/services/iplogic/mkpapi/feed_products.php?param=".$task["ID"]);
 			return self::scheduleFeedProductsRefresh($task["PROFILE_ID"]);
 		}
 		if($i == 0) {
@@ -418,7 +418,7 @@ class TaskTable extends Main\Entity\DataManager
 						TaskTable::scheduleFeedGeneration($task["PROFILE_ID"]);
 						$i++;
 						if($i >= ($step_size/2)) {
-							exec("wget -b -q -O - https://".Option::get(self::$moduleID,"domen")."/bitrix/services/iplogic/mkpapi/feed_products.php?param=".$task["ID"]);
+							exec("wget --no-check-certificate -b -q -O - https://".Option::get(self::$moduleID,"domen")."/bitrix/services/iplogic/mkpapi/feed_products.php?param=".$task["ID"]);
 							return self::scheduleFeedProductsRefresh($task["PROFILE_ID"]);
 						}
 					}
@@ -427,7 +427,7 @@ class TaskTable extends Main\Entity\DataManager
 			}
 		}
 		if ($i < ($step_size/2) && $i > 0) {
-			exec("wget -b -q -O - https://".Option::get(self::$moduleID,"domen")."/bitrix/services/iplogic/mkpapi/feed_products.php?param=".$task["ID"]);
+			exec("wget --no-check-certificate -b -q -O - https://".Option::get(self::$moduleID,"domen")."/bitrix/services/iplogic/mkpapi/feed_products.php?param=".$task["ID"]);
 		}
 		return self::scheduleFeedProductsRefresh($task["PROFILE_ID"]);
 	}

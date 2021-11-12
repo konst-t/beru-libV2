@@ -115,7 +115,7 @@ if($RIGHT >= "R") {
 
 	if($request->isPost() && strlen($Update.$Apply.$RestoreDefaults) > 0 && $RIGHT=="W" && check_bitrix_sessid())
 	{
-		require_once($docRoot."/bitrix/modules/perfmon/prolog.php");
+		//require_once($docRoot."/bitrix/modules/perfmon/prolog.php");
 		if(strlen($RestoreDefaults)>0) {
 			Option::delete($module_id);
 			Option::getDefaults($module_id);

@@ -42,4 +42,8 @@ $MESS["IPL_MAIN_VER"] = "Версия модуля main";
 //$MESS["IPL_CRON"] = "Исполнение агентов на cron";
 $MESS["IPL_ACTIONS"] = "Действия";
 $MESS["IPL_SET_TASK_EXECUTE"] = "Возобновить выполнение задач";
+$MESS["IPL_BACKGROUND_SCRIPTS"] = "Запуск фоновых скриптов";
+$MESS["IPL_CLI_METHOD"] = "Метод запуска";
+$MESS["IPL_CLI_MISS_CERT"] = "Не проврять сертификат";
+$MESS["IPL_PHP_FILE"] = "Файл запуска PHP";
 ?>

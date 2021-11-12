@@ -41,4 +41,8 @@ $MESS["IPL_IBLOCK_VER"] = "sale module version";
 $MESS["IPL_MAIN_VER"] = "main module version";
 $MESS["IPL_ACTIONS"] = "Actions";
 $MESS["IPL_SET_TASK_EXECUTE"] = "Resume task execution";
+$MESS["IPL_BACKGROUND_SCRIPTS"] = "Background scripts execution";
+$MESS["IPL_CLI_METHOD"] = "Script run method";
+$MESS["IPL_CLI_MISS_CERT"] = "Dont check certificate";
+$MESS["IPL_PHP_FILE"] = "PHP run file";
 ?>

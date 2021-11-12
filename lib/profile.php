@@ -450,7 +450,7 @@ class ProfileTable extends Main\Entity\DataManager
 		if ($result->isSuccess()) {
 			if ($arBefore["ACTIVE"] != $arFields["ACTIVE"]) {
 				if ($arFields["ACTIVE"] == "Y") {
-					/*exec("wget -b -q -O - https://".Option::get(self::$moduleID,"domen") ."/bitrix/services/iplogic/mkpapi/products.php");
+					/*exec("wget --no-check-certificate -b -q -O - https://".Option::get(self::$moduleID,"domen") ."/bitrix/services/iplogic/mkpapi/products.php");
 					$rsData = ProductTable::getList(['filter' => ["PROFILE_ID"=>$ID]]);
 					while ($prod = $rsData->Fetch()) {
 						$rsTask = TaskTable::getList(["filter"=>["PROFILE_ID"=>$ID,"TYPE"=>"PU","STATE"=>"WT","ENTITY_ID"=>$prod["ID"]]]);
@@ -470,6 +470,9 @@ class ProfileTable extends Main\Entity\DataManager
 				else {
 					TaskTable::deleteByProfileId($ID);
 				}
+			}
+			if ($arBefore["YML_FROM_MARKET"] != $arFields["YML_FROM_MARKET"]) {
+				TaskTable::scheduleFeedProductsRefresh($ID);
 			}
 			if ((!isset($arFields["BASE_URL"]) || $arFields["BASE_URL"]=="" || $arFields["USE_API"]!="Y") && $arBefore["BASE_URL"] != "") {
 				\CUrlRewriter::Delete([

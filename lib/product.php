@@ -12,11 +12,11 @@ use \Bitrix\Main,
 	\Iplogic\Beru\TaskTable,
 	\Iplogic\Beru\ProfileTable;
 
-IncludeModuleLangFile(Application::getDocumentRoot().BX_ROOT."/modules/iplogic.beru/lib/lib.php");
+IncludeModuleLangFile(Application::getDocumentRoot() . BX_ROOT . "/modules/iplogic.beru/lib/lib.php");
 
 /**
  * Class ProductTable
- * 
+ *
  * Fields:
  * <ul>
  * <li> ID int mandatory
@@ -39,7 +39,6 @@ IncludeModuleLangFile(Application::getDocumentRoot().BX_ROOT."/modules/iplogic.b
  *
  * @package Iplogic\Beru
  **/
-
 class ProductTable extends Main\Entity\DataManager
 {
 
@@ -62,85 +61,86 @@ class ProductTable extends Main\Entity\DataManager
 	 */
 	public static function getMap()
 	{
-		return array(
-			'ID' => array(
-				'data_type' => 'integer',
-				'primary' => true,
+		return [
+			'ID'            => [
+				'data_type'    => 'integer',
+				'primary'      => true,
 				'autocomplete' => true,
-				'title' => Loc::getMessage('PRODUCT_ENTITY_ID_FIELD'),
-			),
-			'PROFILE_ID' => array(
+				'title'        => Loc::getMessage('PRODUCT_ENTITY_ID_FIELD'),
+			],
+			'PROFILE_ID'    => [
 				'data_type' => 'integer',
-				'required' => true,
-				'title' => Loc::getMessage('PRODUCT_ENTITY_PROFILE_ID_FIELD'),
-			),
-			'PRODUCT_ID' => array(
+				'required'  => true,
+				'title'     => Loc::getMessage('PRODUCT_ENTITY_PROFILE_ID_FIELD'),
+			],
+			'PRODUCT_ID'    => [
 				'data_type' => 'integer',
-				'title' => Loc::getMessage('PRODUCT_ENTITY_PRODUCT_ID_FIELD'),
-			),
-			'SKU_ID' => array(
-				'data_type' => 'string',
-				'validation' => array(__CLASS__, 'validateSkuId'),
-				'title' => Loc::getMessage('PRODUCT_ENTITY_SKU_ID_FIELD'),
-			),
-			'MARKET_SKU' => array(
+				'title'     => Loc::getMessage('PRODUCT_ENTITY_PRODUCT_ID_FIELD'),
+			],
+			'SKU_ID'        => [
+				'data_type'  => 'string',
+				'validation' => [__CLASS__, 'validateSkuId'],
+				'title'      => Loc::getMessage('PRODUCT_ENTITY_SKU_ID_FIELD'),
+			],
+			'MARKET_SKU'    => [
 				'data_type' => 'integer',
-				'title' => Loc::getMessage('PRODUCT_ENTITY_MARKET_SKU_FIELD'),
-			),
-			'NAME' => array(
+				'title'     => Loc::getMessage('PRODUCT_ENTITY_MARKET_SKU_FIELD'),
+			],
+			'NAME'          => [
 				'data_type' => 'text',
-				'title' => Loc::getMessage('PRODUCT_ENTITY_NAME_FIELD'),
-			),
-			'VENDOR' => array(
-				'data_type' => 'string',
-				'validation' => array(__CLASS__, 'validateVendor'),
-				'title' => Loc::getMessage('PRODUCT_ENTITY_VENDOR_FIELD'),
-			),
-			'AVAILABILITY' => array(
+				'title'     => Loc::getMessage('PRODUCT_ENTITY_NAME_FIELD'),
+			],
+			'VENDOR'        => [
+				'data_type'  => 'string',
+				'validation' => [__CLASS__, 'validateVendor'],
+				'title'      => Loc::getMessage('PRODUCT_ENTITY_VENDOR_FIELD'),
+			],
+			'AVAILABILITY'  => [
 				'data_type' => 'boolean',
-				'values' => array('N', 'Y'),
-				'title' => Loc::getMessage('PRODUCT_ENTITY_AVAILABILITY_FIELD'),
-			),
-			'STATE' => array(
-				'data_type' => 'string',
-				'validation' => array(__CLASS__, 'validateState'),
-				'title' => Loc::getMessage('PRODUCT_ENTITY_STATE_FIELD'),
-			),
-			'REJECT_REASON' => array(
-				'data_type' => 'string',
-				'validation' => array(__CLASS__, 'validateRejectReason'),
-				'title' => Loc::getMessage('PRODUCT_ENTITY_REJECT_REASON_FIELD'),
-			),
-			'REJECT_NOTES' => array(
+				'values'    => ['N', 'Y'],
+				'title'     => Loc::getMessage('PRODUCT_ENTITY_AVAILABILITY_FIELD'),
+			],
+			'STATE'         => [
+				'data_type'  => 'string',
+				'validation' => [__CLASS__, 'validateState'],
+				'title'      => Loc::getMessage('PRODUCT_ENTITY_STATE_FIELD'),
+			],
+			'REJECT_REASON' => [
+				'data_type'  => 'string',
+				'validation' => [__CLASS__, 'validateRejectReason'],
+				'title'      => Loc::getMessage('PRODUCT_ENTITY_REJECT_REASON_FIELD'),
+			],
+			'REJECT_NOTES'  => [
 				'data_type' => 'text',
-				'title' => Loc::getMessage('PRODUCT_ENTITY_REJECT_NOTES_FIELD'),
-			),
-			'DETAILS' => array(
+				'title'     => Loc::getMessage('PRODUCT_ENTITY_REJECT_NOTES_FIELD'),
+			],
+			'DETAILS'       => [
 				'data_type' => 'text',
-				'title' => Loc::getMessage('PRODUCT_ENTITY_DETAILS_FIELD'),
-			),
-			'PRICE' => array(
-				'data_type' => 'string',
-				'validation' => array(__CLASS__, 'validatePrice'),
-				'title' => Loc::getMessage('PRODUCT_ENTITY_PRICE_FIELD'),
-			),
-			'HIDDEN' => array(
+				'title'     => Loc::getMessage('PRODUCT_ENTITY_DETAILS_FIELD'),
+			],
+			'PRICE'         => [
+				'data_type'  => 'string',
+				'validation' => [__CLASS__, 'validatePrice'],
+				'title'      => Loc::getMessage('PRODUCT_ENTITY_PRICE_FIELD'),
+			],
+			'HIDDEN'        => [
 				'data_type' => 'boolean',
-				'values' => array('N', 'Y'),
-				'title' => Loc::getMessage('PRODUCT_ENTITY_HIDDEN_FIELD'),
-			),
-			'API' => array(
+				'values'    => ['N', 'Y'],
+				'title'     => Loc::getMessage('PRODUCT_ENTITY_HIDDEN_FIELD'),
+			],
+			'API'           => [
 				'data_type' => 'boolean',
-				'values' => array('N', 'Y'),
-				'title' => Loc::getMessage('PRODUCT_ENTITY_API_FIELD'),
-			),
-			'FEED' => array(
+				'values'    => ['N', 'Y'],
+				'title'     => Loc::getMessage('PRODUCT_ENTITY_API_FIELD'),
+			],
+			'FEED'          => [
 				'data_type' => 'boolean',
-				'values' => array('N', 'Y'),
-				'title' => Loc::getMessage('PRODUCT_ENTITY_FEED_FIELD'),
-			),
-		);
+				'values'    => ['N', 'Y'],
+				'title'     => Loc::getMessage('PRODUCT_ENTITY_FEED_FIELD'),
+			],
+		];
 	}
+
 	/**
 	 * Returns validators for SKU_ID field.
 	 *
@@ -148,10 +148,11 @@ class ProductTable extends Main\Entity\DataManager
 	 */
 	public static function validateSkuId()
 	{
-		return array(
+		return [
 			new Main\Entity\Validator\Length(null, 150),
-		);
+		];
 	}
+
 	/**
 	 * Returns validators for VENDOR field.
 	 *
@@ -159,10 +160,11 @@ class ProductTable extends Main\Entity\DataManager
 	 */
 	public static function validateVendor()
 	{
-		return array(
+		return [
 			new Main\Entity\Validator\Length(null, 255),
-		);
+		];
 	}
+
 	/**
 	 * Returns validators for STATE field.
 	 *
@@ -170,10 +172,11 @@ class ProductTable extends Main\Entity\DataManager
 	 */
 	public static function validateState()
 	{
-		return array(
+		return [
 			new Main\Entity\Validator\Length(null, 12),
-		);
+		];
 	}
+
 	/**
 	 * Returns validators for REJECT_REASON field.
 	 *
@@ -181,10 +184,11 @@ class ProductTable extends Main\Entity\DataManager
 	 */
 	public static function validateRejectReason()
 	{
-		return array(
+		return [
 			new Main\Entity\Validator\Length(null, 255),
-		);
+		];
 	}
+
 	/**
 	 * Returns validators for PRICE field.
 	 *
@@ -192,73 +196,84 @@ class ProductTable extends Main\Entity\DataManager
 	 */
 	public static function validatePrice()
 	{
-		return array(
+		return [
 			new Main\Entity\Validator\Length(null, 12),
-		);
+		];
 	}
 
 
-	public static function getById($ID) 
+	public static function getById($ID)
 	{
 		$result = parent::getById($ID);
 		return $result->Fetch();
 	}
 
 
-	public static function getBySkuId($ID, $PROFILE_ID) 
+	public static function getBySkuId($ID, $PROFILE_ID)
 	{
-		$conn = Application::getConnection(); 
+		$conn = Application::getConnection();
 		$helper = $conn->getSqlHelper();
-		$strSql = "SELECT * FROM ".$helper->quote(self::getTableName())." WHERE ".$helper->quote('SKU_ID')."='".$ID."' AND ".$helper->quote('PROFILE_ID')."=".$PROFILE_ID;  //echo $strSql;
+		$strSql =
+			"SELECT * FROM " . $helper->quote(self::getTableName()) . " WHERE " . $helper->quote('SKU_ID') . "='" .
+			$ID . "' AND " . $helper->quote('PROFILE_ID') . "=" . $PROFILE_ID;  //echo $strSql;
 		$result = $conn->query($strSql);
 		unset($helper, $conn);
 		return $result->Fetch();
 	}
 
 
-	public static function getByProductId($ID) 
+	public static function getByProductId($ID)
 	{
-		$conn = Application::getConnection(); 
+		$conn = Application::getConnection();
 		$helper = $conn->getSqlHelper();
-		$strSql = "SELECT * FROM ".$helper->quote(self::getTableName())." WHERE ".$helper->quote('PRODUCT_ID')."='".$ID."'";  //echo $strSql;
+		$strSql =
+			"SELECT * FROM " . $helper->quote(self::getTableName()) . " WHERE " . $helper->quote('PRODUCT_ID') . "='" .
+			$ID . "'";  //echo $strSql;
 		$result = $conn->query($strSql);
 		unset($helper, $conn);
 		return $result;
 	}
 
 
-	public static function checkMarketProducts($profile_id = false, $page_token = false) 
-	{ 
-		$rsProfiles = ProfileTable::getList(["order"=>["ID"=>"ASC"], "filter"=>["ACTIVE"=>"Y"]]);
-		if (!$profile_id) {
+	public static function checkMarketProducts($profile_id = false, $page_token = false)
+	{
+		$rsProfiles = ProfileTable::getList(["order" => ["ID" => "ASC"], "filter" => ["ACTIVE" => "Y"]]);
+		// first step
+		if( !$profile_id ) {
 			$arProfile = $rsProfiles->Fetch();
-			if (!$arProfile) return;
-			Option::set(self::$moduleID,"products_check_last_time",time());
+			if( !$arProfile ) {
+				return;
+			}
+			Option::set(self::$moduleID, "products_check_last_time", time());
 		}
-		elseif ($profile_id && $page_token != "") {
-			while ($ar_Profile = $rsProfiles->Fetch()) {
-				if ($ar_Profile["ID"] == $profile_id) {
+		// not first step for known profile
+		elseif( $profile_id && $page_token != "" ) {
+			while( $ar_Profile = $rsProfiles->Fetch() ) {
+				if( $ar_Profile["ID"] == $profile_id ) {
 					$arProfile = $ar_Profile;
 					break;
 				}
 			}
 		}
+		// not first step - next profile
 		else {
-			while ($ar_Profile = $rsProfiles->Fetch()) {
-				if ($ar_Profile["ID"] == $profile_id) {
+			while( $ar_Profile = $rsProfiles->Fetch() ) {
+				if( $ar_Profile["ID"] == $profile_id ) {
 					$arProfile = $rsProfiles->Fetch();
 					break;
 				}
 			}
-			if (!$arProfile) {
-				Option::set(self::$moduleID,"products_check_last_time",time());
+			// no next profile - end of execution
+			if( !$arProfile ) {
+				Option::set(self::$moduleID, "products_check_last_time", time());
 			}
 		}
-		if (!$arProfile) {
+		if( !$arProfile ) {
 			return;
 		}
 
-		if (   $arProfile["USE_API"] == "Y"
+		if(
+			$arProfile["USE_API"] == "Y"
 			&& $arProfile["CLIENT_ID"] != ""
 			&& $arProfile["COMPAIN_ID"] != ""
 			&& $arProfile["SEND_TOKEN"] != ""
@@ -269,80 +284,88 @@ class ProductTable extends Main\Entity\DataManager
 			$arHidden = [];
 			$api = new YMAPI($arProfile["ID"]);
 			$result = $api->getHidden();
-			foreach($result["body"]["result"]["hiddenOffers"] as $offer) {
+			foreach( $result["body"]["result"]["hiddenOffers"] as $offer ) {
 				$arHidden[] = $offer["marketSku"];
 			}
 
-			$arParams = ["limit"=>Option::get(self::$moduleID,"products_add_num",50)];
-			for ($i=0; $i < 5; $i++) {
-				if ($page_token) {
+			$arParams = ["limit" => Option::get(self::$moduleID, "products_add_num", 50)];
+			for( $i = 0; $i < 5; $i++ ) {
+				if( $page_token ) {
 					$arParams["page_token"] = $page_token;
 				}
 				$api = new YMAPI($arProfile["ID"]);
-				$result = $api->getOffersMapping($arParams); 
-				if ($result["status"] != 200){
+				$result = $api->getOffersMapping($arParams);
+				if( $result["status"] != 200 ) {
 					$page_token = "";
 					break;
 				}
-				if (!count($result["body"]["result"]["offerMappingEntries"])){
+				if( !count($result["body"]["result"]["offerMappingEntries"]) ) {
 					$page_token = "";
 					break;
 				}
-				foreach($result["body"]["result"]["offerMappingEntries"] as $offer) {
+				foreach( $result["body"]["result"]["offerMappingEntries"] as $offer ) {
 					$id = $con->getProductId($offer["offer"]["shopSku"]);
 					$market_sku = null;
-					if (isset($offer["mapping"])) {
+					if( isset($offer["mapping"]) ) {
 						$market_sku = $offer["mapping"]["marketSku"];
 					}
-					elseif (isset($offer["awaitingModerationMapping"])) {
+					elseif( isset($offer["awaitingModerationMapping"]) ) {
 						$market_sku = $offer["awaitingModerationMapping"]["marketSku"];
 					}
-					elseif (isset($offer["rejectedMapping"])) {
+					elseif( isset($offer["rejectedMapping"]) ) {
 						$market_sku = $offer["rejectedMapping"]["marketSku"];
 					}
 					$hidden = "N";
-					if ($market_sku && in_array($market_sku, $arHidden)) {
+					if( $market_sku && in_array($market_sku, $arHidden) ) {
 						$hidden = "Y";
 					}
 					$arReason = [];
 					$arNote = [];
-					foreach($offer["offer"]["processingState"]["notes"] as $rn) {
+					foreach( $offer["offer"]["processingState"]["notes"] as $rn ) {
 						$arReason[] = $rn["type"];
 						$arNote[] = [];
-						if($rn["payload"]!="") {
+						if( $rn["payload"] != "" ) {
 							$n = Json::decode($rn["payload"]);
 							$arNote[] = $n["itemsAsString"];
 						}
 					}
-					if (count($arReason))
+					if( count($arReason) ) {
 						$stReason = implode(", ", $arReason);
-					else
+					}
+					else {
 						$stReason = null;
-					if (count($arNote))
+					}
+					if( count($arNote) ) {
 						$stNote = implode(". ", $arNote);
-					else
+					}
+					else {
 						$stNote = null;
+					}
 					$arFields = [
-						"PROFILE_ID" => $arProfile["ID"],
-						"PRODUCT_ID" => $id,
-						"SKU_ID" => $offer["offer"]["shopSku"],
-						"MARKET_SKU" => $market_sku,
-						"NAME" => $offer["offer"]["name"],
-						"VENDOR" => $offer["offer"]["vendor"],
-						"AVAILABILITY" => ($offer["offer"]["availability"]=="ACTIVE" ? "Y" : "N"),
-						"STATE" => $offer["offer"]["processingState"]["status"],
+						"PROFILE_ID"    => $arProfile["ID"],
+						"PRODUCT_ID"    => $id,
+						"SKU_ID"        => $offer["offer"]["shopSku"],
+						"MARKET_SKU"    => $market_sku,
+						"NAME"          => $offer["offer"]["name"],
+						"VENDOR"        => $offer["offer"]["vendor"],
+						"AVAILABILITY"  => ($offer["offer"]["availability"] == "ACTIVE" ? "Y" : "N"),
+						"STATE"         => $offer["offer"]["processingState"]["status"],
 						"REJECT_REASON" => $stReason,
-						"REJECT_NOTES" => $stNote,
-						"API" => "Y",
-						"HIDDEN" => $hidden,
-					]; 
-					$res = self::getList(["filter"=>["PROFILE_ID"=>$arProfile["ID"], "SKU_ID"=>$offer["offer"]["shopSku"]]]);
-					if ($pr = $res->Fetch())
-						self::update($pr["ID"],$arFields);
-					else
+						"REJECT_NOTES"  => $stNote,
+						"API"           => "Y",
+						"HIDDEN"        => $hidden,
+					];
+					$res = self::getList(
+						["filter" => ["PROFILE_ID" => $arProfile["ID"], "SKU_ID" => $offer["offer"]["shopSku"]]]
+					);
+					if( $pr = $res->Fetch() ) {
+						self::update($pr["ID"], $arFields);
+					}
+					else {
 						self::add($arFields);
+					}
 				}
-				if ($result["body"]["result"]["paging"]["nextPageToken"] != "") {
+				if( $result["body"]["result"]["paging"]["nextPageToken"] != "" ) {
 					$page_token = $result["body"]["result"]["paging"]["nextPageToken"];
 				}
 				else {
@@ -351,34 +374,43 @@ class ProductTable extends Main\Entity\DataManager
 			}
 		}
 
-		exec("wget -b -q -O - https://".Option::get(self::$moduleID,"domen") ."/bitrix/services/iplogic/mkpapi/products.php?param=".$arProfile["ID"]."__".$page_token);
+		exec(
+			"wget --no-check-certificate -b -q -O - https://" . Option::get(self::$moduleID, "domen") .
+			"/bitrix/services/iplogic/mkpapi/products.php?param=" . $arProfile["ID"] . "__" . $page_token
+		);
 		die();
 
 	}
 
 
-	public static function updateCache($ID) {
-		if ($product = self::getById($ID)) { 
+	public static function updateCache($ID)
+	{
+		if( $product = self::getById($ID) ) {
 			$arProfile = ProfileTable::getById($product["PROFILE_ID"]);
-			if ($arProfile["ACTIVE"] != "Y") 
+			if( $arProfile["ACTIVE"] != "Y" ) {
 				return false;
-			$con = new Control($product["PROFILE_ID"]);
-			$set = $con->getSKU($product["SKU_ID"], [], true); 
-			if ($product["PRICE"]!=$set["PRICE"] && $set["PRICE"]>0 && $product["API"] == "Y") {
-				TaskTable::addPriceUpdateTask($ID,$product["PROFILE_ID"]);
 			}
-			if ($product["FEED"] == "Y") {
+			$con = new Control($product["PROFILE_ID"]);
+			$set = $con->getSKU($product["SKU_ID"], [], true);
+			if(
+				$product["PRICE"] != $set["PRICE"] && $set["PRICE"] > 0 && $product["API"] == "Y" &&
+				$product["STATE"] == "READY"
+			) {
+				TaskTable::addPriceUpdateTask($ID, $product["PROFILE_ID"]);
+			}
+			if( $product["FEED"] == "Y" ) {
 				TaskTable::scheduleFeedGeneration($product["PROFILE_ID"]);
 			}
 			$eventManager = Main\EventManager::getInstance();
 			$eventsList = $eventManager->findEventHandlers('iplogic.beru', 'OnIplogicBeruBeforeProductCacheSave');
-			foreach ($eventsList as $arEvent) { 
-				if (ExecuteModuleEventEx($arEvent, [$product["PRODUCT_ID"], &$set])===false) 
+			foreach( $eventsList as $arEvent ) {
+				if( ExecuteModuleEventEx($arEvent, [$product["PRODUCT_ID"], &$set]) === false ) {
 					return false;
+				}
 			}
 			$cache = serialize($set);
-			$arFields = ["DETAILS"=>$cache];
-			return self::update($ID,$arFields);
+			$arFields = ["DETAILS" => $cache];
+			return self::update($ID, $arFields);
 		}
 		return false;
 	}

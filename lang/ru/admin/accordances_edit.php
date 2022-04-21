@@ -1,18 +1,12 @@
 <?
 $MESS["IPL_MA_GENERAL"] = "Общее";
 $MESS["IPL_MA_GENERAL_TITLE"] = "Общие поля";
-$MESS["IPL_MA_API"] = "API";
-$MESS["IPL_MA_API_TITLE"] = "Соответствие полей для работы по API";
-$MESS["IPL_MA_FEED"] = "YML";
-$MESS["IPL_MA_FEED_TITLE"] = "Соответствие полей для вывода в YML файле";
 $MESS["IPL_MA_PROFILE_EDIT_TITLE"] = "Сопоставления полей профиля";
 $MESS["WRONG_PARAMETERS"] = "Неверные параметры запроса";
 $MESS["IPL_MA_LIST"] = "Список";
 $MESS["IPL_MA_LIST_TITLE"] = "Вернуться к списку профилей";
 $MESS["IPL_MA_PROFILE_SETTINGS"] = "Настройки профиля";
 $MESS["IPL_MA_PROFILE_SETTINGS_TITLE"] = "Основные настройки профиля";
-$MESS["IPL_MA_CONDITIONS"] = "Условия";
-$MESS["IPL_MA_CONDITIONS_TITLE"] = "Условия построения прайслиста профиля";
 $MESS["SAVED"] = "Изменения успешно сохранены";
 $MESS["NOT_CHOSEN"] = "(Не выбрано)";
 $MESS["ALL"] = "(Все)";
@@ -30,6 +24,7 @@ $MESS["IPL_MA_CHANGE_TIME"] = "Время изменения";
 $MESS["IPL_MA_CURRENT_TIME"] = "Текущее время";
 $MESS["IPL_MA_ELEMENT_LAST_CHANGE"] = "Последнее изменение элемента";
 $MESS["IPL_MA_PRICE"] = "Цена";
+$MESS["IPL_MA_OLD_PRICE"] = "Старая цена";
 $MESS["IPL_MA_MIN_DISCOUNT_PRICE"] = "Минимальная цена со скидкой";
 $MESS["IPL_MA_PRICES"] = "Тип цены";
 $MESS["IPL_MA_PERMANENT_TEXT"] = "Постоянный текст";

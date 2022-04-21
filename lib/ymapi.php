@@ -240,12 +240,12 @@ class YMAPI {
 				else {
 					if ( ($task["TRYING"] + 1) >= Option::get(self::$moduleID,"task_trying_num",3) ) {
 						$stop_repeating = true;
-						$this->putError($path,$data);
+						$this->putError($path,$data,$EID);
 					}
 				}
 			}
 			else {
-				$this->putError($path,$data);
+				$this->putError($path,$data,$EID);
 			}
 		}
 		$arLogFields["close"] = true;
@@ -265,7 +265,7 @@ class YMAPI {
 	}
 
 
-	private function putError($path, $data) {
+	private function putError($path, $data, $EID) {
 		//$data = ($data ? Control::toHtml(print_r(Json::decode($data),true)) : "");
 		$data = ($data ? $data : "");
 		$details = "URL: ".$path."<br><br>TOKEN: ".$this->arProfile["SEND_TOKEN"]."<br><br>REQUEST<br><br>"
@@ -275,6 +275,7 @@ class YMAPI {
 			"PROFILE_ID" 	=> $this->arProfile["ID"],
 			"ERROR" 		=> $this->cl->getStatus().": ".$response["errors"][0]["code"]." - ".$response["errors"][0]["message"],
 			"DETAILS" 		=> $details,
+			"LOG"           => $EID,
 		];
 		return Error::add($arFields);
 	}

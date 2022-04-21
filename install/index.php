@@ -59,6 +59,7 @@ if (!class_exists("iplogic_beru")) {
 			Option::set(self::MODULE_ID,"use_log",'Y');
 			Option::set(self::MODULE_ID,"dont_log_ok",'N');
 			Option::set(self::MODULE_ID,"log_in_menu",'Y');
+			Option::set(self::MODULE_ID,"tasks_in_menu",'Y');
 			Option::set(self::MODULE_ID,"last_task_time",0);
 			Option::set(self::MODULE_ID,"task_trying_num",3);
 			Option::set(self::MODULE_ID,"task_trying_period",60);

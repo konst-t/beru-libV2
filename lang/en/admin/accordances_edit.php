@@ -1,18 +1,12 @@
 <?
 $MESS["IPL_MA_GENERAL"] = "General";
 $MESS["IPL_MA_GENERAL_TITLE"] = "General fields";
-$MESS["IPL_MA_API"] = "API";
-$MESS["IPL_MA_API_TITLE"] = "Matching fields for API work";
-$MESS["IPL_MA_FEED"] = "YML";
-$MESS["IPL_MA_FEED_TITLE"] = "Matching fields for output in YML file";
 $MESS["IPL_MA_PROFILE_EDIT_TITLE"] = "Profile field mappings";
 $MESS["WRONG_PARAMETERS"] = "Invalid request parameters";
 $MESS["IPL_MA_LIST"] = "List";
 $MESS["IPL_MA_LIST_TITLE"] = "Return to profile list";
 $MESS["IPL_MA_PROFILE_SETTINGS"] = "Profile settings";
 $MESS["IPL_MA_PROFILE_SETTINGS_TITLE"] = "Basic profile settings";
-$MESS["IPL_MA_CONDITIONS"] = "Conditions";
-$MESS["IPL_MA_CONDITIONS_TITLE"] = "Conditions for building a profile price list";
 $MESS["SAVED"] = "Changes saved successfully";
 $MESS["NOT_CHOSEN"] = "(not selected)";
 $MESS["ALL"] = "(All)";
@@ -30,6 +24,7 @@ $MESS["IPL_MA_CHANGE_TIME"] = "Change time";
 $MESS["IPL_MA_CURRENT_TIME"] = "Current time";
 $MESS["IPL_MA_ELEMENT_LAST_CHANGE"] = "Last element change";
 $MESS["IPL_MA_PRICE"] = "Price";
+$MESS["IPL_MA_OLD_PRICE"] = "Old price";
 $MESS["IPL_MA_MIN_DISCOUNT_PRICE"] = "Minimum discounted price";
 $MESS["IPL_MA_PRICES"] = "Price type";
 $MESS["IPL_MA_PERMANENT_TEXT"] = "Permanent text";

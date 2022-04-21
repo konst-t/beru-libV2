@@ -5,6 +5,7 @@ $MESS["IPL_USE_LOG"] = "Enable logging";
 $MESS["IPL_DONT_LOG_OK"] = "Don't log successful operations";
 $MESS["IPL_LOG_IN_MENU"] = "Show log in module menu";
 $MESS["IPL_TASKS"] = "Tasks";
+$MESS["IPL_TASKS_IN_MENU"] = "Show tasks in module menu";
 $MESS["IPL_TASK_TRYING_NUM"] = "Number of attempts to send a request to the marketplace";
 $MESS["IPL_TASK_TRYING_PERIOD"] = "Period of sending repeated requests to the marketplace, sec";
 $MESS["IPL_ALLOW_MULTICHAIN_TASKS"] = "Allow multiple threads to process tasks";

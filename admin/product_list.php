@@ -122,7 +122,6 @@ $arOpts = [
 			"VIEW" => "select",
 			"VALUES" => [
 				"reference" => [
-					Loc::getMessage("IPL_MA_STATE_FEED_ONLY"),
 					Loc::getMessage("IPL_MA_STATE_READY"),
 					Loc::getMessage("IPL_MA_STATE_IN_WORK"),
 					Loc::getMessage("IPL_MA_STATE_NEED_INFO"),
@@ -132,7 +131,6 @@ $arOpts = [
 					Loc::getMessage("IPL_MA_STATE_OTHER"),
 				],
 				"reference_id" => [
-					"FEED_ONLY",
 					"READY",
 					"IN_WORK",
 					"NEED_INFO",
@@ -145,7 +143,6 @@ $arOpts = [
 			"DEFAULT" => Loc::getMessage("IPL_MA_ALL"),
 		],
 		"REPLACE" => [
-			"FEED_ONLY" 	=> "<span style='color:#c95a00;'>".Loc::getMessage("IPL_MA_STATE_FEED_ONLY")."</span>",
 			"READY" 		=> "<span style='color:#1cc43b;'>".Loc::getMessage("IPL_MA_STATE_READY")."</span>",
 			"IN_WORK" 		=> "<span style='color:#1d2bec;'>".Loc::getMessage("IPL_MA_STATE_IN_WORK")."</span>",
 			"NEED_INFO" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_NEED_INFO")."</span>",
@@ -199,54 +196,6 @@ $arOpts = [
 				"PARAM" => "<div class=\"hidden marker ##hidden##\"></div>",
 				"TYPE" => "HTML",
 			],
-		],
-	],
-	[
-		"NAME" => "api",
-		"CAPTION" => Loc::getMessage("IPL_MA_CAPTION_API"),
-		"FILTER" => [
-			"VIEW" => "select",
-			"VALUES" => [
-				"reference" => [
-					Loc::getMessage("IPL_MA_YES"),
-					Loc::getMessage("IPL_MA_NO"),
-				],
-				"reference_id" => [
-					"Y",
-					"N",
-				]
-			],
-			"DEFAULT" => Loc::getMessage("IPL_MA_ALL"),
-		],
-		"VIEW" => [
-			"AddCheckField" =>[],
-		],
-		"HEADER_KEY" => [
-			"default" => false, 
-		],
-	],
-	[
-		"NAME" => "feed",
-		"CAPTION" => Loc::getMessage("IPL_MA_CAPTION_FEED"),
-		"FILTER" => [
-			"VIEW" => "select",
-			"VALUES" => [
-				"reference" => [
-					Loc::getMessage("IPL_MA_YES"),
-					Loc::getMessage("IPL_MA_NO"),
-				],
-				"reference_id" => [
-					"Y",
-					"N",
-				]
-			],
-			"DEFAULT" => Loc::getMessage("IPL_MA_ALL"),
-		],
-		"VIEW" => [
-			"AddCheckField" =>[],
-		],
-		"HEADER_KEY" => [
-			"default" => false, 
 		],
 	],
 	[

@@ -12,3 +12,4 @@ $MESS["IPL_MA_MENU_PRODUCTS"] = "Товары";
 $MESS["IPL_MA_MENU_CONDITIONS"] = "Условия";
 $MESS["IPL_MA_MENU_STICKERS"] = "Стикеры";
 $MESS["IPL_MA_MENU_ACTS"] = "Акты";
+$MESS["IPL_MA_MENU_TASKS"] = "Задачи";

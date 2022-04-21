@@ -35,7 +35,6 @@ $res = CIblockElement::getById($arFields["PRODUCT_ID"]);
 $arElement = $res->Fetch();
 
 $arState = [
-	"FEED_ONLY" 	=> "<span style='color:#c95a00;'>".Loc::getMessage("IPL_MA_STATE_FEED_ONLY")."</span>",
 	"READY" 		=> "<span style='color:#1cc43b;'>".Loc::getMessage("IPL_MA_STATE_READY")." [READY]</span>",
 	"IN_WORK" 		=> "<span style='color:#1d2bec;'>".Loc::getMessage("IPL_MA_STATE_IN_WORK")." [IN_WORK]</span>",
 	"NEED_INFO" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_NEED_INFO")." [NEED_INFO]</span>",

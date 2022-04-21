@@ -33,8 +33,7 @@ IncludeModuleLangFile(Application::getDocumentRoot() . BX_ROOT . "/modules/iplog
  * <li> DETAILS string optional
  * <li> PRICE string(12) optional
  * <li> HIDDEN bool optional default 'N'
- * <li> API bool optional default 'N'
- * <li> FEED bool optional default 'N'
+ * <li> FOR_DELETE bool optional default 'N'
  * </ul>
  *
  * @package Iplogic\Beru
@@ -128,15 +127,10 @@ class ProductTable extends Main\Entity\DataManager
 				'values'    => ['N', 'Y'],
 				'title'     => Loc::getMessage('PRODUCT_ENTITY_HIDDEN_FIELD'),
 			],
-			'API'           => [
+			'FOR_DELETE'          => [
 				'data_type' => 'boolean',
 				'values'    => ['N', 'Y'],
-				'title'     => Loc::getMessage('PRODUCT_ENTITY_API_FIELD'),
-			],
-			'FEED'          => [
-				'data_type' => 'boolean',
-				'values'    => ['N', 'Y'],
-				'title'     => Loc::getMessage('PRODUCT_ENTITY_FEED_FIELD'),
+				'title'     => Loc::getMessage('PRODUCT_ENTITY_FOR_DELETE_FIELD'),
 			],
 		];
 	}
@@ -235,6 +229,26 @@ class ProductTable extends Main\Entity\DataManager
 	}
 
 
+	public static function markAllForDelete()
+	{
+		$conn = Application::getConnection();
+		$helper = $conn->getSqlHelper();
+		$conn->query("UPDATE " . $helper->quote(self::getTableName()) . " SET FOR_DELETE='Y'");
+		unset($helper, $conn);
+		return;
+	}
+
+
+	public static function deleteMarked()
+	{
+		$conn = Application::getConnection();
+		$helper = $conn->getSqlHelper();
+		$conn->query("DELETE FROM " . $helper->quote(self::getTableName()) . " WHERE FOR_DELETE='Y'");
+		unset($helper, $conn);
+		return;
+	}
+
+
 	public static function checkMarketProducts($profile_id = false, $page_token = false)
 	{
 		$rsProfiles = ProfileTable::getList(["order" => ["ID" => "ASC"], "filter" => ["ACTIVE" => "Y"]]);
@@ -244,6 +258,7 @@ class ProductTable extends Main\Entity\DataManager
 			if( !$arProfile ) {
 				return;
 			}
+			self::markAllForDelete();
 			Option::set(self::$moduleID, "products_check_last_time", time());
 		}
 		// not first step for known profile
@@ -265,6 +280,7 @@ class ProductTable extends Main\Entity\DataManager
 			}
 			// no next profile - end of execution
 			if( !$arProfile ) {
+				self::deleteMarked();
 				Option::set(self::$moduleID, "products_check_last_time", time());
 			}
 		}
@@ -273,8 +289,7 @@ class ProductTable extends Main\Entity\DataManager
 		}
 
 		if(
-			$arProfile["USE_API"] == "Y"
-			&& $arProfile["CLIENT_ID"] != ""
+			$arProfile["CLIENT_ID"] != ""
 			&& $arProfile["COMPAIN_ID"] != ""
 			&& $arProfile["SEND_TOKEN"] != ""
 		) {
@@ -352,8 +367,8 @@ class ProductTable extends Main\Entity\DataManager
 						"STATE"         => $offer["offer"]["processingState"]["status"],
 						"REJECT_REASON" => $stReason,
 						"REJECT_NOTES"  => $stNote,
-						"API"           => "Y",
 						"HIDDEN"        => $hidden,
+						"FOR_DELETE"    => "N"
 					];
 					$res = self::getList(
 						["filter" => ["PROFILE_ID" => $arProfile["ID"], "SKU_ID" => $offer["offer"]["shopSku"]]]
@@ -393,13 +408,16 @@ class ProductTable extends Main\Entity\DataManager
 			$con = new Control($product["PROFILE_ID"]);
 			$set = $con->getSKU($product["SKU_ID"], [], true);
 			if(
-				$product["PRICE"] != $set["PRICE"] && $set["PRICE"] > 0 && $product["API"] == "Y" &&
-				$product["STATE"] == "READY"
+				$product["PRICE"] != $set["PRICE"] && $set["PRICE"] > 0 &&
+				($product["STATE"] == "READY" || $product["STATE"] == "NEED_CONTENT")
 			) {
 				TaskTable::addPriceUpdateTask($ID, $product["PROFILE_ID"]);
 			}
-			if( $product["FEED"] == "Y" ) {
-				TaskTable::scheduleFeedGeneration($product["PROFILE_ID"]);
+			if(
+				$product["OLD_PRICE"] != $set["OLD_PRICE"] &&
+				($product["STATE"] == "READY" || $product["STATE"] == "NEED_CONTENT")
+			) {
+				TaskTable::addPriceUpdateTask($ID, $product["PROFILE_ID"]);
 			}
 			$eventManager = Main\EventManager::getInstance();
 			$eventsList = $eventManager->findEventHandlers('iplogic.beru', 'OnIplogicBeruBeforeProductCacheSave');

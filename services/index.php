@@ -57,6 +57,7 @@ if (count($mod->error)) {
 		"PROFILE_ID" 		=> $mod->arProfile["ID"],
 		"ERROR" 			=> $data["error"]["code"].": ".$data["errors"][0]["code"]." - ".$data["errors"][0]["message"],
 		"DETAILS" 			=> $details,
+		"LOG"               => $EID,
 	];
 	Error::add($arErFields);
 }

@@ -20,6 +20,7 @@ IncludeModuleLangFile(Application::getDocumentRoot().BX_ROOT."/modules/iplogic.b
  * <li> ERROR string(255) optional
  * <li> DETAILS string mandatory
  * <li> STATE string(2) mandatory
+ * <li> LOG int optional
  * </ul>
  *
  * @package Iplogic\Beru
@@ -85,6 +86,10 @@ class ErrorTable extends Main\Entity\DataManager
 				'required' => true,
 				'validation' => array(__CLASS__, 'validateState'),
 				'title' => Loc::getMessage('ERROR_ENTITY_STATE_FIELD'),
+			),
+			'LOG' => array(
+				'data_type' => 'integer',
+				'title' => Loc::getMessage('ORDER_ENTITY_LOG_FIELD'),
 			),
 		);
 	}

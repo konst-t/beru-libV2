@@ -37,7 +37,6 @@ $LID = Iplogic\Beru\Admin\TableForm::getLID();
 $aTabs = [
 	["DIV" => "edit1", "TAB" => Loc::getMessage("IPL_MA_GENERAL"), "ICON"=>"main_user_edit", "TITLE"=>Loc::getMessage("IPL_MA_GENERAL_TITLE")],
 	["DIV" => "edit2", "TAB" => Loc::getMessage("IPL_MA_API"), "ICON"=>"main_user_edit", "TITLE"=>Loc::getMessage("IPL_MA_API_TITLE")],
-	["DIV" => "edit3", "TAB" => Loc::getMessage("IPL_MA_FEED"), "ICON"=>"main_user_edit", "TITLE"=>Loc::getMessage("IPL_MA_FEED_TITLE")],
 ];
 $arOpts = [
 
@@ -83,18 +82,6 @@ $arOpts = [
 		"NAME"      => Loc::getMessage("IPL_MA_IBLOCK_ID"),
 		"OPTIONS"   => "iblocks",
 		"REQURIED"  => "Y",
-	],
-	"USE_API" => [
-		"TAB"       => "edit1", 
-		"TYPE"      => "checkbox", 
-		"DEFAULT"   => 'Y',
-		"NAME"      => Loc::getMessage("IPL_MA_USE_API"),
-	],
-	"USE_FEED" => [
-		"TAB"       => "edit1", 
-		"TYPE"      => "checkbox", 
-		"DEFAULT"   => 'Y',
-		"NAME"      => Loc::getMessage("IPL_MA_USE_FEED"),
 	],
 	"COMPANY" => [
 		"TAB"       => "edit1", 
@@ -255,6 +242,20 @@ $arOpts = [
 		"NAME"      => Loc::getMessage("IPL_MA_STATUS_PROCESSING_STARTED")."<br><i class=\"order_status\">PROCESSING STARTED</i>",
 		"OPTIONS"   => "order_statuses",
 	],
+	"S_PROCESSING_COURIER_FOUND" => [
+		"TAB"       => "edit2",
+		"TYPE"      => "select",
+		"DEFAULT"   => "",
+		"NAME"      => Loc::getMessage("IPL_MA_STATUS_PROCESSING_COURIER_FOUND")."<br><i class=\"order_status\">PROCESSING COURIER_FOUND</i>",
+		"OPTIONS"   => "order_statuses",
+	],
+	"S_PROCESSING_COURIER_ARRIVED_TO_SENDER" => [
+		"TAB"       => "edit2",
+		"TYPE"      => "select",
+		"DEFAULT"   => "",
+		"NAME"      => Loc::getMessage("IPL_MA_STATUS_PROCESSING_COURIER_ARRIVED_TO_SENDER")."<br><i class=\"order_status\">PROCESSING COURIER_ARRIVED_TO_SENDER</i>",
+		"OPTIONS"   => "order_statuses",
+	],
 	"S_DELIVERED" => [
 		"TAB"       => "edit2", 
 		"TYPE"      => "select", 
@@ -297,6 +298,7 @@ $arOpts = [
 			"S_NEW",
 			"S_PROCESSING_STARTED",
 			"S_PROCESSING_READY_TO_SHIP",
+			"S_PROCESSING_COURIER_FOUND",
 			"S_PROCESSING_SHIPPED",
 			"S_CANCELLED_SHOP_FAILED",
 			"S_DELIVERED",
@@ -304,63 +306,12 @@ $arOpts = [
 			"S_PICKUP",
 			"S_CANCELLED_BY_MARKETPLACE",
 			"S_UNPAID_WAITING_USER_INPUT",
+			"S_PROCESSING_COURIER_ARRIVED_TO_SENDER",
 		],
 	],
-	/*"heading".randString(8) => [
-		"TAB"       => "edit2", 
-		"TYPE"      => "heading", 
-		"TEXT"      => Loc::getMessage("IPL_MA_STICKER"),
-	],
-	"STICKER_LOGO" => [
-		"TAB" 		=> "edit2", 
-		"TYPE" 		=> "file", 
-		"DEFAULT" 	=> "",
-		"NAME"		=> Loc::getMessage("IPL_MA_STICKER_LOGO"),
-		"MULTIPLE" 	=> "N",
-		"FILE_TYPE" => "I",
-	],
-	"STICKER_DELIVERY" => [
-		"TAB"       => "edit2", 
-		"TYPE"      => "text", 
-		"DEFAULT"   => "",
-		"NAME"      => Loc::getMessage("IPL_MA_STICKER_DELIVERY"),
-	],*/
 
-
-	/* YML */
-	"YML_FROM_MARKET" => [
-		"TAB"       => "edit3", 
-		"TYPE"      => "checkbox", 
-		"DEFAULT"   => 'N',
-		"NAME"      => Loc::getMessage("IPL_MA_YML_FROM_MARKET"),
-	],
-	"YML_FILENAME" => [
-		"TAB"       => "edit3", 
-		"TYPE"      => "text", 
-		"DEFAULT"   => "",
-		"NAME"      => Loc::getMessage("IPL_MA_YML_FILENAME"),
-	],
-	"YML_NAME" => [
-		"TAB"       => "edit3", 
-		"TYPE"      => "text", 
-		"DEFAULT"   => "",
-		"NAME"      => Loc::getMessage("IPL_MA_YML_NAME"),
-	],
-	"YML_URL" => [
-		"TAB"       => "edit3", 
-		"TYPE"      => "text", 
-		"DEFAULT"   => "",
-		"NAME"      => Loc::getMessage("IPL_MA_YML_URL"),
-	],
 ];
 
-
-if ($arFields["USE_API"]!="Y")
-	unset($aTabs[1]);
-if ($arFields["USE_FEED"]!="Y")
-	unset($aTabs[2]);
-
-$aTabs = array_values($aTabs);
 
 $aMenu = [
 	[
@@ -381,13 +332,6 @@ if($ID>0)
 		"LINK"  => "iplogic_beru_accordances_edit.php?PROFILE_ID=".$ID."&lang=".LANG,
 	];
 
-	if ($arFields["USE_FEED"] == "Y") {
-		$aMenu[] = [
-			"TEXT"  => Loc::getMessage("IPL_MA_CONDITIONS"),
-			"TITLE" => Loc::getMessage("IPL_MA_CONDITIONS_TITLE"),
-			"LINK"  => "iplogic_beru_condition_list.php?PROFILE_ID=".$ID."&lang=".LANG,
-		];
-	}
 }
 
 

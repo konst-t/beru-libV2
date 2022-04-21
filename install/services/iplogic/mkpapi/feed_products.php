@@ -1,1 +1,0 @@
-<? require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/iplogic.beru/services/feed_products.php"); ?>

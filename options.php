@@ -36,6 +36,7 @@ if($RIGHT >= "R") {
 		["task_trying_num", Loc::getMessage("IPL_TASK_TRYING_NUM"),"3", ["text", 5]],
 		["task_trying_period", Loc::getMessage("IPL_TASK_TRYING_PERIOD"),"60", ["text", 5]],
 		["allow_multichain_tasks", Loc::getMessage("IPL_ALLOW_MULTICHAIN_TASKS"), "N", ["checkbox"]],
+		["tasks_in_menu", Loc::getMessage("IPL_TASKS_IN_MENU"), "Y", ["checkbox"]],
 		Loc::getMessage("IPL_PRODUCTS"),
 		["products_check_period", Loc::getMessage("IPL_PRODUCTS_CHECK_PERIOD"),"1", ["text", 5]],
 		["products_add_num", Loc::getMessage("IPL_PRODUCTS_ADD_NUM"),50, ["text", 5]],

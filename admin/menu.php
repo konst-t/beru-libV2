@@ -56,42 +56,42 @@ if ($USER->IsAdmin())
 
 	foreach($arProfiles as $arProfile) {
 		$arInnerMenu = [];
-		if ($arProfile["USE_API"] == "Y") {
-			$arInnerMenu[] = [
-				"text" => Loc::getMessage("IPL_MA_MENU_ORDERS"),
-				"title" => Loc::getMessage("IPL_MA_MENU_ORDERS"),
-				"url" => "iplogic_beru_order_list.php?PROFILE_ID=".$arProfile["ID"]."&lang=".LANGUAGE_ID,
-				"more_url" => [
-					"iplogic_beru_order_list.php?PROFILE_ID=".$arProfile["ID"],
-					"iplogic_beru_order_detail.php?PROFILE_ID=".$arProfile["ID"],
-				]
-			];
-			$arInnerMenu[] = [
-				"text" => Loc::getMessage("IPL_MA_MENU_PRODUCTS"),
-				"title" => Loc::getMessage("IPL_MA_MENU_PRODUCTS"),
-				"url" => "iplogic_beru_product_list.php?PROFILE_ID=".$arProfile["ID"]."&lang=".LANGUAGE_ID,
-				"more_url" => [
-					"iplogic_beru_product_list.php?PROFILE_ID=".$arProfile["ID"],
-					"iplogic_beru_product_detail.php?PROFILE_ID=".$arProfile["ID"],
-				]
-			];
-			$arInnerMenu[] = [
-				"text" => Loc::getMessage("IPL_MA_MENU_STICKERS"),
-				"title" => Loc::getMessage("IPL_MA_MENU_STICKERS"),
-				"url" => "iplogic_beru_stickers.php?PROFILE_ID=".$arProfile["ID"]."&lang=".LANGUAGE_ID,
-				"more_url" => [
-					"iplogic_beru_stickers.php?PROFILE_ID=".$arProfile["ID"],
-				]
-			];
-			$arInnerMenu[] = [
-				"text" => Loc::getMessage("IPL_MA_MENU_ACTS"),
-				"title" => Loc::getMessage("IPL_MA_MENU_ACTS"),
-				"url" => "iplogic_beru_acts.php?PROFILE_ID=".$arProfile["ID"]."&lang=".LANGUAGE_ID,
-				"more_url" => [
-					"iplogic_beru_acts.php?PROFILE_ID=".$arProfile["ID"],
-				]
-			];
-		}
+
+		$arInnerMenu[] = [
+			"text" => Loc::getMessage("IPL_MA_MENU_ORDERS"),
+			"title" => Loc::getMessage("IPL_MA_MENU_ORDERS"),
+			"url" => "iplogic_beru_order_list.php?PROFILE_ID=".$arProfile["ID"]."&lang=".LANGUAGE_ID,
+			"more_url" => [
+				"iplogic_beru_order_list.php?PROFILE_ID=".$arProfile["ID"],
+				"iplogic_beru_order_detail.php?PROFILE_ID=".$arProfile["ID"],
+			]
+		];
+		$arInnerMenu[] = [
+			"text" => Loc::getMessage("IPL_MA_MENU_PRODUCTS"),
+			"title" => Loc::getMessage("IPL_MA_MENU_PRODUCTS"),
+			"url" => "iplogic_beru_product_list.php?PROFILE_ID=".$arProfile["ID"]."&lang=".LANGUAGE_ID,
+			"more_url" => [
+				"iplogic_beru_product_list.php?PROFILE_ID=".$arProfile["ID"],
+				"iplogic_beru_product_detail.php?PROFILE_ID=".$arProfile["ID"],
+			]
+		];
+		$arInnerMenu[] = [
+			"text" => Loc::getMessage("IPL_MA_MENU_STICKERS"),
+			"title" => Loc::getMessage("IPL_MA_MENU_STICKERS"),
+			"url" => "iplogic_beru_stickers.php?PROFILE_ID=".$arProfile["ID"]."&lang=".LANGUAGE_ID,
+			"more_url" => [
+				"iplogic_beru_stickers.php?PROFILE_ID=".$arProfile["ID"],
+			]
+		];
+		$arInnerMenu[] = [
+			"text" => Loc::getMessage("IPL_MA_MENU_ACTS"),
+			"title" => Loc::getMessage("IPL_MA_MENU_ACTS"),
+			"url" => "iplogic_beru_acts.php?PROFILE_ID=".$arProfile["ID"]."&lang=".LANGUAGE_ID,
+			"more_url" => [
+				"iplogic_beru_acts.php?PROFILE_ID=".$arProfile["ID"],
+			]
+		];
+
 		$arConMenu[] = [
 			"text" => $arProfile["NAME"],
 			"title" => $arProfile["NAME"],
@@ -131,6 +131,15 @@ if ($USER->IsAdmin())
 			"more_url" => [
 				"iplogic_beru_log_list.php",
 				"iplogic_beru_log_detail.php",
+			]
+		];
+	}
+	if ( Option::get($moduleID, 'use_log', 'Y') == "Y" && Option::get($moduleID, 'log_in_menu', 'Y') == "Y" ) {
+		$arConMenu[] = [
+			"text" => Loc::getMessage("IPL_MA_MENU_TASKS"),
+			"title" => Loc::getMessage("IPL_MA_MENU_TASKS"),
+			"url" => "iplogic_beru_tasks.php?lang=".LANGUAGE_ID,
+			"more_url" => [
 			]
 		];
 	}

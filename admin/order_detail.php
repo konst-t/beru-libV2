@@ -51,10 +51,7 @@ else {
 }
 
 
-
 $adminControl = new \Iplogic\Beru\Admin\Info($moduleID);
-
-
 
 
 /* get service data and preforms*/
@@ -63,6 +60,7 @@ $arState = [
 	"S_NEW" 								=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATUS_NEW")."</span>",
 	"S_PROCESSING_STARTED" 					=> "<span style='color:#4527cb;'>".Loc::getMessage("IPL_MA_STATUS_PROCESSING_STARTED")."</span>",
 	"S_PROCESSING_READY_TO_SHIP" 			=> "<span style='color:#4527cb;'>".Loc::getMessage("IPL_MA_STATUS_PROCESSING_READY_TO_SHIP")."</span>",
+	"S_PROCESSING_COURIER_FOUND" 			=> "<span style='color:#4527cb;'>".Loc::getMessage("IPL_MA_STATUS_PROCESSING_COURIER_FOUND")."</span>",
 	"S_PROCESSING_SHIPPED" 					=> "<span style='color:#4527cb;'>".Loc::getMessage("IPL_MA_STATUS_PROCESSING_SHIPPED")."</span>",
 	"S_CANCELLED_SHOP_FAILED" 				=> "<span style='color:#686868;'>".Loc::getMessage("IPL_MA_STATUS_CANCELLED_SHOP_FAILED")."</span>",
 	"S_DELIVERED" 							=> "<span style='color:#38a915;'>".Loc::getMessage("IPL_MA_STATUS_DELIVERED")."</span>",
@@ -71,6 +69,7 @@ $arState = [
 	"S_CANCELLED" 							=> "<span style='color:#686868;'>".Loc::getMessage("IPL_MA_STATUS_CANCELLED_BY_MARKETPLACE")."</span>",
 	"S_UNPAID_WAITING_USER_INPUT" 			=> "<span style='color:#4527cb;'>".Loc::getMessage("IPL_MA_STATUS_UNPAID_WAITING_USER_INPUT")."</span>",
 	"S_UNKNOWN" 							=> "<span style='color:#4527cb;'>".Loc::getMessage("IPL_MA_STATUS_UNKNOWN")."</span>",
+	"S_PROCESSING_COURIER_ARRIVED_TO_SENDER"=> "<span style='color:#38a915;'>".Loc::getMessage("IPL_MA_STATUS_PROCESSING_COURIER_ARRIVED_TO_SENDER")."</span>",
 ];
 $arBoxes = [];
 $rsBoxes = BoxTable::getList(["filter"=>["ORDER_ID"=>$ID],"order"=>["NUM"=>"ASC"]]);
@@ -110,6 +109,9 @@ if ($arFields["FAKE"] == "Y") {
 }
 else {
 	$info .= Loc::getMessage("IPL_MA_NO");
+}
+if (strlen($arFields["COURIER"])) {
+	$info .= "<br><br>".Loc::getMessage("IPL_MA_COURIER").": ".$arFields["COURIER"];
 }
 $info .= "<br><br><h3>".Loc::getMessage("IPL_MA_PRODUCTS")."</h3><hr><br>";
 $info .= "<div style=\"display:table;\">";
@@ -204,66 +206,12 @@ $boxes .= "</select>
 		</tr>
 ";
 
-/* products */
-$products = "";
-if (count($arLinks)){
-	$products .= "<div style=\"display:table;\">";
-	$show_box = true;
-	foreach($arBoxes as $arBox){
-		$titems = [];
-		foreach($arLinks as $arLink) {
-			if ( $arLink["BOX_ID"] == $arBox["ID"] ) {
-				$products .= "<div style=\"display:table-row;\"><div class=\"table-cell\">";
-				if ($show_box) {
-					$products .= $arFields["EXT_ID"]."-".$arBoxesMod[$arLink["BOX_ID"]];
-					$products .= "</div><div class=\"table-cell\">=></div><div class=\"table-cell\">";
-					$show_box = false;
-				}
-				else {
-					$products .= "&nbsp;</div><div class=\"table-cell\">&nbsp;</div><div class=\"table-cell\">";
-				}
-				$products .= "</div><div class=\"table-cell\">";
-				$products .= "[".$arLink["SKU_ID"]."] ".$arMktProducts[$arLink["SKU_ID"]];
-				$products .= "</div><div class=\"table-cell\">";
-				$products .= "<span class=\"adm-table-item-edit-wrap adm-table-item-edit-single\"><a class=\"adm-table-btn-delete\" href=\"javascript:deleteLinkConfirm(".$arLink["ID"].");\"></a></span>";
-				$products .= "</div></div>";
-			}
-		}
-		$show_box = true;
-	}
-	$products .= "</div>";
-}
-else {
-	$products .= Loc::getMessage("IPL_MA_NO_LINKS");
-}
-$products .= "<br><h3>".Loc::getMessage("IPL_MA_NEW_LINK")."</h3><hr>
-			<tr>
-			<td width=\"40%\">
-				<select name=\"box\">";
-foreach ($arBoxes as $arBox) {
-	$products .= "<option value=\"".$arBox["ID"]."\">".$arFields["EXT_ID"]."-".$arBox["NUM"]."</option>";
-}
-$products .= "</select>
-			</td>
-			<td>
-				<select name=\"product\">";
-foreach ($arMktProducts as $id => $arProd) {
-	$products .= "<option value=\"".$id."\">[".$id."] ".$arProd."</option>";
-}
-$products .= "</select>
-			</td>
-		</tr>
-		<tr>
-			<td colspan=\"2\" align=\"center\"><input type=\"submit\" name=\"add_link\" value=\"".Loc::getMessage("IPL_MA_SUBMIT_BOX")."\"></td>
-		</tr>";
-
 
 
 /* tabs and opts */
 $arTabs = [
 	["DIV" => "edit1", "TAB" => Loc::getMessage("IPL_MA_DETAIL"), "ICON"=>"main_user_edit", "TITLE"=>Loc::getMessage("IPL_MA_DETAIL_TITLE")],
 	["DIV" => "edit2", "TAB" => Loc::getMessage("IPL_MA_BOXES"), "ICON"=>"main_user_edit", "TITLE"=>Loc::getMessage("IPL_MA_BOXES_TITLE")],
-	["DIV" => "edit3", "TAB" => Loc::getMessage("IPL_MA_LINKS"), "ICON"=>"main_user_edit", "TITLE"=>Loc::getMessage("IPL_MA_LINKS_TITLE")],
 ];
 $arOpts = [
 	[
@@ -273,10 +221,6 @@ $arOpts = [
 	[
 		"TAB" 	=> 1,
 		"INFO" 	=> $boxes
-	],
-	[
-		"TAB" 	=> 2,
-		"INFO" 	=> $products
 	],
 ];
 
@@ -400,17 +344,6 @@ else {
 					}
 				}
 				LocalRedirect("/bitrix/admin/iplogic_beru_order_list.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
-			}
-			else {
-				$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_DELETE")."<br>".implode("<br>",$result->getErrorMessages()));
-			}
-		}
-
-
-		if( $request->get("action") == "delete_link" && $request->get("link_id")>0 ) {
-			$result = BoxLinkTable::delete($request->get("link_id"));
-			if ($result->isSuccess()) {
-				LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
 			}
 			else {
 				$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_DELETE")."<br>".implode("<br>",$result->getErrorMessages()));
@@ -553,23 +486,6 @@ else {
 				}
 			}
 
-
-			if ($request->get("add_link")!="") {
-				$arLinkFields = [
-					"PROFILE_ID" 	=> $arFields["PROFILE_ID"],
-					"ORDER_ID" 		=> $ID,
-					"BOX_ID" 		=> $request->get("box"),
-					"SKU_ID" 		=> $request->get("product"),
-				]; 
-				$result = BoxLinkTable::add($arLinkFields);
-				if ($result->isSuccess()) {
-					LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
-				}
-				else {
-					$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_LINK_ADD")."<br>".implode("<br>",$result->getErrorMessages()));
-				}
-			}
-
 		}
 	}
 
@@ -610,11 +526,6 @@ else {
 		function deleteBoxConfirm(id) {
 			if (window.confirm('".Loc::getMessage("IPL_MA_DELETE_BOX_CONF")."')) {
 				window.location.href='iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=delete_box&box_id='+id+'&lang=".LANG."&tabControl_active_tab=edit2';
-			}
-		}
-		function deleteLinkConfirm(id) {
-			if (window.confirm('".Loc::getMessage("IPL_MA_DELETE_LINK_CONF")."')) {
-				window.location.href='iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=delete_link&link_id='+id+'&lang=".LANG."&tabControl_active_tab=edit3';
 			}
 		}
 		$(document).ready(function(){

@@ -22,8 +22,6 @@ IncludeModuleLangFile(Application::getDocumentRoot().BX_ROOT."/modules/iplogic.b
  * <li> SITE string(2) mandatory
  * <li> IBLOCK_TYPE string(50) mandatory
  * <li> IBLOCK_ID int mandatory
- * <li> USE_API bool optional default 'Y'
- * <li> USE_FEED bool optional default 'Y'
  * <li> COMPANY string(255) optional
  * <li> TAX_SYSTEM string(14) optional
  * <li> VAT string(6) optional
@@ -32,18 +30,11 @@ IncludeModuleLangFile(Application::getDocumentRoot().BX_ROOT."/modules/iplogic.b
  * <li> COMPAIN_ID string(100) optional
  * <li> SEND_TOKEN string(255) optional
  * <li> GET_TOKEN string(255) optional
- * <li> STICKER_DELIVERY string(50) optional
  * <li> USER_ID int optional
  * <li> DELIVERY int optional
  * <li> PAYMENTS int optional
  * <li> PERSON_TYPE int optional
  * <li> STATUSES string optional
- * <li> STICKER_LOGO int optional
- * <li> YML_FROM_MARKET bool optional default 'N'
- * <li> YML_FILENAME string(255) optional
- * <li> YML_NAME string(255) optional
- * <li> YML_URL string(255) optional
- * <li> ENABLE_AUTO_DISCOUNTS bool optional default 'N'
  * </ul>
  *
  * @package Iplogic\Beru
@@ -110,16 +101,6 @@ class ProfileTable extends Main\Entity\DataManager
 				'required' => true,
 				'title' => Loc::getMessage('PROFILE_ENTITY_IBLOCK_ID_FIELD'),
 			),
-			'USE_API' => array(
-				'data_type' => 'boolean',
-				'values' => array('N', 'Y'),
-				'title' => Loc::getMessage('PROFILE_ENTITY_USE_API_FIELD'),
-			),
-			'USE_FEED' => array(
-				'data_type' => 'boolean',
-				'values' => array('N', 'Y'),
-				'title' => Loc::getMessage('PROFILE_ENTITY_USE_FEED_FIELD'),
-			),
 			'COMPANY' => array(
 				'data_type' => 'string',
 				'validation' => array(__CLASS__, 'validateCompany'),
@@ -160,11 +141,6 @@ class ProfileTable extends Main\Entity\DataManager
 				'validation' => array(__CLASS__, 'validateGetToken'),
 				'title' => Loc::getMessage('PROFILE_ENTITY_GET_TOKEN_FIELD'),
 			),
-			'STICKER_DELIVERY' => array(
-				'data_type' => 'string',
-				'validation' => array(__CLASS__, 'validateStickerDelivery'),
-				'title' => Loc::getMessage('PROFILE_ENTITY_STICKER_DELIVERY_FIELD'),
-			),
 			'USER_ID' => array(
 				'data_type' => 'integer',
 				'title' => Loc::getMessage('PROFILE_ENTITY_USER_ID_FIELD'),
@@ -184,35 +160,6 @@ class ProfileTable extends Main\Entity\DataManager
 			'STATUSES' => array(
 				'data_type' => 'text',
 				'title' => Loc::getMessage('PROFILE_ENTITY_STATUSES_FIELD'),
-			),
-			'STICKER_LOGO' => array(
-				'data_type' => 'integer',
-				'title' => Loc::getMessage('PROFILE_ENTITY_STICKER_LOGO_FIELD'),
-			),
-			'YML_FROM_MARKET' => array(
-				'data_type' => 'boolean',
-				'values' => array('N', 'Y'),
-				'title' => Loc::getMessage('PROFILE_ENTITY_YML_FROM_MARKET_FIELD'),
-			),
-			'YML_FILENAME' => array(
-				'data_type' => 'text',
-				'validation' => array(__CLASS__, 'validateYmlFilename'),
-				'title' => Loc::getMessage('PROFILE_ENTITY_YML_FILENAME_FIELD'),
-			),
-			'YML_NAME' => array(
-				'data_type' => 'string',
-				'validation' => array(__CLASS__, 'validateYmlName'),
-				'title' => Loc::getMessage('PROFILE_ENTITY_YML_NAME_FIELD'),
-			),
-			'YML_URL' => array(
-				'data_type' => 'string',
-				'validation' => array(__CLASS__, 'validateYmlUrl'),
-				'title' => Loc::getMessage('PROFILE_ENTITY_YML_URL_FIELD'),
-			),
-			'ENABLE_AUTO_DISCOUNTS' => array(
-				'data_type' => 'boolean',
-				'values' => array('N', 'Y'),
-				'title' => Loc::getMessage('PROFILE_ENTITY_ENABLE_AUTO_DISCOUNTS_FIELD'),
 			),
 		);
 	}
@@ -337,50 +284,6 @@ class ProfileTable extends Main\Entity\DataManager
 			new Main\Entity\Validator\Length(null, 255),
 		);
 	}
-	/**
-	 * Returns validators for STICKER_DELIVERY field.
-	 *
-	 * @return array
-	 */
-	public static function validateStickerDelivery()
-	{
-		return array(
-			new Main\Entity\Validator\Length(null, 50),
-		);
-	}
-	/**
-	 * Returns validators for YML_FILENAME field.
-	 *
-	 * @return array
-	 */
-	public static function validateYmlFilename()
-	{
-		return array(
-			new Main\Entity\Validator\Length(null, 255),
-		);
-	}
-	/**
-	 * Returns validators for YML_NAME field.
-	 *
-	 * @return array
-	 */
-	public static function validateYmlName()
-	{
-		return array(
-			new Main\Entity\Validator\Length(null, 255),
-		);
-	}
-	/**
-	 * Returns validators for YML_URL field.
-	 *
-	 * @return array
-	 */
-	public static function validateYmlUrl()
-	{
-		return array(
-			new Main\Entity\Validator\Length(null, 255),
-		);
-	}
 
 
 	public static function getById($ID, $short = false) 
@@ -445,7 +348,6 @@ class ProfileTable extends Main\Entity\DataManager
 			return false;
 		$arBefore = self::getById($ID, true);
 		$arFields["STATUSES"] = serialize($arFields["STATUSES"]);
-		$arFields["YML_FILENAME"] = ($arFields["YML_FILENAME"][0]=="/" ? $arFields["YML_FILENAME"] : "/".$arFields["YML_FILENAME"]);
 		$result = parent::update($ID, $arFields);
 		if ($result->isSuccess()) {
 			if ($arBefore["ACTIVE"] != $arFields["ACTIVE"]) {
@@ -471,10 +373,7 @@ class ProfileTable extends Main\Entity\DataManager
 					TaskTable::deleteByProfileId($ID);
 				}
 			}
-			if ($arBefore["YML_FROM_MARKET"] != $arFields["YML_FROM_MARKET"]) {
-				TaskTable::scheduleFeedProductsRefresh($ID);
-			}
-			if ((!isset($arFields["BASE_URL"]) || $arFields["BASE_URL"]=="" || $arFields["USE_API"]!="Y") && $arBefore["BASE_URL"] != "") {
+			if ((!isset($arFields["BASE_URL"]) || $arFields["BASE_URL"]=="") && $arBefore["BASE_URL"] != "") {
 				\CUrlRewriter::Delete([
 					'CONDITION' => '#^'.$arBefore["BASE_URL"].'#',
 				]);
@@ -507,11 +406,10 @@ class ProfileTable extends Main\Entity\DataManager
 			}
 		}
 		$arFields["STATUSES"] = serialize($arFields["STATUSES"]);
-		$arFields["YML_FILENAME"] = ($arFields["YML_FILENAME"][0]=="/" ? $arFields["YML_FILENAME"] : "/".$arFields["YML_FILENAME"]);
 		$result = parent::add($arFields);
 
 		if ($result->isSuccess()) {
-			if ($arFields["BASE_URL"]!="" && $arFields["USE_API"]=="Y") {
+			if ($arFields["BASE_URL"]!="") {
 				\Bitrix\Main\UrlRewriter::add($arFields["SITE"], [
 					"CONDITION" => "#^".$arFields["BASE_URL"]."#",
 					"RULE" => "",

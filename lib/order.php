@@ -34,6 +34,7 @@ IncludeModuleLangFile(Application::getDocumentRoot().BX_ROOT."/modules/iplogic.b
  * <li> DELIVERY_ID string(255) optional
  * <li> BOXES_SENT bool optional default 'N'
  * <li> READY_TIME int optional
+ * <li> COURIER string(255) optional
  * </ul>
  *
  * @package Iplogic\Beru
@@ -142,6 +143,11 @@ class OrderTable extends Main\Entity\DataManager
 				'data_type' => 'integer',
 				'title' => Loc::getMessage('ORDER_ENTITY_READY_TIME_FIELD'),
 			),
+			'COURIER' => array(
+				'data_type' => 'string',
+				'validation' => array(__CLASS__, 'validateCourier'),
+				'title' => Loc::getMessage('ORDER_ENTITY_COURIER_FIELD'),
+			),
 		);
 	}
 	/**
@@ -205,6 +211,17 @@ class OrderTable extends Main\Entity\DataManager
 	 * @return array
 	 */
 	public static function validateDeliveryId()
+	{
+		return array(
+			new Main\Entity\Validator\Length(null, 255),
+		);
+	}
+	/**
+	 * Returns validators for COURIER field.
+	 *
+	 * @return array
+	 */
+	public static function validateCourier()
 	{
 		return array(
 			new Main\Entity\Validator\Length(null, 255),
@@ -284,7 +301,7 @@ class OrderTable extends Main\Entity\DataManager
 				"height" 		=> (int)$arBox["HEIGHT"],
 				"depth" 		=> (int)$arBox["DEPTH"],
 			];
-			$titems = [];
+			/*$titems = [];
 			foreach($arLinks as $arLink) {
 				if ( $arLink["BOX_ID"] == $arBox["ID"] ) {
 					if (isset($titems[$arLink["SKU_ID"]])) {
@@ -302,7 +319,7 @@ class OrderTable extends Main\Entity\DataManager
 					"id" 	=> (int)$item["id"],
 					"count" => (int)$item["count"]
 				];
-			}
+			}*/
 			$boxes[] = $box;
 		}
 

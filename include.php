@@ -16,7 +16,6 @@ Loader::registerAutoLoadClasses(
 
 		"Iplogic\Beru\Control" 		=> "lib/control.php",
 		"Iplogic\Beru\YMAPI" 		=> "lib/ymapi.php",
-		"Iplogic\Beru\YML" 			=> "lib/yml.php",
 		"Iplogic\Beru\Profile" 		=> "lib/profile.php",
 		"Iplogic\Beru\Product" 		=> "lib/product.php",
 		"Iplogic\Beru\Order" 		=> "lib/order.php",

@@ -128,6 +128,7 @@ $arOpts = [
 					Loc::getMessage("IPL_MA_STATUS_CANCELLED_BY_MARKETPLACE"),
 					Loc::getMessage("IPL_MA_STATUS_UNPAID_WAITING_USER_INPUT"),
 					Loc::getMessage("IPL_MA_STATUS_UNKNOWN"),
+					Loc::getMessage("IPL_MA_STATUS_PROCESSING_COURIER_ARRIVED_TO_SENDER"),
 				],
 				"reference_id" => [
 					"S_NEW",
@@ -141,6 +142,7 @@ $arOpts = [
 					"S_CANCELLED_BY_MARKETPLACE",
 					"S_UNPAID_WAITING_USER_INPUT",
 					"S_UNKNOWN",
+					"S_PROCESSING_COURIER_ARRIVED_TO_SENDER",
 				]
 			],
 			"DEFAULT" => Loc::getMessage("IPL_MA_ALL"),
@@ -149,6 +151,7 @@ $arOpts = [
 			"S_NEW" 								=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATUS_NEW")."</span>",
 			"S_PROCESSING_STARTED" 					=> "<span style='color:#4527cb;'>".Loc::getMessage("IPL_MA_STATUS_PROCESSING_STARTED")."</span>",
 			"S_PROCESSING_READY_TO_SHIP" 			=> "<span style='color:#4527cb;'>".Loc::getMessage("IPL_MA_STATUS_PROCESSING_READY_TO_SHIP")."</span>",
+			"S_PROCESSING_COURIER_FOUND" 			=> "<span style='color:#4527cb;'>".Loc::getMessage("IPL_MA_STATUS_PROCESSING_COURIER_FOUND")."</span>",
 			"S_PROCESSING_SHIPPED" 					=> "<span style='color:#4527cb;'>".Loc::getMessage("IPL_MA_STATUS_PROCESSING_SHIPPED")."</span>",
 			"S_CANCELLED_SHOP_FAILED" 				=> "<span style='color:#686868;'>".Loc::getMessage("IPL_MA_STATUS_CANCELLED_SHOP_FAILED")."</span>",
 			"S_DELIVERED" 							=> "<span style='color:#38a915;'>".Loc::getMessage("IPL_MA_STATUS_DELIVERED")."</span>",
@@ -157,6 +160,7 @@ $arOpts = [
 			"S_CANCELLED" 							=> "<span style='color:#686868;'>".Loc::getMessage("IPL_MA_STATUS_CANCELLED_BY_MARKETPLACE")."</span>",
 			"S_UNPAID_WAITING_USER_INPUT" 			=> "<span style='color:#4527cb;'>".Loc::getMessage("IPL_MA_STATUS_UNPAID_WAITING_USER_INPUT")."</span>",
 			"S_UNKNOWN" 							=> "<span style='color:#4527cb;'>".Loc::getMessage("IPL_MA_STATUS_UNKNOWN")."</span>",
+			"S_PROCESSING_COURIER_ARRIVED_TO_SENDER"=> "<span style='color:#38a915;'>".Loc::getMessage("IPL_MA_STATUS_PROCESSING_COURIER_ARRIVED_TO_SENDER")."</span>",
 		],
 		"VIEW" => [
 			"AddField" => [

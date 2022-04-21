@@ -95,10 +95,14 @@ else {
 	$tabControl->Begin();
 	$tabControl->BeginNextTab();
 
-	echo Loc::getMessage("IPL_MA_PRIFILE").": <a href=\"/bitrix/admin/iplogic_beru_profile_edit.php?ID=".
+	echo Loc::getMessage("IPL_MA_PROFILE").": <a href=\"/bitrix/admin/iplogic_beru_profile_edit.php?ID=".
 		 $arFields["PROFILE_ID"]."&lang=".LANGUAGE_ID."\">".$arProfiles[$arFields["PROFILE_ID"]]."</a><br><br>";
 	echo Loc::getMessage("IPL_MA_TIME").": ".$arFields["HUMAN_TIME"]."<br><br>";
 	echo Loc::getMessage("IPL_MA_ERROR").": ".$arFields["ERROR"]."<br><br>";
+	if ($arFields["LOG"] > 0) {
+		echo "<a href=\"/bitrix/admin/iplogic_beru_log_detail.php?ID=".
+			$arFields["LOG"]."&lang=".LANGUAGE_ID."\">".Loc::getMessage("IPL_MA_LOG")."</a><br><br>";
+	}
 	echo Loc::getMessage("IPL_MA_DETAIL").":<br><br>".$arFields["DETAILS"]."<br><br>";
 
 	$tabControl->End();

@@ -102,13 +102,10 @@ $ProductFields = [
 
 $aTabs = [
 	["DIV" => "edit1", "TAB" => Loc::getMessage("IPL_MA_GENERAL"), "ICON"=>"main_user_edit", "TITLE"=>Loc::getMessage("IPL_MA_GENERAL_TITLE")],
-	["DIV" => "edit2", "TAB" => Loc::getMessage("IPL_MA_API"), "ICON"=>"main_user_edit", "TITLE"=>Loc::getMessage("IPL_MA_API_TITLE")],
-	["DIV" => "edit3", "TAB" => Loc::getMessage("IPL_MA_FEED"), "ICON"=>"main_user_edit", "TITLE"=>Loc::getMessage("IPL_MA_FEED_TITLE")],
 ];
 $arOpts = [
 
 
-	/* GENERAL */
 	"SHOP_SKU_ID" => [
 		"TAB"       => "edit1",
 		"TYPE"      => "prop_choose", 
@@ -143,6 +140,23 @@ $arOpts = [
 		"TYPE"      => "prop_choose", 
 		"DEFAULT"   => "",
 		"NAME"      => Loc::getMessage("IPL_MA_PRICE"),
+		"REQURIED"  => "Y",
+		"TYPES" 	=> [
+			"custom_set" 		=> [
+				"min_discount_price" 	=> Loc::getMessage("IPL_MA_MIN_DISCOUNT_PRICE"),
+			],
+			"prices" 			=> Loc::getMessage("IPL_MA_PRICES"),
+			"common_props" 		=> Loc::getMessage("IPL_MA_COMMON_PROPS"),
+			"product_props" 	=> Loc::getMessage("IPL_MA_PROD_PROPS"),
+			"offer_props" 		=> Loc::getMessage("IPL_MA_OFFER_PROPS"),
+		]
+	],
+
+	"OLD_PRICE" => [
+		"TAB"       => "edit1",
+		"TYPE"      => "prop_choose",
+		"DEFAULT"   => "",
+		"NAME"      => Loc::getMessage("IPL_MA_OLD_PRICE"),
 		"REQURIED"  => "Y",
 		"TYPES" 	=> [
 			"custom_set" 		=> [
@@ -203,11 +217,8 @@ $arOpts = [
 		],
 	],
 
-
-	/* API */
-
 	"CHANGE_TIME" => [
-		"TAB"       => "edit2",
+		"TAB"       => "edit1",
 		"TYPE"      => "prop_choose", 
 		"DEFAULT"   => "",
 		"NAME"      => Loc::getMessage("IPL_MA_CHANGE_TIME"),
@@ -224,131 +235,7 @@ $arOpts = [
 	],
 
 
-
-	/* YML */
-
-	"NAME" => [
-		"TAB"       => "edit3",
-		"TYPE"      => "prop_choose", 
-		"DEFAULT"   => "",
-		"NAME"      => "<span style=\"font-size:16px;\">&lt;name&gt;</span>",
-		"REQURIED"  => "Y",
-		"TYPES" 	=> [
-			"element_fields" 	=> Loc::getMessage("IPL_MA_ELEMENT_FIELDS"),
-			"common_props" 		=> Loc::getMessage("IPL_MA_COMMON_PROPS"),
-			"product_props" 	=> Loc::getMessage("IPL_MA_PROD_PROPS"),
-			"offer_props" 		=> Loc::getMessage("IPL_MA_OFFER_PROPS"),
-		]
-	],
-
-	"VENDOR" => [
-		"TAB"       => "edit3",
-		"TYPE"      => "prop_choose", 
-		"DEFAULT"   => "",
-		"NAME"      => "<span style=\"font-size:16px;\">&lt;vendor&gt;</span>",
-		"TYPES" 	=> [
-			"empty" 			=> Loc::getMessage("IPL_MA_NOSHOW"),
-			"custom_set" 		=> [
-				"permanent_text" 	=> Loc::getMessage("IPL_MA_PERMANENT_TEXT"),
-			],
-			"element_fields" 	=> Loc::getMessage("IPL_MA_ELEMENT_FIELDS"),
-			"common_props" 		=> Loc::getMessage("IPL_MA_COMMON_PROPS"),
-			"product_props" 	=> Loc::getMessage("IPL_MA_PROD_PROPS"),
-			"offer_props" 		=> Loc::getMessage("IPL_MA_OFFER_PROPS"),
-		]
-	],
-
-	"OLD_PRICE" => [
-		"TAB"       => "edit3",
-		"TYPE"      => "prop_choose", 
-		"DEFAULT"   => "",
-		"NAME"      => "<span style=\"font-size:16px;\">&lt;oldprice&gt;</span>",
-		"TYPES" 	=> [
-			"empty" 			=> Loc::getMessage("IPL_MA_NOSHOW"),
-			"custom_set" 		=> [
-				"min_discount_price" 	=> Loc::getMessage("IPL_MA_MIN_DISCOUNT_PRICE"),
-			],
-			"prices" 			=> Loc::getMessage("IPL_MA_PRICES"),
-			"common_props" 		=> Loc::getMessage("IPL_MA_COMMON_PROPS"),
-			"product_props" 	=> Loc::getMessage("IPL_MA_PROD_PROPS"),
-			"offer_props" 		=> Loc::getMessage("IPL_MA_OFFER_PROPS"),
-		]
-	],
-
-	"IMG" => [
-		"TAB"       => "edit3",
-		"TYPE"      => "prop_choose", 
-		"DEFAULT"   => "",
-		"NAME"      => "<span style=\"font-size:16px;\">&lt;picture&gt;</span>",
-		"REQURIED"  => "Y",
-		"TYPES" 	=> [
-			"element_fields" 	=> Loc::getMessage("IPL_MA_ELEMENT_FIELDS"),
-			"common_props" 		=> Loc::getMessage("IPL_MA_COMMON_PROPS"),
-			"product_props" 	=> Loc::getMessage("IPL_MA_PROD_PROPS"),
-			"offer_props" 		=> Loc::getMessage("IPL_MA_OFFER_PROPS"),
-		],
-	],
-
-	"DESCRIPTION" => [
-		"TAB"       => "edit3",
-		"TYPE"      => "prop_choose", 
-		"DEFAULT"   => "",
-		"NAME"      => "<span style=\"font-size:16px;\">&lt;description&gt;</span>",
-		"TYPES" 	=> [
-			"empty" 			=> Loc::getMessage("IPL_MA_NOSHOW"),
-			"element_fields" 	=> Loc::getMessage("IPL_MA_ELEMENT_FIELDS"),
-			"common_props" 		=> Loc::getMessage("IPL_MA_COMMON_PROPS"),
-			"product_props" 	=> Loc::getMessage("IPL_MA_PROD_PROPS"),
-			"offer_props" 		=> Loc::getMessage("IPL_MA_OFFER_PROPS"),
-		],
-	],
-
-	"BARCODE" => [
-		"TAB"       => "edit3",
-		"TYPE"      => "prop_choose", 
-		"DEFAULT"   => "",
-		"NAME"      => "<span style=\"font-size:16px;\">&lt;barcode&gt;</span>",
-		"TYPES" 	=> [
-			"empty" 			=> Loc::getMessage("IPL_MA_NOSHOW"),
-			"element_fields" 	=> Loc::getMessage("IPL_MA_ELEMENT_FIELDS"),
-			"common_props" 		=> Loc::getMessage("IPL_MA_COMMON_PROPS"),
-			"product_props" 	=> Loc::getMessage("IPL_MA_PROD_PROPS"),
-			"offer_props" 		=> Loc::getMessage("IPL_MA_OFFER_PROPS"),
-		],
-	],
-
-	"DISABLED" => [
-		"TAB"       => "edit3",
-		"TYPE"      => "prop_choose", 
-		"DEFAULT"   => "",
-		"NAME"      => "<span style=\"font-size:16px;\">&lt;disabled&gt;</span>",
-		"TYPES" 	=> [
-			"empty" 			=> Loc::getMessage("IPL_MA_NOSHOW"),
-			"element_fields" 	=> Loc::getMessage("IPL_MA_ELEMENT_FIELDS"),
-			"common_props" 		=> Loc::getMessage("IPL_MA_COMMON_PROPS"),
-			"product_props" 	=> Loc::getMessage("IPL_MA_PROD_PROPS"),
-			"offer_props" 		=> Loc::getMessage("IPL_MA_OFFER_PROPS"),
-			"prices" 			=> Loc::getMessage("IPL_MA_PRICES"),
-			"stores" 			=> Loc::getMessage("IPL_MA_STORES"),
-		],
-	],
-
-
-
-
 ];
-
-
-if ($arProfile["MARKETPLACE"] != "B") {
-	unset($arOpts["GET_TOKEN"]);
-	unset($arOpts["BASE_URL"]);
-}
-if ($arProfile["USE_API"]!="Y")
-	unset($aTabs[1]);
-if ($arProfile["USE_FEED"]!="Y")
-	unset($aTabs[2]);
-
-$aTabs = array_values($aTabs);
 
 
 $arProdIBlock = \CCatalogSKU::GetInfoByProductIBlock($arProfile["IBLOCK_ID"]);
@@ -377,13 +264,6 @@ $aMenu = [
 		"LINK"  => "iplogic_beru_profile_edit.php?ID=".$arProfile["ID"]."&lang=".LANG,
 	]
 ];
-if ($arProfile["USE_FEED"] == "Y") {
-	$aMenu[] = [
-		"TEXT"  => Loc::getMessage("IPL_MA_CONDITIONS"),
-		"TITLE" => Loc::getMessage("IPL_MA_CONDITIONS"),
-		"LINK"  => "iplogic_beru_condition_list.php?PROFILE_ID=".$arProfile["ID"]."&lang=".LANG,
-	];
-}
 
 
 $Messages = [

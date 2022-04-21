@@ -47,7 +47,7 @@ function mkaAction() {
 		}
 		else {
 			$statusKey = "S_UNKNOWN";
-			mail("info@iplogic.ru", "New beru status ".$statusKey, file_get_contents( 'php://input' ));
+			//mail("info@iplogic.ru", "New beru status ".$statusKey, file_get_contents( 'php://input' ));
 		}
 	}
 	if ( $arOrder["STATUS_ID"] != $mod->arProfile["STATUSES"][$statusKey] ) {
@@ -67,6 +67,17 @@ function mkaAction() {
 			"DELIVERY_NAME" => $request["order"]["delivery"]["serviceName"],
 			"DELIVERY_ID" => $request["order"]["delivery"]["deliveryServiceId"],
 		];
+		if(isset($request["order"]["courierFio"])) {
+			$courier =
+				$request["order"]["courierFio"]." ".
+				$request["order"]["courierPhone"]." ".
+				$request["order"]["vehicleNumber"]." ".
+				$request["order"]["vehicleDescription"];
+			if(strlen($courier) > 255) {
+				$courier = substr($courier, 0, 255);
+			}
+			$arFields["COURIER"] = $courier;
+		}
 		$arModOrder = OrderTable::getList(["filter"=>["ORDER_ID"=>$exID]])->Fetch();
 		OrderTable::update($arModOrder["ID"],$arFields);
 		$arFields = [

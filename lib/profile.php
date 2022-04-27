@@ -326,7 +326,6 @@ class ProfileTable extends Main\Entity\DataManager
 			$conn->query("DELETE FROM b_iplogicberu_product WHERE PROFILE_ID=".$ID);
 			$conn->query("DELETE FROM b_iplogicberu_box WHERE PROFILE_ID=".$ID);
 			$conn->query("DELETE FROM b_iplogicberu_box_link WHERE PROFILE_ID=".$ID);
-			$conn->query("DELETE FROM b_iplogicberu_condition WHERE PROFILE_ID=".$ID);
 			unset($helper, $conn);
 		}
 

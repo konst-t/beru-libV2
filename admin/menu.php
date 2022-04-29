@@ -146,7 +146,7 @@ if ($USER->IsAdmin())
 	$arConMenu[] = [
 		"text" => Loc::getMessage("IPL_MA_MENU_HELP"),
 		"title" => Loc::getMessage("IPL_MA_MENU_HELP"),
-		"url" => "javascript:window.open('https://iplogic.ru/doc/course/index.php?COURSE_ID=2&INDEX=Y', '_blank');void(0);",
+		"url" => "javascript:window.open('https://iplogic.ru/doc/course/1/', '_blank');void(0);",
 	];
 
 	$arModMenu = [

@@ -20,6 +20,7 @@ IncludeModuleLangFile(Application::getDocumentRoot().BX_ROOT."/modules/iplogic.b
  * <li> ACTIVE bool optional default 'Y'
  * <li> SORT int optional default 100
  * <li> SITE string(2) mandatory
+ * <li> SCHEME string(3) mandatory
  * <li> IBLOCK_TYPE string(50) mandatory
  * <li> IBLOCK_ID int mandatory
  * <li> COMPANY string(255) optional
@@ -35,6 +36,7 @@ IncludeModuleLangFile(Application::getDocumentRoot().BX_ROOT."/modules/iplogic.b
  * <li> PAYMENTS int optional
  * <li> PERSON_TYPE int optional
  * <li> STATUSES string optional
+ * <li> PAYMENT_METHODS string(255) optional
  * </ul>
  *
  * @package Iplogic\Beru
@@ -89,6 +91,12 @@ class ProfileTable extends Main\Entity\DataManager
 				'required' => true,
 				'validation' => array(__CLASS__, 'validateSite'),
 				'title' => Loc::getMessage('PROFILE_ENTITY_SITE_FIELD'),
+			),
+			'SCHEME' => array(
+				'data_type' => 'string',
+				'required' => true,
+				'validation' => array(__CLASS__, 'validateScheme'),
+				'title' => Loc::getMessage('PROFILE_ENTITY_SCHEME_FIELD'),
 			),
 			'IBLOCK_TYPE' => array(
 				'data_type' => 'string',
@@ -161,6 +169,11 @@ class ProfileTable extends Main\Entity\DataManager
 				'data_type' => 'text',
 				'title' => Loc::getMessage('PROFILE_ENTITY_STATUSES_FIELD'),
 			),
+			'PAYMENT_METHODS' => array(
+				'data_type' => 'string',
+				'validation' => array(__CLASS__, 'validatePaymentMethods'),
+				'title' => Loc::getMessage('PROFILE_ENTITY_GET_TOKEN_FIELD'),
+			),
 		);
 	}
 	/**
@@ -183,6 +196,17 @@ class ProfileTable extends Main\Entity\DataManager
 	{
 		return array(
 			new Main\Entity\Validator\Length(null, 2),
+		);
+	}
+	/**
+	 * Returns validators for SCHEME field.
+	 *
+	 * @return array
+	 */
+	public static function validateScheme()
+	{
+		return array(
+			new Main\Entity\Validator\Length(null, 3),
 		);
 	}
 	/**
@@ -284,6 +308,17 @@ class ProfileTable extends Main\Entity\DataManager
 			new Main\Entity\Validator\Length(null, 255),
 		);
 	}
+	/**
+	 * Returns validators for PAYMENT_METHODS field.
+	 *
+	 * @return array
+	 */
+	public static function validatePaymentMethods()
+	{
+		return array(
+			new Main\Entity\Validator\Length(null, 255),
+		);
+	}
 
 
 	public static function getById($ID, $short = false) 
@@ -292,6 +327,7 @@ class ProfileTable extends Main\Entity\DataManager
 		$result = parent::getById($ID);
 		if($arFields = $result->Fetch()){
 			$arFields["STATUSES"] = unserialize($arFields["STATUSES"]);
+			//$arFields["PAYMENT_METHODS"] = unserialize($arFields["PAYMENT_METHODS"]);
 			if (!$short) {
 				$conn = Application::getConnection(); 
 				$helper = $conn->getSqlHelper();
@@ -326,6 +362,9 @@ class ProfileTable extends Main\Entity\DataManager
 			$conn->query("DELETE FROM b_iplogicberu_product WHERE PROFILE_ID=".$ID);
 			$conn->query("DELETE FROM b_iplogicberu_box WHERE PROFILE_ID=".$ID);
 			$conn->query("DELETE FROM b_iplogicberu_box_link WHERE PROFILE_ID=".$ID);
+			$conn->query("DELETE FROM b_iplogicberu_outlet WHERE PROFILE_ID=".$ID);
+			$conn->query("DELETE FROM b_iplogicberu_interval WHERE PROFILE_ID=".$ID);
+			$conn->query("DELETE FROM b_iplogicberu_delivery WHERE PROFILE_ID=".$ID);
 			unset($helper, $conn);
 		}
 
@@ -347,6 +386,7 @@ class ProfileTable extends Main\Entity\DataManager
 			return false;
 		$arBefore = self::getById($ID, true);
 		$arFields["STATUSES"] = serialize($arFields["STATUSES"]);
+		$arFields["PAYMENT_METHODS"] = serialize($arFields["PAYMENT_METHODS"]);
 		$result = parent::update($ID, $arFields);
 		if ($result->isSuccess()) {
 			if ($arBefore["ACTIVE"] != $arFields["ACTIVE"]) {
@@ -405,6 +445,7 @@ class ProfileTable extends Main\Entity\DataManager
 			}
 		}
 		$arFields["STATUSES"] = serialize($arFields["STATUSES"]);
+		$arFields["PAYMENT_METHODS"] = serialize($arFields["PAYMENT_METHODS"]);
 		$result = parent::add($arFields);
 
 		if ($result->isSuccess()) {

@@ -21,3 +21,4 @@ $MESS["IPL_MA_SAVE_ERROR_DELETE"] = "Ошибка удаления профиля";
 $MESS["IPL_MA_PRIFILE_ADD"] = "Создать профиль";
 $MESS["IPL_MA_PRIFILE_ADD_TITLE"] = "Создание нового профиля интеграции";
 $MESS["IPL_MA_DELETE_CONF"] = "Вы уверены, что хотите удалить элемент?";
+$MESS["IPL_MA_SCHEME"] = "Схема работы";

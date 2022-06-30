@@ -211,8 +211,10 @@ $boxes .= "</select>
 /* tabs and opts */
 $arTabs = [
 	["DIV" => "edit1", "TAB" => Loc::getMessage("IPL_MA_DETAIL"), "ICON"=>"main_user_edit", "TITLE"=>Loc::getMessage("IPL_MA_DETAIL_TITLE")],
-	["DIV" => "edit2", "TAB" => Loc::getMessage("IPL_MA_BOXES"), "ICON"=>"main_user_edit", "TITLE"=>Loc::getMessage("IPL_MA_BOXES_TITLE")],
 ];
+if ($arProfile["SCHEME"] != "DBS") {
+	$arTabs[] = ["DIV" => "edit2", "TAB" => Loc::getMessage("IPL_MA_BOXES"), "ICON"=>"main_user_edit", "TITLE"=>Loc::getMessage("IPL_MA_BOXES_TITLE")];
+}
 $arOpts = [
 	[
 		"TAB" 	=> 0,
@@ -223,7 +225,6 @@ $arOpts = [
 		"INFO" 	=> $boxes
 	],
 ];
-
 
 
 /* context menu */
@@ -242,17 +243,31 @@ $arContextMenu = [
 $bShowDoneButton = false;
 if ($arFields["STATE"] == "S_PROCESSING_READY_TO_SHIP" && $arFields["BOXES_SENT"] == "Y") {
 	$bShowDoneButton = true;
-	if ($arFields["READY_TIME"]>0 && ($arFields["READY_TIME"]+3600)>time()) {
+	if ($arFields["READY_TIME"]>0 && ($arFields["READY_TIME"]+60)>time()) {
 		$bShowDoneButton = false;
+	}
+}
+$bShowDeliveredButton = false;
+if ($arFields["STATE"] == "S_DELIVERY") {
+	$bShowDeliveredButton = true;
+	if ($arFields["READY_TIME"]>0 && ($arFields["READY_TIME"]+60)>time()) {
+		$bShowDeliveredButton = false;
 	}
 }
 
 
-if ($arFields["STATE"] == "S_PROCESSING_STARTED" && $arFields["BOXES_SENT"] == "Y") {
+if ($arFields["STATE"] == "S_PROCESSING_STARTED" && $arFields["BOXES_SENT"] == "Y" && $arProfile["SCHEME"] != "DBS") {
 	$arContextMenu[] = [
 		"TEXT"  => Loc::getMessage("IPL_MA_STATE_READY"),
 		"TITLE" => Loc::getMessage("IPL_MA_STATE_READY_TITLE"),
 		"LINK"  => "iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=state_ready&lang=".LANG,
+	];
+}
+if ($arFields["STATE"] == "S_PROCESSING_STARTED" && $arProfile["SCHEME"] == "DBS") {
+	$arContextMenu[] = [
+		"TEXT"  => Loc::getMessage("IPL_MA_STATE_DELIVERY"),
+		"TITLE" => Loc::getMessage("IPL_MA_STATE_DELIVERY_TITLE"),
+		"LINK"  => "iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=state_delivery&lang=".LANG,
 	];
 }
 if ($bShowDoneButton) {
@@ -262,14 +277,31 @@ if ($bShowDoneButton) {
 		"LINK"  => "iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=state_done&lang=".LANG,
 	];
 }
-if ($arFields["STATE"] == "S_PROCESSING_STARTED" || $arFields["STATE"] == "S_PROCESSING_READY_TO_SHIP" || $arFields["STATE"] == "S_UNPAID_WAITING_USER_INPUT") {
+if ($bShowDeliveredButton) {
+	$arContextMenu[] = [
+		"TEXT"  => Loc::getMessage("IPL_MA_STATE_DELIVERED"),
+		"TITLE" => Loc::getMessage("IPL_MA_STATE_DELIVERED_TITLE"),
+		"LINK"  => "iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=state_delivered&lang=".LANG,
+	];
+}
+if (
+	($arFields["STATE"] == "S_PROCESSING_STARTED" ||
+	$arFields["STATE"] == "S_PROCESSING_READY_TO_SHIP" ||
+	$arFields["STATE"] == "S_UNPAID_WAITING_USER_INPUT") &&
+	$arProfile["SCHEME"] != "DBS" &&
+	$arFields["BOXES_SENT"] != "Y"
+) {
 	$arContextMenu[] = [
 		"TEXT"  => Loc::getMessage("IPL_MA_SEND_BOXES"),
 		"TITLE" => Loc::getMessage("IPL_MA_SEND_BOXES_TITLE"),
 		"LINK"  => "iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=send_boxes&lang=".LANG,
 	];
 }
-if ($arFields["STATE"] == "S_PROCESSING_STARTED" || $arFields["STATE"] == "S_PROCESSING_READY_TO_SHIP") {
+if (
+	$arFields["STATE"] == "S_PROCESSING_STARTED" ||
+	$arFields["STATE"] == "S_PROCESSING_READY_TO_SHIP" ||
+	( $arFields["STATE"] == "S_DELIVERY" && $arProfile["SCHEME"] == "DBS" )
+) {
 	$arContextMenu[] = [
 		"TEXT"  => Loc::getMessage("IPL_MA_STATE_CANCEL"),
 		"TITLE" => Loc::getMessage("IPL_MA_STATE_CANCEL_TITLE"),
@@ -315,20 +347,25 @@ else {
 	) {
 
 		if( $request->get("action") == "send_boxes" ) {
-			$res = OrderTable::sendOrderBoxes($ID);
-			if ($res["status"]==200) {
-				$arUpdateFields = ["BOXES_SENT"=>"Y"];
-				OrderTable::update($ID,$arUpdateFields);
-				$arSentBoxes = $res["body"]["result"]["boxes"];
-				foreach($arSentBoxes as $arSentBox) {
-					if ($arBoxesIds[$arSentBox["fulfilmentId"]] > 0) {
-						BoxTable::update($arBoxesIds[$arSentBox["fulfilmentId"]], ["EXT_ID"=>$arSentBox["id"]]);
-					}
-				}
-				LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
+			if ($arFields["BOXES_SENT"] == "Y") {
+				$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_BOXES_SENT"));
 			}
 			else {
-				$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_SEND_BOXES")."<br>".$res["error"]);
+				$res = OrderTable::sendOrderBoxes($ID);
+				if ($res["status"]==200) {
+					$arUpdateFields = ["BOXES_SENT"=>"Y"];
+					OrderTable::update($ID,$arUpdateFields);
+					$arSentBoxes = $res["body"]["result"]["boxes"];
+					foreach($arSentBoxes as $arSentBox) {
+						if ($arBoxesIds[$arSentBox["fulfilmentId"]] > 0) {
+							BoxTable::update($arBoxesIds[$arSentBox["fulfilmentId"]], ["EXT_ID"=>$arSentBox["id"]]);
+						}
+					}
+					LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
+				}
+				else {
+					$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_SEND_BOXES")."<br>".$res["error"]);
+				}
 			}
 		}
 
@@ -343,7 +380,7 @@ else {
 						$i++;
 					}
 				}
-				LocalRedirect("/bitrix/admin/iplogic_beru_order_list.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
+				LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
 			}
 			else {
 				$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_DELETE")."<br>".implode("<br>",$result->getErrorMessages()));
@@ -426,6 +463,63 @@ else {
 			$arStatus = [
 				"CANCELLED",
 				"SHOP_FAILED"
+			];
+			$cl = new YMAPI($arFields["PROFILE_ID"]);
+			$result = $cl->setOrderStatus($arFields["EXT_ID"], $arStatus[0], $arStatus[1]);
+			if ($result["status"] == 200) {
+				$arOUFields = [
+					"STATE" => $statusKey,
+					"STATE_CODE" => $newStatusCode,
+				];
+				OrderTable::update($ID,$arOUFields);
+				$arStFields = [
+					'STATUS_ID' => $arProfile["STATUSES"][$statusKey],
+				];
+				\CSaleOrder::Update($arFields["ORDER_ID"], $arStFields);
+				LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
+			}
+			else {
+				$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_STATUS_UPDATE"));
+			}
+		}
+
+
+		if( $request->get("action") == "state_delivery" ) {
+			$arOrder = CSaleOrder::GetByID($arFields["ORDER_ID"]);
+			$statusKey = "S_DELIVERY";
+			$newStatusCode = "DELIVERY";
+			$arStatus = [
+				"DELIVERY",
+				""
+			];
+			$cl = new YMAPI($arFields["PROFILE_ID"]);
+			$result = $cl->setOrderStatus($arFields["EXT_ID"], $arStatus[0], $arStatus[1]);
+			if ($result["status"] == 200) {
+				$arOUFields = [
+					"STATE" => $statusKey,
+					"STATE_CODE" => $newStatusCode,
+					"READY_TIME" => time(),
+				];
+				OrderTable::update($ID,$arOUFields);
+				$arStFields = [
+					'STATUS_ID' => $arProfile["STATUSES"][$statusKey],
+				];
+				\CSaleOrder::Update($arFields["ORDER_ID"], $arStFields);
+				LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
+			}
+			else {
+				$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_STATUS_UPDATE"));
+			}
+		}
+
+
+		if( $request->get("action") == "state_delivered" ) {
+			$arOrder = CSaleOrder::GetByID($arFields["ORDER_ID"]);
+			$statusKey = "S_DELIVERED";
+			$newStatusCode = "DELIVERED";
+			$arStatus = [
+				"DELIVERED",
+				""
 			];
 			$cl = new YMAPI($arFields["PROFILE_ID"]);
 			$result = $cl->setOrderStatus($arFields["EXT_ID"], $arStatus[0], $arStatus[1]);

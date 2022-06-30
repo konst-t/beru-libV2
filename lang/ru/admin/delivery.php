@@ -1,0 +1,25 @@
+<?
+$MESS["IPL_MA_LIST_TITLE"] = "Способы доставки";
+$MESS["IPL_MA_ACCESS_DENIED"] = "Доступ к модулю запрещен";
+$MESS["MODULE_INCLUDE_ERROR"] = "Модуль не установлен";
+$MESS["WRONG_PARAMETERS"] = "Неверные параметры запроса";
+$MESS["SAVED"] = "Изменения успешно сохранены";
+$MESS["IPL_MA_SAVE_ERROR_UPDATE"] = "Ошибка обновления";
+$MESS["IPL_MA_SAVE_ERROR_DELETE"] = "Ошибка удаления";
+$MESS["IPL_MA_YES"] = "Да";
+$MESS["IPL_MA_NO"] = "Нет";
+$MESS["IPL_MA_CAPTION_ACTIVE"] = "Активность";
+$MESS["IPL_MA_CAPTION_SORT"] = "Сортировка";
+$MESS["IPL_MA_ALL"] = "(все)";
+$MESS["IPL_MA_IY"] = "Включение в YML";
+$MESS["IPL_MA_DV"] = "Доставка";
+$MESS["IPL_MA_CAPTION_TYPE"] = "Тип";
+$MESS["IPL_MA_CAPTION_NAME"] = "Название";
+$MESS["IPL_MA_COND_ADD"] = "Добавить доставку";
+$MESS["IPL_MA_COND_ADD_TITLE"] = "Добавить новый вид доставки в профиль";
+$MESS["IPL_MA_DELIVERY_COND"] = "Доставка";
+$MESS["IPL_MA_PROFILE_SETTINGS"] = "Настройки профиля";
+$MESS["IPL_MA_PROFILE_SETTINGS_TITLE"] = "Основные настройки профиля";
+$MESS["IPL_MA_ACCORDANCES"] = "Соответствие полей";
+$MESS["IPL_MA_ACCORDANCES_TITLE"] = "Соответствие полей и свойств товаров";
+$MESS["IPL_MA_DELETE_CONF"] = "Вы уверены, что хотите удалить элемент?";

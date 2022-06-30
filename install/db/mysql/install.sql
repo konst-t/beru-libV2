@@ -5,6 +5,7 @@ create table if not exists b_iplogicberu_profile
 	ACTIVE char(1) NULL default 'Y',
 	SORT int(5) NULL default 100,
 	SITE varchar(2) NOT NULL,
+	SCHEME varchar(3) NOT NULL,
 	IBLOCK_TYPE varchar(50) NOT NULL,
 	IBLOCK_ID int(11) NOT NULL,
 	COMPANY VARCHAR(255) NULL,
@@ -20,6 +21,7 @@ create table if not exists b_iplogicberu_profile
 	PAYMENTS INT(11) NULL,
 	PERSON_TYPE INT(2) NULL,
 	STATUSES TEXT NULL,
+	PAYMENT_METHODS varchar(255) NULL,
 	PRIMARY KEY (ID)
 );
 
@@ -150,4 +152,53 @@ create table if not exists b_iplogicberu_box
 	DEPTH int(64) NOT NULL,
 	PRIMARY KEY (ID),
 	INDEX (ORDER_ID)
+);
+
+create table if not exists b_iplogicberu_interval
+(
+	ID int(11) NOT NULL auto_increment,
+	PROFILE_ID int(5) NOT NULL,
+	DELIVERY_ID int(11) NOT NULL,
+	DAY varchar(3) NOT NULL,
+	FROM varchar(5) NOT NULL,
+	TO varchar(5) NOT NULL,
+	PRIMARY KEY (ID),
+	INDEX (ID)
+);
+
+create table if not exists b_iplogicberu_outlet
+(
+	ID int(11) NOT NULL auto_increment,
+	PROFILE_ID int(5) NOT NULL,
+	DELIVERY_ID int(11) NOT NULL,
+	NAME varchar(255) NOT NULL,
+	CODE int(64) NOT NULL,
+	PRIMARY KEY (ID),
+	INDEX (CODE)
+);
+
+create table if not exists b_iplogicberu_delivery
+(
+	ID int(11) NOT NULL auto_increment,
+	PROFILE_ID int(5) NOT NULL,
+	ACTIVE char(1) NULL default 'Y',
+	SORT int(5) NULL default 100,
+	TYPE varchar(8) NOT NULL,
+	NAME varchar(50) NOT NULL,
+	PAYMENT_ALLOW varchar(1) NOT NULL DEFAULT 'N',
+    DAY_FROM varchar(3) NOT NULL,
+    DAY_TO varchar(3) NOT NULL,
+    PRIMARY KEY (ID),
+	INDEX (PROFILE_ID)
+);
+
+create table if not exists b_iplogicberu_holiday
+(
+	ID int(11) NOT NULL auto_increment,
+	PROFILE_ID int(5) NOT NULL,
+	DELIVERY_ID int(11) NOT NULL,
+	DATE varchar(10) NOT NULL,
+	TIMESTAMP int(15) NOT NULL,
+	PRIMARY KEY (ID),
+	INDEX (TIMESTAMP)
 );

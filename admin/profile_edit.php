@@ -61,6 +61,16 @@ $arOpts = [
 		"NAME"      => Loc::getMessage("IPL_MA_SITE"),
 		"OPTIONS"   => "sites",
 	],
+	"SCHEME" => [
+		"TAB"       => "edit1",
+		"TYPE"      => "select",
+		"DEFAULT"   => "FBS",
+		"NAME"      => Loc::getMessage("IPL_MA_SCHEME"),
+		"OPTIONS"   => [
+			"FBS" => "FBS",
+			"DBS" => "DBS",
+		],
+	],
 	"SORT" => [
 		"TAB"       => "edit1", 
 		"TYPE"      => "text", 
@@ -203,6 +213,26 @@ $arOpts = [
 		"OPTIONS"   => "order_statuses",
 	],
 	"html".randString(8) => [
+		"TAB"       => "edit2",
+		"TYPE"      => "html",
+		"NAME"      => "",
+		"HTML"      => Loc::getMessage("IPL_MA_GENERAL_STATUSES"),
+	],
+	"S_DELIVERED" => [
+		"TAB"       => "edit2",
+		"TYPE"      => "select",
+		"DEFAULT"   => "",
+		"NAME"      => Loc::getMessage("IPL_MA_STATUS_DELIVERED")."<br><i class=\"order_status\">DELIVERED</i>",
+		"OPTIONS"   => "order_statuses",
+	],
+	"S_DELIVERY" => [
+		"TAB"       => "edit2",
+		"TYPE"      => "select",
+		"DEFAULT"   => "",
+		"NAME"      => Loc::getMessage("IPL_MA_STATUS_DELIVERY")."<br><i class=\"order_status\">DELIVERY</i>",
+		"OPTIONS"   => "order_statuses",
+	],
+	"html".randString(8) => [
 		"TAB"       => "edit2", 
 		"TYPE"      => "html", 
 		"NAME"      => "",
@@ -256,20 +286,6 @@ $arOpts = [
 		"NAME"      => Loc::getMessage("IPL_MA_STATUS_PROCESSING_COURIER_ARRIVED_TO_SENDER")."<br><i class=\"order_status\">PROCESSING COURIER_ARRIVED_TO_SENDER</i>",
 		"OPTIONS"   => "order_statuses",
 	],
-	"S_DELIVERED" => [
-		"TAB"       => "edit2", 
-		"TYPE"      => "select", 
-		"DEFAULT"   => "",
-		"NAME"      => Loc::getMessage("IPL_MA_STATUS_DELIVERED")."<br><i class=\"order_status\">DELIVERED</i>",
-		"OPTIONS"   => "order_statuses",
-	],
-	"S_DELIVERY" => [
-		"TAB"       => "edit2", 
-		"TYPE"      => "select", 
-		"DEFAULT"   => "",
-		"NAME"      => Loc::getMessage("IPL_MA_STATUS_DELIVERY")."<br><i class=\"order_status\">DELIVERY</i>",
-		"OPTIONS"   => "order_statuses",
-	],
 	"S_PICKUP" => [
 		"TAB"       => "edit2", 
 		"TYPE"      => "select", 
@@ -312,6 +328,27 @@ $arOpts = [
 
 ];
 
+if($arFields["SCHEME"] == "DBS") {
+	$arOpts["PAYMENT_METHODS"] = [
+		"TAB"       => "edit1",
+		"TYPE"      => "select",
+		"MULTIPLE"  => "Y",
+		"SIZE"      => 8,
+		"DEFAULT"   => "",
+		"NAME"      => Loc::getMessage("IPL_MA_PAYMENT_METHODS"),
+		"OPTIONS"   => [
+			"YANDEX" => Loc::getMessage("IPL_MA_PM_YANDEX"),
+			"APPLE_PAY" => Loc::getMessage("IPL_MA_PM_APPLE_PAY"),
+			"GOOGLE_PAY" => Loc::getMessage("IPL_MA_PM_GOOGLE_PAY"),
+			"TINKOFF_CREDIT" => Loc::getMessage("IPL_MA_PM_TINKOFF_CREDIT"),
+			"TINKOFF_INSTALLMENTS" => Loc::getMessage("IPL_MA_PM_TINKOFF_INSTALLMENTS"),
+			"SBP" => Loc::getMessage("IPL_MA_PM_SBP"),
+			"CARD_ON_DELIVERY" => Loc::getMessage("IPL_MA_PM_CARD_ON_DELIVERY"),
+			"CASH_ON_DELIVERY" => Loc::getMessage("IPL_MA_PM_CASH_ON_DELIVERY"),
+		],
+	];
+}
+
 
 $aMenu = [
 	[
@@ -331,6 +368,14 @@ if($ID>0)
 		"TITLE" => Loc::getMessage("IPL_MA_ACCORDANCES_TITLE"),
 		"LINK"  => "iplogic_beru_accordances_edit.php?PROFILE_ID=".$ID."&lang=".LANG,
 	];
+
+	if ($arFields["SCHEME"] == "DBS") {
+		$aMenu[] = [
+			"TEXT"  => Loc::getMessage("IPL_MA_DELIVERIES"),
+			"TITLE" => Loc::getMessage("IPL_MA_DELIVERIES_TITLE"),
+			"LINK"  => "iplogic_beru_delivery.php?PROFILE_ID=".$ID."&lang=".LANG,
+		];
+	}
 
 }
 

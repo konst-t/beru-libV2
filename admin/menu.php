@@ -41,8 +41,8 @@ if ($USER->IsAdmin())
 	if ($bHiddenProfile) {
 		$arMoreUrl[] = "iplogic_beru_profile_edit.php?ID=".$H_PROFILE_ID;
 		$arMoreUrl[] = "iplogic_beru_accordances_edit.php?PROFILE_ID=".$H_PROFILE_ID;
-		$arMoreUrl[] = "iplogic_beru_condition_list.php?PROFILE_ID=".$H_PROFILE_ID;
-		$arMoreUrl[] = "iplogic_beru_condition_edit.php?PROFILE_ID=".$H_PROFILE_ID;
+		$arMoreUrl[] = "iplogic_beru_delivery.php?PROFILE_ID=".$H_PROFILE_ID;
+		$arMoreUrl[] = "iplogic_beru_delivery_edit.php?PROFILE_ID=".$H_PROFILE_ID;
 	}
 
 	$arConMenu = [
@@ -83,14 +83,16 @@ if ($USER->IsAdmin())
 				"iplogic_beru_stickers.php?PROFILE_ID=".$arProfile["ID"],
 			]
 		];
-		$arInnerMenu[] = [
-			"text" => Loc::getMessage("IPL_MA_MENU_ACTS"),
-			"title" => Loc::getMessage("IPL_MA_MENU_ACTS"),
-			"url" => "iplogic_beru_acts.php?PROFILE_ID=".$arProfile["ID"]."&lang=".LANGUAGE_ID,
-			"more_url" => [
-				"iplogic_beru_acts.php?PROFILE_ID=".$arProfile["ID"],
-			]
-		];
+		if ( $arProfile["SCHEME"] != "DBS" ) {
+			$arInnerMenu[] = [
+				"text" => Loc::getMessage("IPL_MA_MENU_ACTS"),
+				"title" => Loc::getMessage("IPL_MA_MENU_ACTS"),
+				"url" => "iplogic_beru_acts.php?PROFILE_ID=".$arProfile["ID"]."&lang=".LANGUAGE_ID,
+				"more_url" => [
+					"iplogic_beru_acts.php?PROFILE_ID=".$arProfile["ID"],
+				]
+			];
+		}
 
 		$arConMenu[] = [
 			"text" => $arProfile["NAME"],
@@ -101,8 +103,8 @@ if ($USER->IsAdmin())
 			"more_url" => [
 				"iplogic_beru_profile_edit.php?ID=".$arProfile["ID"],
 				"iplogic_beru_accordances_edit.php?PROFILE_ID=".$arProfile["ID"],
-				"iplogic_beru_condition_list.php?PROFILE_ID=".$arProfile["ID"],
-				"iplogic_beru_condition_edit.php?PROFILE_ID=".$arProfile["ID"],
+				"iplogic_beru_delivery.php?PROFILE_ID=".$arProfile["ID"],
+				"iplogic_beru_delivery_edit.php?PROFILE_ID=".$arProfile["ID"],
 			]
 		];
 	}
@@ -134,7 +136,7 @@ if ($USER->IsAdmin())
 			]
 		];
 	}
-	if ( Option::get($moduleID, 'use_log', 'Y') == "Y" && Option::get($moduleID, 'log_in_menu', 'Y') == "Y" ) {
+	if ( Option::get($moduleID, 'tasks_in_menu', 'Y') == "Y" ) {
 		$arConMenu[] = [
 			"text" => Loc::getMessage("IPL_MA_MENU_TASKS"),
 			"title" => Loc::getMessage("IPL_MA_MENU_TASKS"),

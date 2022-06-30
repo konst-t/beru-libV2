@@ -9,3 +9,7 @@ DROP TABLE if exists b_iplogicberu_product;
 DROP TABLE if exists b_iplogicberu_box;
 DROP TABLE if exists b_iplogicberu_box_link;
 DROP TABLE if exists b_iplogicberu_condition;
+DROP TABLE if exists b_iplogicberu_interval;
+DROP TABLE if exists b_iplogicberu_outlet;
+DROP TABLE if exists b_iplogicberu_delivery;
+DROP TABLE if exists b_iplogicberu_holiday;

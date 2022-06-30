@@ -1,35 +1,35 @@
 <?
+
 $moduleID = 'iplogic.beru';
-define("ADMIN_MODULE_NAME", $moduleID);
 
 require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_before.php');
 
 use Bitrix\Main\Localization\Loc,
-	Iplogic\Beru\ProfileTable;
+	Iplogic\Beru\ProfileTable,
+	Iplogic\Beru\DeliveryTable,
+	Iplogic\Beru\TaskTable;
 
-$checkParams = [];
+$checkParams = [
+	"PROFILE" => true
+];
 
 include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$moduleID."/prolog.php");
 
 Loc::loadMessages(__FILE__);
 
+
+
+class ListEx extends Iplogic\Beru\Admin\TableList
+{
+
+	protected function filterMod() {
+		$this->arFilter["PROFILE_ID"] = $_REQUEST['PROFILE_ID'];
+	}
+
+}
+
+
 $arOpts = [
-	[
-		"NAME" => "name",
-		"CAPTION" => Loc::getMessage("IPL_MA_CAPTION_NAME"),
-		"FILTER" => [
-			"COMPARE" => "?",
-		],
-		"VIEW" => [
-			"AddInputField" => [
-				"PARAM" => array("size"=>20)
-			],
-			"AddViewField" => [
-				"PARAM" => "/bitrix/admin/iplogic_beru_profile_edit.php?ID=##id##&lang=".LANGUAGE_ID,
-				"TYPE" => "HREF",
-			],
-		],
-	],
 	[
 		"NAME" => "active",
 		"CAPTION" => Loc::getMessage("IPL_MA_CAPTION_ACTIVE"),
@@ -50,10 +50,6 @@ $arOpts = [
 		"VIEW" => [
 			"AddCheckField" =>[],
 		],
-		"REPLACE" => [
-			"Y" => Loc::getMessage("IPL_MA_YES"),
-			"N"  => Loc::getMessage("IPL_MA_NO"),
-		],
 	],
 	[
 		"NAME" => "sort",
@@ -64,29 +60,11 @@ $arOpts = [
 		],
 	],
 	[
-		"NAME" => "scheme",
-		"CAPTION" => Loc::getMessage("IPL_MA_SCHEME"),
-		"FILTER" => [
-			"VIEW" => "select",
-			"VALUES" => [
-				"reference" => [
-					"FBS",
-					"DBS",
-				],
-				"reference_id" => [
-					"FBS",
-					"DBS",
-				]
-			],
-			"DEFAULT" => Loc::getMessage("IPL_MA_ALL"),
-		],
+		"NAME" => "name",
+		"CAPTION" => Loc::getMessage("IPL_MA_CAPTION_NAME"),
+		"FILTER" => [],
 		"VIEW" => [
-			"AddSelectField" =>[
-				"PARAM" => [
-					"FBS" => "FBS",
-					"DBS" => "DBS",
-				],
-			]
+			"AddInputField" => [],
 		],
 	],
 	[
@@ -96,6 +74,7 @@ $arOpts = [
 		"UNIQ" => "Y",
 		"FILTER" => [
 			"VIEW" => "text",
+
 		],
 		"HEADER_KEY" => [
 			"align" => "right",
@@ -104,15 +83,24 @@ $arOpts = [
 	],
 ];
 
-
-
 /* context menu */
 $arContextMenu = [
 	[
-		"TEXT"=>Loc::getMessage("IPL_MA_PRIFILE_ADD"),
-		"LINK"=>"iplogic_beru_profile_edit.php?mode=new&lang=".LANG,
-		"TITLE"=>Loc::getMessage("IPL_MA_PRIFILE_ADD_TITLE"),
-		"ICON"=>"btn_new",
+		"TEXT"  => Loc::getMessage("IPL_MA_COND_ADD"),
+		"TITLE" => Loc::getMessage("IPL_MA_COND_ADD_TITLE"),
+		"ICON"  => "btn_new",
+		"LINK"  => "iplogic_beru_delivery_edit.php?PROFILE_ID=".$PROFILE_ID."&lang=".LANG,
+	],
+	["SEPARATOR"=>"Y"],
+	[
+		"TEXT"  => Loc::getMessage("IPL_MA_PROFILE_SETTINGS"),
+		"TITLE" => Loc::getMessage("IPL_MA_PROFILE_SETTINGS_TITLE"),
+		"LINK"  => "iplogic_beru_profile_edit.php?ID=".$PROFILE_ID."&lang=".LANG,
+	],
+	[
+		"TEXT"  => Loc::getMessage("IPL_MA_ACCORDANCES"),
+		"TITLE" => Loc::getMessage("IPL_MA_ACCORDANCES_TITLE"),
+		"LINK"  => "iplogic_beru_accordances_edit.php?PROFILE_ID=".$PROFILE_ID."&lang=".LANG,
 	],
 ];
 
@@ -126,9 +114,9 @@ $arItemContextMenu = [
 		"ICON" => "edit",
 		"ACTION" => [
 			"TYPE" => "REDIRECT",
-			"HREF" => "iplogic_beru_profile_edit.php?ID=##ID##&lang=".LANG,
+			"HREF" => "iplogic_beru_delivery_edit.php?PROFILE_ID=".$PROFILE_ID."&ID=##ID##&lang=".LANG,
 		],
-		"DEFAULT" => true
+		"DEFAULT"=>true,
 	],
 	[
 		"TEXT" => Loc::getMessage("MAIN_ADMIN_LIST_DELETE"),
@@ -136,58 +124,57 @@ $arItemContextMenu = [
 		"ICON" => "delete",
 		"ACTION" => [
 			"TYPE" => "DELETE",
+			"PARAMS" => "PROFILE_ID=".$PROFILE_ID,
 		]
 	],
 ];
 
-
-
-/* lang messages in classes */
 $Messages = [
-	"TITLE" => Loc::getMessage("IPL_MA_LIST_TITLE"),
-	"COPY" => Loc::getMessage("IPL_MA_LIST_COPY"),
+	"DELETE_CONF" => Loc::getMessage("IPL_MA_DELETE_CONF"),
 	"SELECTED" => Loc::getMessage("MAIN_ADMIN_LIST_SELECTED"),
 	"CHECKED" => Loc::getMessage("MAIN_ADMIN_LIST_CHECKED"),
-	"DELETE" => Loc::getMessage("MAIN_ADMIN_LIST_DELETE"), 
-	"ACTIVATE" => Loc::getMessage("MAIN_ADMIN_LIST_ACTIVATE"), 
-	"DEACTIVATE" => Loc::getMessage("MAIN_ADMIN_LIST_DEACTIVATE"), 
-	"EDIT" => Loc::getMessage("MAIN_ADMIN_LIST_EDIT"), 
+	"DELETE" => Loc::getMessage("MAIN_ADMIN_LIST_DELETE"),
+	"ACTIVATE" => Loc::getMessage("MAIN_ADMIN_LIST_ACTIVATE"),
+	"DEACTIVATE" => Loc::getMessage("MAIN_ADMIN_LIST_DEACTIVATE"),
+	"EDIT" => Loc::getMessage("MAIN_ADMIN_LIST_EDIT"),
 	"SAVE_ERROR_NO_ITEM" => Loc::getMessage("IPL_MA_SAVE_ERROR_NO_ITEM"),
 	"SAVE_ERROR_UPDATE" => Loc::getMessage("IPL_MA_SAVE_ERROR_UPDATE"),
 	"SAVE_ERROR_DELETE" => Loc::getMessage("IPL_MA_SAVE_ERROR_DELETE"),
-	"DELETE_CONF" => Loc::getMessage("IPL_MA_DELETE_CONF"),
+
 ];
 
-
-/* prepare control object */
-$adminControl = new Iplogic\Beru\Admin\TableList($moduleID);
+$adminControl = new ListEx($moduleID);
 $adminControl->arOpts = $arOpts;
 $adminControl->Mess = $Messages;
 $adminControl->arContextMenu = $arContextMenu;
 $adminControl->arItemContextMenu = $arItemContextMenu;
-$adminControl->sTableClass = "\Iplogic\Beru\ProfileTable";
+$adminControl->gaCopy = "N";
+$adminControl->sTableClass = "\Iplogic\Beru\DeliveryTable";
+$adminControl->filterFormAction = "/bitrix/admin/iplogic_beru_delivery.php?PROFILE_ID=".$PROFILE_ID;
 
+$adminControl->arGroupActions = [];
 
 
 if ($adminControl->POST_RIGHT == "D") $APPLICATION->AuthForm(Loc::getMessage("ACCESS_DENIED"));
 
+$adminControl->initList("tbl_condition");
 
-
-/* exec actions */
-$adminControl->initList("tbl_iplogic_beru_profiles");
 $adminControl->EditAction();
 $adminControl->GroupAction();
 
-
-/* get list and put it in control object */
-$rsData = ProfileTable::getList(['order' => $adminControl->arSort, 'filter' => $adminControl->arFilter, 'select' => $adminControl->arSelect]);
+$rsData = DeliveryTable::getList(['order' => $adminControl->arSort, 'filter' => $adminControl->arFilter, 'select' => $adminControl->arSelect]);
 $adminControl->prepareData($rsData);
 
-
-/* starting output */
-$APPLICATION->SetTitle(Loc::getMessage('IPL_MA_LIST_TITLE'));
+$APPLICATION->SetTitle(Loc::getMessage('IPL_MA_LIST_TITLE')." #".$PROFILE_ID." (".$arProfile["NAME"].")");
 
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
+
+if ($fatalErrors != ""){
+	CAdminMessage::ShowMessage($fatalErrors);
+	require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
+	die();
+}
+
 
 /* ok message */
 if($request->get("mess") === "ok")

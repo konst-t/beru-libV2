@@ -21,3 +21,4 @@ $MESS["IPL_MA_SAVE_ERROR_DELETE"] = "Profile deletion error";
 $MESS["IPL_MA_PRIFILE_ADD"] = "Create profile";
 $MESS["IPL_MA_PRIFILE_ADD_TITLE"] = "Creating a new integration profile";
 $MESS["IPL_MA_DELETE_CONF"] = "Are you sure you want to delete an item?";
+$MESS["IPL_MA_SCHEME"] = "Work scheme";

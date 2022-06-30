@@ -262,6 +262,11 @@ $aMenu = [
 		"TEXT"  => Loc::getMessage("IPL_MA_PROFILE_SETTINGS"),
 		"TITLE" => Loc::getMessage("IPL_MA_PROFILE_SETTINGS_TITLE"),
 		"LINK"  => "iplogic_beru_profile_edit.php?ID=".$arProfile["ID"]."&lang=".LANG,
+	],
+	[
+		"TEXT"  => Loc::getMessage("IPL_MA_DELIVERIES"),
+		"TITLE" => Loc::getMessage("IPL_MA_DELIVERIES_TITLE"),
+		"LINK"  => "iplogic_beru_delivery.php?PROFILE_ID=".$ID."&lang=".LANG,
 	]
 ];
 

@@ -788,6 +788,66 @@ class Control
 	}
 
 
+	public static function discountAddHandler($ID, $arFields)
+	{
+		self::discountUpdate($ID);
+	}
+
+
+	public static function discountUpdateHandler($ID, $arFields)
+	{
+		self::discountUpdate($ID);
+	}
+
+
+	public static function discountDeleteHandler($ID)
+	{
+		$dbProductDiscounts = \CCatalogDiscount::GetList(
+			[],
+			[
+				"ID" => $ID,
+				"ACTIVE" => "Y",
+				"COUPON" => ""
+			],
+			false,
+			false,
+			["ID", "PRODUCT_ID"]
+		);
+		while ($arProductDiscounts = $dbProductDiscounts->Fetch())
+		{
+			self::setUpdateTask($arProductDiscounts["PRODUCT_ID"]);
+		}
+	}
+
+
+	protected static function discountUpdate($ID)
+	{
+		$dbProductDiscounts = \CCatalogDiscount::GetList(
+			[],
+			[
+				"ID" => $ID,
+				"ACTIVE" => "Y",
+				"COUPON" => ""
+			],
+			false,
+			false,
+			["ID", "ACTIVE_FROM", "ACTIVE_TO", "PRODUCT_ID"]
+		);
+		while ($arProductDiscounts = $dbProductDiscounts->Fetch())
+		{
+			if($arProductDiscounts["ACTIVE_FROM"] != "") {
+				self::setDeferredUpdateTask($arProductDiscounts["PRODUCT_ID"], $arProductDiscounts["ACTIVE_FROM"]);
+			}
+			else {
+				self::setUpdateTask($arProductDiscounts["PRODUCT_ID"]);
+			}
+			if($arProductDiscounts["ACTIVE_TO"] != "") {
+				self::setDeferredUpdateTask($arProductDiscounts["PRODUCT_ID"], $arProductDiscounts["ACTIVE_TO"]);
+			}
+		}
+	}
+
+
 	protected static function setUpdateTask($ID)
 	{
 		$rsProducts = Product::getByProductId($ID);
@@ -817,6 +877,27 @@ class Control
 				];
 				Task::add($arFields);
 			}
+		}
+	}
+
+
+	protected static function setDeferredUpdateTask($ID, $time)
+	{
+		$rsProducts = Product::getByProductId($ID);
+		while( $arProduct = $rsProducts->Fetch() ) {
+			$arProfile = ProfileTable::getById($arProduct["PROFILE_ID"]);
+			if( $arProfile["ACTIVE"] != "Y" ) {
+				continue;
+			}
+			$arFields = [
+				"PROFILE_ID"     => $arProduct["PROFILE_ID"],
+				"UNIX_TIMESTAMP" => strtotime($time),
+				"TYPE"           => "DU",
+				"STATE"          => "WT",
+				"ENTITY_ID"      => $arProduct["ID"],
+				"TRYING"         => 0,
+			];
+			Task::add($arFields);
 		}
 	}
 

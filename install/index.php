@@ -53,6 +53,10 @@ if (!class_exists("iplogic_beru")) {
 			EventManager::getInstance()->registerEventHandler('catalog', '\Bitrix\Catalog\Price::OnAfterUpdate', self::MODULE_ID, 'Iplogic\Beru\Control', 'priceUpdateHandler');
 			EventManager::getInstance()->registerEventHandler('catalog', 'OnStoreProductUpdate', self::MODULE_ID, 'Iplogic\Beru\Control', 'storeUpdateHandler');
 			EventManager::getInstance()->registerEventHandler('iblock', 'OnBeforeIBlockElementDelete', self::MODULE_ID, 'Iplogic\Beru\Control', 'productDeleteHandler');
+			EventManager::getInstance()->registerEventHandler('catalog', 'OnDiscountAdd', self::MODULE_ID, 'Iplogic\Beru\Control', 'discountAddHandler');
+			EventManager::getInstance()->registerEventHandler('catalog', 'OnDiscountUpdate', self::MODULE_ID, 'Iplogic\Beru\Control', 'discountUpdateHandler');
+			EventManager::getInstance()->registerEventHandler('catalog', 'OnBeforeDiscountDelete', self::MODULE_ID, 'Iplogic\Beru\Control', 'discountDeleteHandler');
+
 			$taid = CAgent::AddAgent( "\Iplogic\Beru\Control::executeTasksAgent();", self::MODULE_ID, "N", 60, "", "Y");
 
 			Option::set(self::MODULE_ID,"GROUP_DEFAULT_RIGHT",'R');
@@ -135,6 +139,9 @@ if (!class_exists("iplogic_beru")) {
 			EventManager::getInstance()->unRegisterEventHandler('catalog', '\Bitrix\Catalog\Price::OnAfterUpdate', self::MODULE_ID, 'Iplogic\Beru\Control', 'priceUpdateHandler');
 			EventManager::getInstance()->unRegisterEventHandler('catalog', 'OnStoreProductUpdate', self::MODULE_ID, 'Iplogic\Beru\Control', 'storeUpdateHandler');
 			EventManager::getInstance()->unRegisterEventHandler('iblock', 'OnBeforeIBlockElementDelete', self::MODULE_ID, 'Iplogic\Beru\Control', 'productDeleteHandler');
+			EventManager::getInstance()->unRegisterEventHandler('catalog', 'OnDiscountAdd', self::MODULE_ID, 'Iplogic\Beru\Control', 'discountAddHandler');
+			EventManager::getInstance()->unRegisterEventHandler('catalog', 'OnDiscountUpdate', self::MODULE_ID, 'Iplogic\Beru\Control', 'discountUpdateHandler');
+			EventManager::getInstance()->unRegisterEventHandler('catalog', 'OnBeforeDiscountDelete', self::MODULE_ID, 'Iplogic\Beru\Control', 'discountDeleteHandler');
 
 			CAgent::RemoveModuleAgents(self::MODULE_ID);
 			Option::delete($this->MODULE_ID);

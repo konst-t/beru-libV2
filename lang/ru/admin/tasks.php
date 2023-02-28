@@ -15,6 +15,7 @@ $MESS["IPL_MA_CLEAR_CONFIRM"] = "Вы действительно хотите удалить все записи лога
 $MESS["IPL_MA_DELETE_CONF"] = "Вы уверены, что хотите удалить элемент?";
 
 $MESS["IPL_MA_TYPE_PU"] = "Обновление товара";
+$MESS["IPL_MA_TYPE_DU"] = "Обновление товара (отложенное)";
 $MESS["IPL_MA_TYPE_PR"] = "Обновление цены";
 $MESS["IPL_MA_TYPE_SP"] = "Отправка цен";
 $MESS["IPL_MA_TYPE_HP"] = "Скрыть товар";
@@ -22,3 +23,4 @@ $MESS["IPL_MA_TYPE_UP"] = "Показать товар";
 $MESS["IPL_MA_TYPE_RQ"] = "Повторить запрос";
 $MESS["IPL_MA_TYPE_HS"] = "Отправить скрытые";
 $MESS["IPL_MA_TYPE_US"] = "Отправить отмену скрытия";
+$MESS["IPL_MA_TYPE_CT"] = "Проверка задач";

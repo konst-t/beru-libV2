@@ -63,6 +63,7 @@ $arOpts = [
 			"VALUES" => [
 				"reference" => [
 					Loc::getMessage("IPL_MA_TYPE_PU"),
+					Loc::getMessage("IPL_MA_TYPE_DU"),
 					Loc::getMessage("IPL_MA_TYPE_PR"),
 					Loc::getMessage("IPL_MA_TYPE_SP"),
 					Loc::getMessage("IPL_MA_TYPE_HP"),
@@ -70,9 +71,11 @@ $arOpts = [
 					Loc::getMessage("IPL_MA_TYPE_RQ"),
 					Loc::getMessage("IPL_MA_TYPE_HS"),
 					Loc::getMessage("IPL_MA_TYPE_US"),
+					Loc::getMessage("IPL_MA_TYPE_CT"),
 				],
 				"reference_id" => [
 					"PU",
+					"DU",
 					"PR",
 					"SP",
 					"HP",
@@ -80,6 +83,7 @@ $arOpts = [
 					"RQ",
 					"HS",
 					"US",
+					"CT",
 				]
 			],
 			"DEFAULT" => Loc::getMessage("IPL_MA_ALL"),
@@ -91,6 +95,7 @@ $arOpts = [
 		],
 		"REPLACE" => [
 			"PU" => Loc::getMessage("IPL_MA_TYPE_PU"),
+			"DU" => Loc::getMessage("IPL_MA_TYPE_DU"),
 			"PR" => Loc::getMessage("IPL_MA_TYPE_PR"),
 			"SP" => Loc::getMessage("IPL_MA_TYPE_SP"),
 			"HP" => Loc::getMessage("IPL_MA_TYPE_HP"),
@@ -98,6 +103,7 @@ $arOpts = [
 			"RQ" => Loc::getMessage("IPL_MA_TYPE_RQ"),
 			"HS" => Loc::getMessage("IPL_MA_TYPE_HS"),
 			"US" => Loc::getMessage("IPL_MA_TYPE_US"),
+			"CT" => Loc::getMessage("IPL_MA_TYPE_CT"),
 		]
 	],
 	[

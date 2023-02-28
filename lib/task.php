@@ -194,6 +194,15 @@ class TaskTable extends Main\Entity\DataManager
 		$strSql = "SELECT * FROM " . $helper->quote(self::getTableName()) . " WHERE " .
 			$helper->quote('UNIX_TIMESTAMP') . "<=" . time() . " AND " .
 			$helper->quote('STATE') . " = 'WT' AND " .
+			$helper->quote('TYPE') . " = 'CT'";
+		$result = $conn->query($strSql);
+		$task = $result->Fetch();
+		if(!$task) {
+			self::scheduleCheckTasks();
+		}
+		$strSql = "SELECT * FROM " . $helper->quote(self::getTableName()) . " WHERE " .
+			$helper->quote('UNIX_TIMESTAMP') . "<=" . time() . " AND " .
+			$helper->quote('STATE') . " = 'WT' AND " .
 			$helper->quote('TYPE') . " = 'SP' ORDER BY UNIX_TIMESTAMP ASC";
 		$result = $conn->query($strSql);
 		$task = $result->Fetch();
@@ -223,7 +232,7 @@ class TaskTable extends Main\Entity\DataManager
 			if( $task["TYPE"] == "RQ" ) {
 				self::repeatQuery($task);
 			}
-			if( $task["TYPE"] == "PU" ) {
+			if( $task["TYPE"] == "PU" || $task["TYPE"] == "DU" ) {
 				self::updateProduct($task);
 			}
 			if( $task["TYPE"] == "SP" ) {
@@ -234,6 +243,9 @@ class TaskTable extends Main\Entity\DataManager
 			}
 			if( $task["TYPE"] == "US" ) {
 				self::sendShown($task);
+			}
+			if( $task["TYPE"] == "CT" ) {
+				self::checkTasks($task);
 			}
 			exec(
 				"wget --no-check-certificate -b -q -O - https://" . Option::get(self::$moduleID, "domen") .
@@ -283,6 +295,31 @@ class TaskTable extends Main\Entity\DataManager
 		else {
 			self::delete($task["ID"]);
 		}
+	}
+
+
+	/* CHECK TASKS */
+
+	public static function scheduleCheckTasks()
+	{
+		self::scheduleTask(0, "CT", 300);
+	}
+
+	protected static function checkTasks($task)
+	{
+		$conn = Application::getConnection();
+		$helper = $conn->getSqlHelper();
+		$strSql = "SELECT * FROM " . $helper->quote(self::getTableName()) . " WHERE " .
+			$helper->quote('UNIX_TIMESTAMP') . "<=" . (time()-300) . " AND " .
+			$helper->quote('STATE') . " = 'IW'";
+		$result = $conn->query($strSql);
+		while ($_task = $result->Fetch()) {
+			self::delete($_task["ID"]);
+		}
+		unset($helper, $conn);
+		self::delete($task["ID"]);
+		self::scheduleCheckTasks();
+		return;
 	}
 
 
@@ -585,7 +622,8 @@ class TaskTable extends Main\Entity\DataManager
 		$helper = $conn->getSqlHelper();
 		$strSql =
 			"SELECT * FROM " . $helper->quote(self::getTableName()) . " WHERE " . $helper->quote('TYPE') . " = '" .
-			$CODE . "' AND " . $helper->quote('PROFILE_ID') . " = " . $PROFILE_ID;
+			$CODE . "' AND " . $helper->quote('PROFILE_ID') . " = " . $PROFILE_ID . " AND " .
+			$helper->quote('STATE') . " = 'WT'";
 		$result = $conn->query($strSql);
 		unset($helper, $conn);
 		$task = $result->Fetch();

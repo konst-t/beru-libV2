@@ -25,6 +25,10 @@ if (!Loader::includeModule("sale")){
 	$fatalErrors = Loc::getMessage("MODULE_INCLUDE_ERROR")."<br>";
 }
 
+$MODULE_ACCESS = \Iplogic\Beru\Access::getGroupRight("module");
+
+$POST_REQUEST = false;
+
 $pass = (time() - Option::get($moduleID,"system_check_last_time",0))/86400;
 if ( $pass > 30 ) {
 	include($_SERVER['DOCUMENT_ROOT'].BX_ROOT."/modules/".$moduleID."/conf_check.php");

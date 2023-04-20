@@ -2,6 +2,8 @@
 $moduleID = 'iplogic.beru';
 define("ADMIN_MODULE_NAME", $moduleID);
 
+$baseFolder = realpath(__DIR__ . "/../../..");
+
 require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_before.php');
 
 use \Bitrix\Main\Localization\Loc,
@@ -13,9 +15,16 @@ $checkParams = [
 	"PROFILE" => true
 ];
 
-include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$moduleID."/prolog.php");
+include($baseFolder."/modules/".$moduleID."/prolog.php");
 
 Loc::loadMessages(__FILE__);
+
+if ($MODULE_ACCESS == "D") {
+	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
+	CAdminMessage::ShowMessage(Loc::getMessage("ACCESS_DENIED"));
+	require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
+	die();
+}
 
 class TableFormEx extends Iplogic\Beru\Admin\TableForm
 {
@@ -263,12 +272,15 @@ $aMenu = [
 		"TITLE" => Loc::getMessage("IPL_MA_PROFILE_SETTINGS_TITLE"),
 		"LINK"  => "iplogic_beru_profile_edit.php?ID=".$arProfile["ID"]."&lang=".LANG,
 	],
-	[
+];
+
+if ($arProfile["SCHEME"] == "DBS") {
+	$aMenu[] = [
 		"TEXT"  => Loc::getMessage("IPL_MA_DELIVERIES"),
 		"TITLE" => Loc::getMessage("IPL_MA_DELIVERIES_TITLE"),
-		"LINK"  => "iplogic_beru_delivery.php?PROFILE_ID=".$ID."&lang=".LANG,
-	]
-];
+		"LINK"  => "iplogic_beru_delivery.php?PROFILE_ID=".$arProfile["ID"]."&lang=".LANG,
+	];
+}
 
 
 $Messages = [
@@ -288,70 +300,64 @@ $adminControl->captionWidth = 30;
 $adminControl->catalogIBlockID = $arProfile["IBLOCK_ID"];
 $adminControl->initDetailPage();
 
-if ($adminControl->POST_RIGHT == "D") {
-	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
-	$APPLICATION->AuthForm(Loc::getMessage("ACCESS_DENIED"));
+
+foreach ($arProfile["PROP"] as $arProp) {
+	$adminControl->arOpts[$arProp["NAME"]]["VALUE"] = $arProp["VALUE"];
+	$adminControl->arOpts[$arProp["NAME"]]["VALUE_TYPE"] = $arProp["TYPE"];
+	$adminControl->arOpts[$arProp["NAME"]]["ID"] = $arProp["ID"];
 }
-else {
 
-	foreach ($arProfile["PROP"] as $arProp) {
-		$adminControl->arOpts[$arProp["NAME"]]["VALUE"] = $arProp["VALUE"];
-		$adminControl->arOpts[$arProp["NAME"]]["VALUE_TYPE"] = $arProp["TYPE"];
-		$adminControl->arOpts[$arProp["NAME"]]["ID"] = $arProp["ID"];
-	}
+if( $request->isPost()
+	&& ($request->get("save")!="" || $request->get("apply")!="")
+	&& $MODULE_ACCESS >= "W"
+	&& check_bitrix_sessid()
+	&& $fatalErrors == ""
+) {
 
-	if( $request->isPost() 
-		&& ($request->get("save")!="" || $request->get("apply")!="") 
-		&& $APPLICATION->GetGroupRight($moduleID)=="W" 
-		&& check_bitrix_sessid() 
-		&& $fatalErrors == ""
-	) {
+	$adminControl->getRequestData();
 
-		$adminControl->getRequestData();
-
-		if( !count($adminControl->errors) ) {
-			$res = true;
-			foreach($request->get("prop") as $id => $arFields) {
-				$arFields["ID"] = $id;
-				$_res = ProfileTable::setAccordance($PROFILE_ID, $arFields);
-				if(!$_res) $res = false;
-			}
-			if($res) {
-				if ($request->get("apply") != "")
-					LocalRedirect("/bitrix/admin/iplogic_beru_accordances_edit.php?PROFILE_ID=".$PROFILE_ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
-				else
-					LocalRedirect("/bitrix/admin/iplogic_beru_profile_list.php?lang=".LANG);
-			}
-			else {
-				$adminControl->errors = array_merge($adminControl->errors, $obProfile->errors);
-			}
+	if( !count($adminControl->errors) ) {
+		$res = true;
+		foreach($request->get("prop") as $id => $arFields) {
+			$arFields["ID"] = $id;
+			$_res = ProfileTable::setAccordance($PROFILE_ID, $arFields);
+			if(!$_res) $res = false;
 		}
-
-	}
-
-	$APPLICATION->SetTitle(Loc::getMessage("IPL_MA_PROFILE_EDIT_TITLE")." ".$arProfile["NAME"]." #".$PROFILE_ID." (".$arProfile["NAME"].")");
-
-	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
-
-	if ($fatalErrors != ""){
-		CAdminMessage::ShowMessage($fatalErrors);
-		require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
-		die();
-	}
-
-	if($request->get("mess") === "ok")
-		CAdminMessage::ShowMessage(array("MESSAGE"=>Loc::getMessage("SAVED"), "TYPE"=>"OK"));
-
-	elseif( count($adminControl->errors) ) {
-		foreach($adminControl->errors as $error) {
-			CAdminMessage::ShowMessage($error);
+		if($res) {
+			if ($request->get("apply") != "")
+				LocalRedirect("/bitrix/admin/iplogic_beru_accordances_edit.php?PROFILE_ID=".$PROFILE_ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
+			else
+				LocalRedirect("/bitrix/admin/iplogic_beru_profile_list.php?lang=".LANG);
+		}
+		else {
+			$adminControl->errors = array_merge($adminControl->errors, $obProfile->errors);
 		}
 	}
 
-	$adminControl->buildPage();
-
-	$adminControl->getPropChooseScript();
 }
+
+$APPLICATION->SetTitle(Loc::getMessage("IPL_MA_PROFILE_EDIT_TITLE")." ".$arProfile["NAME"]." #".$PROFILE_ID." (".$arProfile["NAME"].")");
+
+require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
+
+if ($fatalErrors != ""){
+	CAdminMessage::ShowMessage($fatalErrors);
+	require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
+	die();
+}
+
+if($request->get("mess") === "ok")
+	CAdminMessage::ShowMessage(array("MESSAGE"=>Loc::getMessage("SAVED"), "TYPE"=>"OK"));
+
+elseif( count($adminControl->errors) ) {
+	foreach($adminControl->errors as $error) {
+		CAdminMessage::ShowMessage($error);
+	}
+}
+
+$adminControl->buildPage();
+
+$adminControl->getPropChooseScript();
 
 require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
 ?>

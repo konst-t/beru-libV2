@@ -1,4 +1,4 @@
 <?
-$MESS["MODULE_INCLUDE_ERROR"] = "Модуль не установлен";
-$MESS["WRONG_PARAMETERS"] = "Неверные параметры запроса";
-$MESS["CONFIG_CHECK_MESSAGE"] = "Обнаружены ошибки в настройках системы, которые могут повлиять на работоспособность решения Интеграция с Беру. <a href='/bitrix/admin/settings.php?mid=iplogic.beru&lang=".LANG."&tabControl_active_tab=edit2'>Подробно.</a>";
+$MESS["MODULE_INCLUDE_ERROR"] = "РњРѕРґСѓР»СЊ РЅРµ СѓСЃС‚Р°РЅРѕРІР»РµРЅ";
+$MESS["WRONG_PARAMETERS"] = "РќРµРІРµСЂРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ Р·Р°РїСЂРѕСЃР°";
+$MESS["CONFIG_CHECK_MESSAGE"] = "РћР±РЅР°СЂСѓР¶РµРЅС‹ РѕС€РёР±РєРё РІ РЅР°СЃС‚СЂРѕР№РєР°С… СЃРёСЃС‚РµРјС‹, РєРѕС‚РѕСЂС‹Рµ РјРѕРіСѓС‚ РїРѕРІР»РёСЏС‚СЊ РЅР° СЂР°Р±РѕС‚РѕСЃРїРѕСЃРѕР±РЅРѕСЃС‚СЊ СЂРµС€РµРЅРёСЏ РРЅС‚РµРіСЂР°С†РёСЏ СЃ РЇРЅРґРµРєСЃ.РњР°СЂРєРµС‚. <a href='/bitrix/admin/settings.php?mid=iplogic.beru&lang=".LANG."&tabControl_active_tab=edit2'>РџРѕРґСЂРѕР±РЅРѕ.</a>";

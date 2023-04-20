@@ -2,16 +2,25 @@
 $moduleID = 'iplogic.beru';
 define("ADMIN_MODULE_NAME", $moduleID);
 
-require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_before.php');
+$baseFolder = realpath(__DIR__ . "/../../..");
+
+require_once($_SERVER["DOCUMENT_ROOT"].'/bitrix/modules/main/include/prolog_admin_before.php');
 
 use Bitrix\Main\Localization\Loc,
 	Iplogic\Beru\ProfileTable;
 
 $checkParams = [];
 
-include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$moduleID."/prolog.php");
+include($baseFolder."/modules/".$moduleID."/prolog.php");
 
 Loc::loadMessages(__FILE__);
+
+if ($MODULE_ACCESS == "D") {
+	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
+	CAdminMessage::ShowMessage(Loc::getMessage("ACCESS_DENIED"));
+	require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
+	die();
+}
 
 $arOpts = [
 	[
@@ -107,14 +116,15 @@ $arOpts = [
 
 
 /* context menu */
-$arContextMenu = [
-	[
+$arContextMenu = [];
+if($MODULE_ACCESS >= "W") {
+	$arContextMenu[] = [
 		"TEXT"=>Loc::getMessage("IPL_MA_PRIFILE_ADD"),
 		"LINK"=>"iplogic_beru_profile_edit.php?mode=new&lang=".LANG,
 		"TITLE"=>Loc::getMessage("IPL_MA_PRIFILE_ADD_TITLE"),
 		"ICON"=>"btn_new",
-	],
-];
+	];
+}
 
 
 
@@ -144,6 +154,7 @@ $arItemContextMenu = [
 
 /* lang messages in classes */
 $Messages = [
+	"ACCESS_DENIED" => Loc::getMessage("ACCESS_DENIED"),
 	"TITLE" => Loc::getMessage("IPL_MA_LIST_TITLE"),
 	"COPY" => Loc::getMessage("IPL_MA_LIST_COPY"),
 	"SELECTED" => Loc::getMessage("MAIN_ADMIN_LIST_SELECTED"),
@@ -161,16 +172,12 @@ $Messages = [
 
 /* prepare control object */
 $adminControl = new Iplogic\Beru\Admin\TableList($moduleID);
+$adminControl->POST_RIGHT = $MODULE_ACCESS;
 $adminControl->arOpts = $arOpts;
 $adminControl->Mess = $Messages;
 $adminControl->arContextMenu = $arContextMenu;
 $adminControl->arItemContextMenu = $arItemContextMenu;
 $adminControl->sTableClass = "\Iplogic\Beru\ProfileTable";
-
-
-
-if ($adminControl->POST_RIGHT == "D") $APPLICATION->AuthForm(Loc::getMessage("ACCESS_DENIED"));
-
 
 
 /* exec actions */
@@ -203,5 +210,5 @@ if( count($adminControl->errors) ) {
 
 $adminControl->renderList();
 
-require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
+require($_SERVER["DOCUMENT_ROOT"].'/bitrix/modules/main/include/epilog_admin.php');
 ?>

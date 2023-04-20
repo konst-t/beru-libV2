@@ -1,3 +1,3 @@
 <?
-require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/iplogic.beru/admin/tasks.php");
+require_once($_SERVER["DOCUMENT_ROOT"]."/#dir#/modules/iplogic.beru/admin/tasks.php");
 ?>

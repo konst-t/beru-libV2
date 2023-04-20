@@ -2,6 +2,8 @@
 $moduleID = 'iplogic.beru';
 define("ADMIN_MODULE_NAME", $moduleID);
 
+$baseFolder = realpath(__DIR__ . "/../../..");
+
 require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_before.php');
 
 use \Bitrix\Main\Localization\Loc,
@@ -15,9 +17,18 @@ $checkParams = [
 	"PROFILE" => true
 ];
 
-include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$moduleID."/prolog.php");
+include($baseFolder."/modules/".$moduleID."/prolog.php");
 
 Loc::loadMessages(__FILE__);
+
+$PROFILE_ACCESS = \Iplogic\Beru\Access::getGroupRight("profile", $PROFILE_ID);
+
+if ($MODULE_ACCESS == "D" || $PROFILE_ACCESS == "D") {
+	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
+	CAdminMessage::ShowMessage(Loc::getMessage("ACCESS_DENIED"));
+	require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
+	die();
+}
 
 
 class ListEx extends Iplogic\Beru\Admin\TableList
@@ -28,13 +39,13 @@ class ListEx extends Iplogic\Beru\Admin\TableList
 		switch($_REQUEST['action']) {
 			case "set_price":
 				TaskTable::addPriceUpdateTask($ID, $_REQUEST['PROFILE_ID']);
-			break;
+				break;
 			case "gr_hide":
 				TaskTable::hideProductTask($ID, $_REQUEST['PROFILE_ID']);
-			break;
+				break;
 			case "gr_unhide":
 				TaskTable::showProductTask($ID, $_REQUEST['PROFILE_ID']);
-			break;
+				break;
 		}
 	}
 
@@ -170,9 +181,17 @@ $arOpts = [
 	[
 		"NAME" => "price",
 		"CAPTION" => Loc::getMessage("IPL_MA_CAPTION_PRICE"),
-		"FILTER" => [
+		/*"FILTER" => [
 			"COMPARE" => "%",
-		],
+		],*/
+	],
+	[
+		"NAME" => "old_price",
+		"CAPTION" => Loc::getMessage("IPL_MA_CAPTION_OLD_PRICE"),
+	],
+	[
+		"NAME" => "stock_fit",
+		"CAPTION" => Loc::getMessage("IPL_MA_CAPTION_STOCK_FIT"),
 	],
 	[
 		"NAME" => "hidden",
@@ -201,30 +220,34 @@ $arOpts = [
 	[
 		"NAME" => "id",
 		"CAPTION" => "ID",
-		"PROPERTY" => "N", 
+		"PROPERTY" => "N",
 		"UNIQ" => "Y",
 		"FILTER" => [
-			"VIEW" => "text", 
+			"VIEW" => "text",
 		],
 		"HEADER_KEY" => [
-			"align" => "right", 
-			"default" => false, 
+			"align" => "right",
+			"default" => false,
 		],
 	],
 ];
 
-$arContext = [
-	[
-		"TEXT"=>Loc::getMessage("IPL_MA_REFRESH"),
-		"LINK"=>"iplogic_beru_product_list.php?PROFILE_ID=".$PROFILE_ID."&refresh=Y&lang=".LANG,
-		"TITLE"=>Loc::getMessage("IPL_MA_REFRESH_TITLE"),
-	],
-	[
-		"TEXT"=>Loc::getMessage("IPL_MA_CACHE"),
-		"LINK"=>"iplogic_beru_product_list.php?PROFILE_ID=".$PROFILE_ID."&cache=Y&lang=".LANG,
-		"TITLE"=>Loc::getMessage("IPL_MA_CACHE_TITLE"),
-	],
-];
+$arContext = [];
+if( $PROFILE_ACCESS >= "W") {
+	$arContext = [
+		[
+			"TEXT"=>Loc::getMessage("IPL_MA_REFRESH"),
+			"LINK"=>"iplogic_beru_product_list.php?PROFILE_ID=".$PROFILE_ID."&refresh=Y&lang=".LANG,
+			"TITLE"=>Loc::getMessage("IPL_MA_REFRESH_TITLE"),
+		],
+		[
+			"TEXT"=>Loc::getMessage("IPL_MA_CACHE"),
+			"LINK"=>"iplogic_beru_product_list.php?PROFILE_ID=".$PROFILE_ID."&cache=Y&lang=".LANG,
+			"TITLE"=>Loc::getMessage("IPL_MA_CACHE_TITLE"),
+		],
+	];
+}
+
 
 $arItemContext = [
 	[
@@ -265,13 +288,14 @@ $arItemContext = [
 ];
 
 $Messages = [
+	"ACCESS_DENIED" => Loc::getMessage("ACCESS_DENIED"),
 	"DELETE_CONF" => Loc::getMessage("IPL_MA_DELETE_CONF"),
 	"SELECTED" => Loc::getMessage("MAIN_ADMIN_LIST_SELECTED"),
 	"CHECKED" => Loc::getMessage("MAIN_ADMIN_LIST_CHECKED"),
-	"DELETE" => Loc::getMessage("MAIN_ADMIN_LIST_DELETE"), 
-	"ACTIVATE" => Loc::getMessage("MAIN_ADMIN_LIST_ACTIVATE"), 
-	"DEACTIVATE" => Loc::getMessage("MAIN_ADMIN_LIST_DEACTIVATE"), 
-	"EDIT" => Loc::getMessage("MAIN_ADMIN_LIST_EDIT"), 
+	"DELETE" => Loc::getMessage("MAIN_ADMIN_LIST_DELETE"),
+	"ACTIVATE" => Loc::getMessage("MAIN_ADMIN_LIST_ACTIVATE"),
+	"DEACTIVATE" => Loc::getMessage("MAIN_ADMIN_LIST_DEACTIVATE"),
+	"EDIT" => Loc::getMessage("MAIN_ADMIN_LIST_EDIT"),
 	"SAVE_ERROR_NO_ITEM" => Loc::getMessage("IPL_MA_SAVE_ERROR_NO_ITEM"),
 	"SAVE_ERROR_UPDATE" => Loc::getMessage("IPL_MA_SAVE_ERROR_UPDATE"),
 	"SAVE_ERROR_DELETE" => Loc::getMessage("IPL_MA_SAVE_ERROR_DELETE"),
@@ -279,6 +303,7 @@ $Messages = [
 ];
 
 $adminControl = new ListEx($moduleID);
+$adminControl->POST_RIGHT = $PROFILE_ACCESS;
 $adminControl->arOpts = $arOpts;
 $adminControl->Mess = $Messages;
 $adminControl->arContextMenu = $arContext;
@@ -299,47 +324,66 @@ $adminControl->arGroupActions = [
 ];
 
 
-if ($adminControl->POST_RIGHT == "D") $APPLICATION->AuthForm(Loc::getMessage("ACCESS_DENIED"));
-
 $adminControl->initList("tbl_product");
 
 $adminControl->EditAction();
 $adminControl->GroupAction();
 
-if ($request->get("refresh") == "Y"){
-	exec("wget -b -q -O - https://".Option::get($moduleID,"domen") ."/bitrix/services/iplogic/mkpapi/products.php");
-	LocalRedirect("/bitrix/admin/iplogic_beru_product_list.php?PROFILE_ID=".$PROFILE_ID."&mess=ok&lang=".LANG);
-}
-if ($request->get("cache") == "Y"){
-	$rsData = ProductTable::getList(['order' => $adminControl->arSort, 'filter' => $adminControl->arFilter, 'select' => ["ID"]]);
-	while ($prod = $rsData->Fetch()) {
-		$rsTask = TaskTable::getList(["filter"=>["TYPE"=>"PU","STATE"=>"WT","ENTITY_ID"=>$prod["ID"]]]);
-		if (!$rsTask->Fetch()) {
-			$arFields = [
-				"PROFILE_ID" 		=> $PROFILE_ID,
-				"UNIX_TIMESTAMP" 	=> time(),
-				"TYPE" 				=> "PU",
-				"STATE" 			=> "WT",
-				"ENTITY_ID" 		=> $prod["ID"],
-				"TRYING" 			=> 0
-			];
-			TaskTable::add($arFields);
-		}
+
+if( $PROFILE_ACCESS >= "W"
+	&& $fatalErrors == ""
+) {
+	if( $request->get("refresh") == "Y" ) {
+		exec(
+			"wget -b -q -O - https://" . Option::get($moduleID, "domen") .
+			"/bitrix/services/iplogic/mkpapi/products.php"
+		);
+		LocalRedirect(
+			"/bitrix/admin/iplogic_beru_product_list.php?PROFILE_ID=" . $PROFILE_ID . "&mess=ok&lang=" . LANG
+		);
 	}
-	LocalRedirect("/bitrix/admin/iplogic_beru_product_list.php?PROFILE_ID=".$PROFILE_ID."&mess=ok&lang=".LANG);
+	if( $request->get("cache") == "Y" ) {
+		$rsData = ProductTable::getList(
+			['order' => $adminControl->arSort, 'filter' => $adminControl->arFilter, 'select' => ["ID"]]
+		);
+		while( $prod = $rsData->Fetch() ) {
+			$rsTask = TaskTable::getList(["filter" => ["TYPE" => "PU", "STATE" => "WT", "ENTITY_ID" => $prod["ID"]]]);
+			if( !$rsTask->Fetch() ) {
+				$arFields = [
+					"PROFILE_ID" => $PROFILE_ID,
+					"UNIX_TIMESTAMP" => time(),
+					"TYPE" => "PU",
+					"STATE" => "WT",
+					"ENTITY_ID" => $prod["ID"],
+					"TRYING" => 0
+				];
+				TaskTable::add($arFields);
+			}
+		}
+		LocalRedirect(
+			"/bitrix/admin/iplogic_beru_product_list.php?PROFILE_ID=" . $PROFILE_ID . "&mess=ok&lang=" . LANG
+		);
+	}
+	if( $request->get("action") == "hide" ) {
+		TaskTable::hideProductTask($request->get("ID"), $PROFILE_ID);
+		LocalRedirect(
+			"/bitrix/admin/iplogic_beru_product_list.php?PROFILE_ID=" . $PROFILE_ID . "&mess=ok&lang=" . LANG
+		);
+	}
+	if( $request->get("action") == "show" ) {
+		TaskTable::showProductTask($request->get("ID"), $PROFILE_ID);
+		LocalRedirect(
+			"/bitrix/admin/iplogic_beru_product_list.php?PROFILE_ID=" . $PROFILE_ID . "&mess=ok&lang=" . LANG
+		);
+	}
+	if( $request->get("action") == "send_price" ) {
+		TaskTable::addPriceUpdateTask($request->get("ID"), $PROFILE_ID);
+		LocalRedirect(
+			"/bitrix/admin/iplogic_beru_product_list.php?PROFILE_ID=" . $PROFILE_ID . "&mess=ok&lang=" . LANG
+		);
+	}
 }
-if ($request->get("action") == "hide"){
-	TaskTable::hideProductTask($request->get("ID"), $PROFILE_ID);
-	LocalRedirect("/bitrix/admin/iplogic_beru_product_list.php?PROFILE_ID=".$PROFILE_ID."&mess=ok&lang=".LANG);
-}
-if ($request->get("action") == "show"){
-	TaskTable::showProductTask($request->get("ID"), $PROFILE_ID);
-	LocalRedirect("/bitrix/admin/iplogic_beru_product_list.php?PROFILE_ID=".$PROFILE_ID."&mess=ok&lang=".LANG);
-}
-if ($request->get("action") == "send_price"){
-	TaskTable::addPriceUpdateTask($request->get("ID"), $PROFILE_ID);
-	LocalRedirect("/bitrix/admin/iplogic_beru_product_list.php?PROFILE_ID=".$PROFILE_ID."&mess=ok&lang=".LANG);
-}
+
 
 $rsData = ProductTable::getList(['order' => $adminControl->arSort, 'filter' => $adminControl->arFilter, 'select' => $adminControl->arSelect]);
 $adminControl->prepareData($rsData);

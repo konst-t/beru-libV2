@@ -1,0 +1,19 @@
+<?
+$MESS['OP_NAME_PROFILES_READ'] = "Viewing profiles";
+$MESS['OP_DESC_PROFILES_READ'] = "View exchange profile settings";
+$MESS['OP_NAME_PROFILES_EDIT'] = "Editing profiles";
+$MESS['OP_DESC_PROFILES_EDIT'] = "Creating, deleting and editing exchange profile settings";
+$MESS['OP_NAME_LOGS_READ'] = "Viewing logs";
+$MESS['OP_DESC_LOGS_READ'] = "Viewing exchange and error log entries";
+$MESS['OP_NAME_LOGS_EDIT'] = "Clearing the log";
+$MESS['OP_DESC_LOGS_EDIT'] = "Full or partial clearing of exchange and error log entries";
+$MESS['OP_NAME_TASKS_READ'] = "Viewing tasks";
+$MESS['OP_DESC_TASKS_READ'] = "Viewing the task queue";
+$MESS['OP_NAME_TASKS_EDIT'] = "Editing tasks";
+$MESS['OP_DESC_TASKS_EDIT'] = "Performing actions with tasks from the queue";
+$MESS['OP_NAME_OPTIONS_EDIT'] = "Module Setup";
+$MESS['OP_DESC_OPTIONS_EDIT'] = "Changing module settings";
+$MESS['OP_NAME_PROFILE_READ'] = "Profile view";
+$MESS['OP_DESC_PROFILE_READ'] = "View products and profile tasks";
+$MESS['OP_NAME_PROFILE_EDIT'] = "Working with profile";
+$MESS['OP_DESC_PROFILE_EDIT'] = "Performing operations with goods and processing profile orders";

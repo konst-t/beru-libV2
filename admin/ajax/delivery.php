@@ -11,8 +11,10 @@ use \Bitrix\Main\Application;
 use \Bitrix\Main\Web\Json;
 use \Iplogic\Beru\DeliveryTable;
 
+$baseFolder = realpath(__DIR__ . "/../../../..");
+
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_before.php");
-IncludeModuleLangFile($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/'.$moduleID.'/admin/delivery_edit.php');
+IncludeModuleLangFile($baseFolder."/modules/".$moduleID.'/admin/delivery_edit.php');
 
 CJSCore::Init(array("jquery"));
 
@@ -21,7 +23,7 @@ $checkParams = [
 	"PROFILE" => true,
 ];
 
-include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$moduleID."/prolog.php");
+include($baseFolder."/modules/".$moduleID."/prolog.php");
 
 if ($ID > 0){
 	$arFields = DeliveryTable::getRowById($ID);
@@ -38,13 +40,12 @@ else {
 }
 
 if ($fatalErrors != "") {
-	//require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
 	ShowError($fatalErrors);
 	//require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin.php");
 	die();
 }
 
-if ($request->get('action')=='save' && $APPLICATION->GetGroupRight($moduleID)=="W") {
+if ($request->get('action')=='save' && $MODULE_ACCESS >= "W") {
 	$arParams = $request->get('params');
 	if ($arParams["NAME"] == "") {
 		echo(Json::encode(
@@ -69,7 +70,7 @@ if ($request->get('action')=='save' && $APPLICATION->GetGroupRight($moduleID)=="
 			die();
 		}
 		$arFields = DeliveryTable::getRowById($ID);
-		include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$moduleID."/admin/include/delivery_info.php");
+		include($baseFolder."/modules/".$moduleID."/admin/include/delivery_info.php");
 		echo(Json::encode(
 			[
 				"result"  => "success",

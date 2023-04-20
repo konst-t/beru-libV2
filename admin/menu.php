@@ -9,17 +9,19 @@ $moduleID = 'iplogic.beru';
 
 $GLOBALS['APPLICATION']->SetAdditionalCss("/bitrix/css/".$moduleID."/menu.css");
 
-if ($USER->IsAdmin())
+Loc::loadMessages(__FILE__);
+
+Loader::includeModule($moduleID);
+
+$MODULE_ACCESS = \Iplogic\Beru\Access::getGroupRight("module");
+
+if ($MODULE_ACCESS > "D")
 {
-	Loc::loadMessages(__FILE__);
-
-	Loader::includeModule($moduleID);
-
 	$a = explode("/",$_SERVER['PHP_SELF']);
 	$strCurrentPage = $a[count($a)-1];
 
 	$bHiddenProfile = false;
-	if($_REQUEST["PROFILE_ID"]>0) {
+	if($_REQUEST["PROFILE_ID"] > 0) {
 		$bHiddenProfile = true;
 		$H_PROFILE_ID = $_REQUEST["PROFILE_ID"];
 	}
@@ -55,58 +57,64 @@ if ($USER->IsAdmin())
 	];
 
 	foreach($arProfiles as $arProfile) {
-		$arInnerMenu = [];
+		$PROFILE_ACCESS = \Iplogic\Beru\Access::getGroupRight("profile", $arProfile["ID"]);
 
-		$arInnerMenu[] = [
-			"text" => Loc::getMessage("IPL_MA_MENU_ORDERS"),
-			"title" => Loc::getMessage("IPL_MA_MENU_ORDERS"),
-			"url" => "iplogic_beru_order_list.php?PROFILE_ID=".$arProfile["ID"]."&lang=".LANGUAGE_ID,
-			"more_url" => [
-				"iplogic_beru_order_list.php?PROFILE_ID=".$arProfile["ID"],
-				"iplogic_beru_order_detail.php?PROFILE_ID=".$arProfile["ID"],
-			]
-		];
-		$arInnerMenu[] = [
-			"text" => Loc::getMessage("IPL_MA_MENU_PRODUCTS"),
-			"title" => Loc::getMessage("IPL_MA_MENU_PRODUCTS"),
-			"url" => "iplogic_beru_product_list.php?PROFILE_ID=".$arProfile["ID"]."&lang=".LANGUAGE_ID,
-			"more_url" => [
-				"iplogic_beru_product_list.php?PROFILE_ID=".$arProfile["ID"],
-				"iplogic_beru_product_detail.php?PROFILE_ID=".$arProfile["ID"],
-			]
-		];
-		$arInnerMenu[] = [
-			"text" => Loc::getMessage("IPL_MA_MENU_STICKERS"),
-			"title" => Loc::getMessage("IPL_MA_MENU_STICKERS"),
-			"url" => "iplogic_beru_stickers.php?PROFILE_ID=".$arProfile["ID"]."&lang=".LANGUAGE_ID,
-			"more_url" => [
-				"iplogic_beru_stickers.php?PROFILE_ID=".$arProfile["ID"],
-			]
-		];
-		if ( $arProfile["SCHEME"] != "DBS" ) {
+		if($PROFILE_ACCESS > "D") {
+
+			$arInnerMenu = [];
+
 			$arInnerMenu[] = [
-				"text" => Loc::getMessage("IPL_MA_MENU_ACTS"),
-				"title" => Loc::getMessage("IPL_MA_MENU_ACTS"),
-				"url" => "iplogic_beru_acts.php?PROFILE_ID=".$arProfile["ID"]."&lang=".LANGUAGE_ID,
+				"text" => Loc::getMessage("IPL_MA_MENU_ORDERS"),
+				"title" => Loc::getMessage("IPL_MA_MENU_ORDERS"),
+				"url" => "iplogic_beru_order_list.php?PROFILE_ID=".$arProfile["ID"]."&lang=".LANGUAGE_ID,
 				"more_url" => [
-					"iplogic_beru_acts.php?PROFILE_ID=".$arProfile["ID"],
+					"iplogic_beru_order_list.php?PROFILE_ID=".$arProfile["ID"],
+					"iplogic_beru_order_detail.php?PROFILE_ID=".$arProfile["ID"],
 				]
 			];
-		}
+			$arInnerMenu[] = [
+				"text" => Loc::getMessage("IPL_MA_MENU_PRODUCTS"),
+				"title" => Loc::getMessage("IPL_MA_MENU_PRODUCTS"),
+				"url" => "iplogic_beru_product_list.php?PROFILE_ID=".$arProfile["ID"]."&lang=".LANGUAGE_ID,
+				"more_url" => [
+					"iplogic_beru_product_list.php?PROFILE_ID=".$arProfile["ID"],
+					"iplogic_beru_product_detail.php?PROFILE_ID=".$arProfile["ID"],
+				]
+			];
+			$arInnerMenu[] = [
+				"text" => Loc::getMessage("IPL_MA_MENU_STICKERS"),
+				"title" => Loc::getMessage("IPL_MA_MENU_STICKERS"),
+				"url" => "iplogic_beru_stickers.php?PROFILE_ID=".$arProfile["ID"]."&lang=".LANGUAGE_ID,
+				"more_url" => [
+					"iplogic_beru_stickers.php?PROFILE_ID=".$arProfile["ID"],
+				]
+			];
+			if ( $arProfile["SCHEME"] != "DBS" ) {
+				$arInnerMenu[] = [
+					"text" => Loc::getMessage("IPL_MA_MENU_ACTS"),
+					"title" => Loc::getMessage("IPL_MA_MENU_ACTS"),
+					"url" => "iplogic_beru_acts.php?PROFILE_ID=".$arProfile["ID"]."&lang=".LANGUAGE_ID,
+					"more_url" => [
+						"iplogic_beru_acts.php?PROFILE_ID=".$arProfile["ID"],
+					]
+				];
+			}
 
-		$arConMenu[] = [
-			"text" => $arProfile["NAME"],
-			"title" => $arProfile["NAME"],
-			"url" => "iplogic_beru_profile_edit.php?ID=".$arProfile["ID"]."&lang=".LANGUAGE_ID,
-			"items_id" => "menu_beru_".$arProfile["ID"],
-			"items" => $arInnerMenu,
-			"more_url" => [
-				"iplogic_beru_profile_edit.php?ID=".$arProfile["ID"],
-				"iplogic_beru_accordances_edit.php?PROFILE_ID=".$arProfile["ID"],
-				"iplogic_beru_delivery.php?PROFILE_ID=".$arProfile["ID"],
-				"iplogic_beru_delivery_edit.php?PROFILE_ID=".$arProfile["ID"],
-			]
-		];
+			$arConMenu[] = [
+				"text" => $arProfile["NAME"],
+				"title" => $arProfile["NAME"],
+				"url" => "iplogic_beru_profile_edit.php?ID=".$arProfile["ID"]."&lang=".LANGUAGE_ID,
+				"items_id" => "menu_beru_".$arProfile["ID"],
+				"items" => $arInnerMenu,
+				"more_url" => [
+					"iplogic_beru_profile_edit.php?ID=".$arProfile["ID"],
+					"iplogic_beru_accordances_edit.php?PROFILE_ID=".$arProfile["ID"],
+					"iplogic_beru_delivery.php?PROFILE_ID=".$arProfile["ID"],
+					"iplogic_beru_delivery_edit.php?PROFILE_ID=".$arProfile["ID"],
+				]
+			];
+
+		}
 	}
 
 	$newErrMark = "";

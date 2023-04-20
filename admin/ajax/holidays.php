@@ -12,8 +12,10 @@ use \Bitrix\Main\Web\Json;
 use \Iplogic\Beru\DeliveryTable;
 use \Iplogic\Beru\HolidayTable;
 
+$baseFolder = realpath(__DIR__ . "/../../../..");
+
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_before.php");
-IncludeModuleLangFile($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/'.$moduleID.'/admin/delivery_edit.php');
+IncludeModuleLangFile($baseFolder."/modules/".$moduleID.'/admin/delivery_edit.php');
 
 CJSCore::Init(array("jquery"));
 
@@ -22,7 +24,7 @@ $checkParams = [
 	"PROFILE" => true,
 ];
 
-include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$moduleID."/prolog.php");
+include($baseFolder."/modules/".$moduleID."/prolog.php");
 
 $ID = $request->get("ID");
 if ($ID > 0){
@@ -58,7 +60,7 @@ if ($arParams["CONTENT"] == "") {
 	die();
 }
 
-if ($request->get('action')=='add' && $APPLICATION->GetGroupRight($moduleID)=="W") {
+if ($request->get('action')=='add' && $MODULE_ACCESS >= "W") {
 
 	$arParams["DATE"] = $arParams["CONTENT"];
 	unset($arParams["CONTENT"]);
@@ -90,7 +92,7 @@ if ($request->get('action')=='add' && $APPLICATION->GetGroupRight($moduleID)=="W
 		));
 		die();
 	}
-	include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$moduleID."/admin/include/holidays.php");
+	include($baseFolder."/modules/".$moduleID."/admin/include/holidays.php");
 	echo(Json::encode(
 		[
 			"result"  => "success",

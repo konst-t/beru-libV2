@@ -1,15 +1,19 @@
 <?
 $module_id = "iplogic.beru";
 
-use \Bitrix\Main\Config\Option,
-	\Bitrix\Main\Localization\Loc,
-	\Bitrix\Main\Application,
-	\Bitrix\Main\Loader;
+$groupRightsBind = "module";
+
+use \Bitrix\Main\Config\Option;
+use \Bitrix\Main\Localization\Loc;
+use \Bitrix\Main\Application;
+use \Bitrix\Main\Loader;
 
 Loader::includeModule($module_id);
 
 $docRoot = $_SERVER['DOCUMENT_ROOT'];
-$RIGHT = $APPLICATION->GetGroupRight($module_id);
+$baseFolder = realpath(__DIR__ . "/../..");
+//$RIGHT = $APPLICATION->GetGroupRight($module_id);
+$RIGHT = $MODULE_ACCESS = \Iplogic\Beru\Access::getGroupRight("module");
 
 IncludeModuleLangFile($docRoot.BX_ROOT."/modules/main/options.php");
 IncludeModuleLangFile(__FILE__);
@@ -18,7 +22,7 @@ $request = Application::getInstance()->getContext()->getRequest();
 
 if($RIGHT >= "R") {
 
-	include($docRoot.BX_ROOT."/modules/".$module_id."/conf_check.php");
+	include($baseFolder."/modules/".$module_id."/conf_check.php");
 
 	$arMainOptions = [
 		["domen", Loc::getMessage("IPL_DOMEN"),"", ["text", 15]],
@@ -41,6 +45,9 @@ if($RIGHT >= "R") {
 		["products_check_period", Loc::getMessage("IPL_PRODUCTS_CHECK_PERIOD"),"1", ["text", 5]],
 		["products_add_num", Loc::getMessage("IPL_PRODUCTS_ADD_NUM"),50, ["text", 5]],
 		["products_check_disable", Loc::getMessage("IPL_PRODUCTS_CHECK_DISABLE"), "N", ["checkbox"]],
+		Loc::getMessage("IPL_SEND_OPTS"),
+		["send_prices", Loc::getMessage("IPL_SEND_PRICES"), "N", ["checkbox"]],
+		["send_stocks", Loc::getMessage("IPL_SEND_STOCKS"), "N", ["checkbox"]],
 	];
 	if (Option::get($module_id, "can_execute_tasks") != "Y") {
 		$arMainOptions[] = Loc::getMessage("IPL_ACTIONS");
@@ -114,7 +121,7 @@ if($RIGHT >= "R") {
 	];
 	$tabControl = new CAdminTabControl("tabControl", $aTabs);
 
-	if($request->isPost() && strlen($Update.$Apply.$RestoreDefaults) > 0 && $RIGHT=="W" && check_bitrix_sessid())
+	if($request->isPost() && strlen($Update.$Apply.$RestoreDefaults) > 0 && $RIGHT=="X" && check_bitrix_sessid())
 	{
 		//require_once($docRoot."/bitrix/modules/perfmon/prolog.php");
 		if(strlen($RestoreDefaults)>0) {
@@ -131,10 +138,14 @@ if($RIGHT >= "R") {
 				}
 			}
 		}
-		ob_start();
-		$Update = $Update.$Apply;
-		require_once($docRoot . '/bitrix/modules/main/admin/group_rights.php');
-		ob_end_clean();
+
+		$groupRightsAction = "POST";
+		require_once(__DIR__ . "/admin/group_rights.php");
+		$groupRightsAction = false;
+		//ob_start();
+		//$Update = $Update.$Apply.$RestoreDefaults;;
+		//require_once($docRoot . '/bitrix/modules/main/admin/group_rights.php');
+		//ob_end_clean();
 
 		if ($request->get("back_url_settings") != "")
 		{
@@ -161,12 +172,13 @@ if($RIGHT >= "R") {
 			}
 		}
 		$tabControl->BeginNextTab();
-		require_once($docRoot."/bitrix/modules/main/admin/group_rights.php");
+		//require_once($docRoot."/bitrix/modules/main/admin/group_rights.php");
+		require_once(__DIR__ . "/admin/group_rights.php");
 		$tabControl->Buttons();
 		?>
-		<input <?if ($RIGHT<"W") echo "disabled" ?> type="submit" name="Update" value="<?=Loc::getMessage("MAIN_SAVE")?>" title="<?=Loc::getMessage("MAIN_OPT_SAVE_TITLE")?>" class="adm-btn-save">
+		<input <?if ($RIGHT<"X") echo "disabled" ?> type="submit" name="Update" value="<?=Loc::getMessage("MAIN_SAVE")?>" title="<?=Loc::getMessage("MAIN_OPT_SAVE_TITLE")?>" class="adm-btn-save">
 		<?if(strlen($request->get("back_url_settings"))>0):?>
-			<input <?if ($RIGHT<"W") echo "disabled" ?> type="button" name="Cancel" value="<?=Loc::getMessage("MAIN_OPT_CANCEL")?>" title="<?=Loc::getMessage("MAIN_OPT_CANCEL_TITLE")?>" onclick="window.location='<?echo htmlspecialcharsbx(CUtil::addslashes($request->get("back_url_settings")))?>'">
+			<input <?if ($RIGHT<"X") echo "disabled" ?> type="button" name="Cancel" value="<?=Loc::getMessage("MAIN_OPT_CANCEL")?>" title="<?=Loc::getMessage("MAIN_OPT_CANCEL_TITLE")?>" onclick="window.location='<?echo htmlspecialcharsbx(CUtil::addslashes($request->get("back_url_settings")))?>'">
 			<input type="hidden" name="back_url_settings" value="<?=htmlspecialcharsbx($request->get("back_url_settings"))?>">
 		<?endif?>
 		<input type="submit" name="RestoreDefaults" title="<?echo Loc::getMessage("MAIN_HINT_RESTORE_DEFAULTS")?>" OnClick="confirm('<?echo AddSlashes(Loc::getMessage("MAIN_HINT_RESTORE_DEFAULTS_WARNING"))?>')" value="<?echo Loc::getMessage("MAIN_RESTORE_DEFAULTS")?>">

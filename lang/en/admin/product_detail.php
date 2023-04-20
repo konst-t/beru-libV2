@@ -38,6 +38,8 @@ $MESS["IPL_MA_STATE"] = "Status";
 $MESS["IPL_MA_REJECT_REASON"] = "Reason for failure";
 $MESS["IPL_MA_REJECT_NOTES"] = "Explanations";
 $MESS["IPL_MA_PRICE"] = "Price set via API";
+$MESS["IPL_MA_OLD_PRICE"] = "Old price set via API";
+$MESS["IPL_MA_STOCK_FIT"] = "Stock set via API";
 $MESS["IPL_MA_DETAILS"] = "Cached values";
 
 $MESS["IPL_MA_UPDATE_CACHE"] = "Update cache";

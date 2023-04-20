@@ -109,7 +109,7 @@ class Form extends Detail {
 									<? foreach($arProps["OPTIONS"] as $val => $text) {
 										$selected = false;
 										if ( $arProps["MULTIPLE"] == "Y" ) {
-											if (in_array($val, $arProps["VALUE"])) $selected = true;
+											if (is_array($arProps["VALUE"]) && in_array($val, $arProps["VALUE"])) $selected = true;
 										}
 										else {
 											if ($arProps["VALUE"] == $val) $selected = true;

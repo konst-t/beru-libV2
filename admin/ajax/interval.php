@@ -12,8 +12,10 @@ use \Bitrix\Main\Web\Json;
 use \Iplogic\Beru\DeliveryTable;
 use \Iplogic\Beru\IntervalTable;
 
+$baseFolder = realpath(__DIR__ . "/../../../..");
+
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_before.php");
-IncludeModuleLangFile($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/'.$moduleID.'/admin/delivery_edit.php');
+IncludeModuleLangFile($baseFolder."/modules/".$moduleID.'/admin/delivery_edit.php');
 
 CJSCore::Init(array("jquery"));
 
@@ -22,7 +24,7 @@ $checkParams = [
 	"PROFILE" => true,
 ];
 
-include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$moduleID."/prolog.php");
+include($baseFolder."/modules/".$moduleID."/prolog.php");
 
 $ID = $request->get("ID");
 if ($ID > 0){
@@ -43,7 +45,7 @@ if ($fatalErrors != "") {
 	die();
 }
 
-if ($request->get('action')=='save' && $APPLICATION->GetGroupRight($moduleID)=="W") {
+if ($request->get('action')=='save' && $MODULE_ACCESS >= "W") {
 	$arParams = $request->get('params');
 	$arParams["PROFILE_ID"] = $request->get('PROFILE_ID');
 	$arParams["DELIVERY_ID"] = $request->get('ID');
@@ -59,7 +61,7 @@ if ($request->get('action')=='save' && $APPLICATION->GetGroupRight($moduleID)=="
 		));
 		die();
 	}
-	include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$moduleID."/admin/include/intervals.php");
+	include($baseFolder."/modules/".$moduleID."/admin/include/intervals.php");
 	echo(Json::encode(
 		[
 			"result"  => "success",

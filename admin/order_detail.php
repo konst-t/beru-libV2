@@ -3,6 +3,8 @@
 $moduleID = 'iplogic.beru';
 define("ADMIN_MODULE_NAME", $moduleID);
 
+$baseFolder = realpath(__DIR__ . "/../../..");
+
 require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_before.php');
 
 use \Bitrix\Main\Localization\Loc,
@@ -20,7 +22,16 @@ CJSCore::Init(array("jquery"));
 /* fatal errors check, creat control object and get table data */
 $checkParams = [];
 
-include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$moduleID."/prolog.php");
+include($baseFolder."/modules/".$moduleID."/prolog.php");
+
+$PROFILE_ACCESS = \Iplogic\Beru\Access::getGroupRight("profile", $PROFILE_ID);
+
+if ($MODULE_ACCESS == "D" || $PROFILE_ACCESS == "D") {
+	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
+	CAdminMessage::ShowMessage(Loc::getMessage("ACCESS_DENIED"));
+	require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
+	die();
+}
 
 $ID = $request->get("ID");
 if ($ID > 0){
@@ -240,81 +251,91 @@ $arContextMenu = [
 	],
 ];
 
-$bShowDoneButton = false;
-if ($arFields["STATE"] == "S_PROCESSING_READY_TO_SHIP" && $arFields["BOXES_SENT"] == "Y") {
-	$bShowDoneButton = true;
-	if ($arFields["READY_TIME"]>0 && ($arFields["READY_TIME"]+60)>time()) {
-		$bShowDoneButton = false;
+if($PROFILE_ACCESS >= "W") {
+
+	$bShowDoneButton = false;
+	if( $arFields["STATE"] == "S_PROCESSING_READY_TO_SHIP" && $arFields["BOXES_SENT"] == "Y" ) {
+		$bShowDoneButton = true;
+		if( $arFields["READY_TIME"] > 0 && ($arFields["READY_TIME"] + 60) > time() ) {
+			$bShowDoneButton = false;
+		}
 	}
-}
-$bShowDeliveredButton = false;
-if ($arFields["STATE"] == "S_DELIVERY") {
-	$bShowDeliveredButton = true;
-	if ($arFields["READY_TIME"]>0 && ($arFields["READY_TIME"]+60)>time()) {
-		$bShowDeliveredButton = false;
+	$bShowDeliveredButton = false;
+	if( $arFields["STATE"] == "S_DELIVERY" ) {
+		$bShowDeliveredButton = true;
+		if( $arFields["READY_TIME"] > 0 && ($arFields["READY_TIME"] + 60) > time() ) {
+			$bShowDeliveredButton = false;
+		}
 	}
-}
 
 
-if ($arFields["STATE"] == "S_PROCESSING_STARTED" && $arFields["BOXES_SENT"] == "Y" && $arProfile["SCHEME"] != "DBS") {
+	if(
+		$arFields["STATE"] == "S_PROCESSING_STARTED" && $arFields["BOXES_SENT"] == "Y" && $arProfile["SCHEME"] != "DBS"
+	) {
+		$arContextMenu[] = [
+			"TEXT"  => Loc::getMessage("IPL_MA_STATE_READY"),
+			"TITLE" => Loc::getMessage("IPL_MA_STATE_READY_TITLE"),
+			"LINK"  => "iplogic_beru_order_detail.php?PROFILE_ID=" . $arFields["PROFILE_ID"] . "&ID=" . $ID .
+				"&action=state_ready&lang=" . LANG,
+		];
+	}
+	if( $arFields["STATE"] == "S_PROCESSING_STARTED" && $arProfile["SCHEME"] == "DBS" ) {
+		$arContextMenu[] = [
+			"TEXT"  => Loc::getMessage("IPL_MA_STATE_DELIVERY"),
+			"TITLE" => Loc::getMessage("IPL_MA_STATE_DELIVERY_TITLE"),
+			"LINK"  => "iplogic_beru_order_detail.php?PROFILE_ID=" . $arFields["PROFILE_ID"] . "&ID=" . $ID .
+				"&action=state_delivery&lang=" . LANG,
+		];
+	}
+	if( $bShowDoneButton ) {
+		$arContextMenu[] = [
+			"TEXT"  => Loc::getMessage("IPL_MA_STATE_DONE"),
+			"TITLE" => Loc::getMessage("IPL_MA_STATE_DONE_TITLE"),
+			"LINK"  => "iplogic_beru_order_detail.php?PROFILE_ID=" . $arFields["PROFILE_ID"] . "&ID=" . $ID .
+				"&action=state_done&lang=" . LANG,
+		];
+	}
+	if( $bShowDeliveredButton ) {
+		$arContextMenu[] = [
+			"TEXT"  => Loc::getMessage("IPL_MA_STATE_DELIVERED"),
+			"TITLE" => Loc::getMessage("IPL_MA_STATE_DELIVERED_TITLE"),
+			"LINK"  => "iplogic_beru_order_detail.php?PROFILE_ID=" . $arFields["PROFILE_ID"] . "&ID=" . $ID .
+				"&action=state_delivered&lang=" . LANG,
+		];
+	}
+	if(
+		($arFields["STATE"] == "S_PROCESSING_STARTED" ||
+			$arFields["STATE"] == "S_PROCESSING_READY_TO_SHIP" ||
+			$arFields["STATE"] == "S_UNPAID_WAITING_USER_INPUT") &&
+		$arProfile["SCHEME"] != "DBS" &&
+		$arFields["BOXES_SENT"] != "Y"
+	) {
+		$arContextMenu[] = [
+			"TEXT"  => Loc::getMessage("IPL_MA_SEND_BOXES"),
+			"TITLE" => Loc::getMessage("IPL_MA_SEND_BOXES_TITLE"),
+			"LINK"  => "iplogic_beru_order_detail.php?PROFILE_ID=" . $arFields["PROFILE_ID"] . "&ID=" . $ID .
+				"&action=send_boxes&lang=" . LANG,
+		];
+	}
+	if(
+		$arFields["STATE"] == "S_PROCESSING_STARTED" ||
+		$arFields["STATE"] == "S_PROCESSING_READY_TO_SHIP" ||
+		($arFields["STATE"] == "S_DELIVERY" && $arProfile["SCHEME"] == "DBS")
+	) {
+		$arContextMenu[] = [
+			"TEXT"  => Loc::getMessage("IPL_MA_STATE_CANCEL"),
+			"TITLE" => Loc::getMessage("IPL_MA_STATE_CANCEL_TITLE"),
+			"LINK"  => "iplogic_beru_order_detail.php?PROFILE_ID=" . $arFields["PROFILE_ID"] . "&ID=" . $ID .
+				"&action=state_cancel&lang=" . LANG,
+		];
+	}
 	$arContextMenu[] = [
-		"TEXT"  => Loc::getMessage("IPL_MA_STATE_READY"),
-		"TITLE" => Loc::getMessage("IPL_MA_STATE_READY_TITLE"),
-		"LINK"  => "iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=state_ready&lang=".LANG,
+		"TEXT"  => Loc::getMessage("IPL_MA_DELETE"),
+		"TITLE" => Loc::getMessage("IPL_MA_DELETE_TITLE"),
+		"LINK"  => "javascript:deleteConfirm();",
+		"ICON"  => "btn_delete",
 	];
 }
-if ($arFields["STATE"] == "S_PROCESSING_STARTED" && $arProfile["SCHEME"] == "DBS") {
-	$arContextMenu[] = [
-		"TEXT"  => Loc::getMessage("IPL_MA_STATE_DELIVERY"),
-		"TITLE" => Loc::getMessage("IPL_MA_STATE_DELIVERY_TITLE"),
-		"LINK"  => "iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=state_delivery&lang=".LANG,
-	];
-}
-if ($bShowDoneButton) {
-	$arContextMenu[] = [
-		"TEXT"  => Loc::getMessage("IPL_MA_STATE_DONE"),
-		"TITLE" => Loc::getMessage("IPL_MA_STATE_DONE_TITLE"),
-		"LINK"  => "iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=state_done&lang=".LANG,
-	];
-}
-if ($bShowDeliveredButton) {
-	$arContextMenu[] = [
-		"TEXT"  => Loc::getMessage("IPL_MA_STATE_DELIVERED"),
-		"TITLE" => Loc::getMessage("IPL_MA_STATE_DELIVERED_TITLE"),
-		"LINK"  => "iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=state_delivered&lang=".LANG,
-	];
-}
-if (
-	($arFields["STATE"] == "S_PROCESSING_STARTED" ||
-	$arFields["STATE"] == "S_PROCESSING_READY_TO_SHIP" ||
-	$arFields["STATE"] == "S_UNPAID_WAITING_USER_INPUT") &&
-	$arProfile["SCHEME"] != "DBS" &&
-	$arFields["BOXES_SENT"] != "Y"
-) {
-	$arContextMenu[] = [
-		"TEXT"  => Loc::getMessage("IPL_MA_SEND_BOXES"),
-		"TITLE" => Loc::getMessage("IPL_MA_SEND_BOXES_TITLE"),
-		"LINK"  => "iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=send_boxes&lang=".LANG,
-	];
-}
-if (
-	$arFields["STATE"] == "S_PROCESSING_STARTED" ||
-	$arFields["STATE"] == "S_PROCESSING_READY_TO_SHIP" ||
-	( $arFields["STATE"] == "S_DELIVERY" && $arProfile["SCHEME"] == "DBS" )
-) {
-	$arContextMenu[] = [
-		"TEXT"  => Loc::getMessage("IPL_MA_STATE_CANCEL"),
-		"TITLE" => Loc::getMessage("IPL_MA_STATE_CANCEL_TITLE"),
-		"LINK"  => "iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=state_cancel&lang=".LANG,
-	];
-}
-$arContextMenu[] = [
-	"TEXT"  => Loc::getMessage("IPL_MA_DELETE"),
-	"TITLE" => Loc::getMessage("IPL_MA_DELETE_TITLE"),
-	"LINK"  => "javascript:deleteConfirm();",
-	"ICON"  => "btn_delete",
-];
-
 
 
 
@@ -335,309 +356,303 @@ $adminControl->initDetailPage();
 
 
 /* executing */
-if ($adminControl->POST_RIGHT == "D") {
-	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
-	$APPLICATION->AuthForm(Loc::getMessage("ACCESS_DENIED"));
+
+/* actions */
+if( $PROFILE_ACCESS >= "W"
+	&& $fatalErrors == ""
+) {
+
+	if( $request->get("action") == "send_boxes" ) {
+		if ($arFields["BOXES_SENT"] == "Y") {
+			$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_BOXES_SENT"));
+		}
+		else {
+			$res = OrderTable::sendOrderBoxes($ID);
+			if ($res["status"]==200) {
+				$arUpdateFields = ["BOXES_SENT"=>"Y"];
+				OrderTable::update($ID,$arUpdateFields);
+				$arSentBoxes = $res["body"]["result"]["boxes"];
+				foreach($arSentBoxes as $arSentBox) {
+					if ($arBoxesIds[$arSentBox["fulfilmentId"]] > 0) {
+						BoxTable::update($arBoxesIds[$arSentBox["fulfilmentId"]], ["EXT_ID"=>$arSentBox["id"]]);
+					}
+				}
+				LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
+			}
+			else {
+				$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_SEND_BOXES")."<br>".$res["error"]);
+			}
+		}
+	}
+
+
+	if( $request->get("action") == "delete_box" && $request->get("box_id")>0 ) {
+		$result = BoxTable::delete($request->get("box_id"));
+		if ($result->isSuccess()) {
+			$i = 1;
+			foreach($arBoxes as $arBox) {
+				if ($arBox["ID"]!=$request->get("box_id")) {
+					BoxTable::update($arBox["ID"],["NUM"=>$i]);
+					$i++;
+				}
+			}
+			LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
+		}
+		else {
+			$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_DELETE")."<br>".implode("<br>",$result->getErrorMessages()));
+		}
+	}
+
+
+	if( $request->get("action") == "delete" ) {
+		$result = OrderTable::delete($ID);
+		if ($result->isSuccess()) {
+			LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
+		}
+		else {
+			$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_DELETE")."<br>".implode("<br>",$result->getErrorMessages()));
+		}
+	}
+
+
+	if( $request->get("action") == "state_ready" ) {
+		$arOrder = CSaleOrder::GetByID($arFields["ORDER_ID"]);
+		$statusKey = "S_PROCESSING_READY_TO_SHIP";
+		$newStatusCode = "PROCESSING READY_TO_SHIP";
+		$arStatus = [
+			"PROCESSING",
+			"READY_TO_SHIP"
+		];
+		$cl = new YMAPI($arFields["PROFILE_ID"]);
+		$result = $cl->setOrderStatus($arFields["EXT_ID"], $arStatus[0], $arStatus[1]);
+		if ($result["status"] == 200) {
+			$arOUFields = [
+				"STATE" => $statusKey,
+				"STATE_CODE" => $newStatusCode,
+				"READY_TIME" => time(),
+			];
+			OrderTable::update($ID,$arOUFields);
+			$arStFields = [
+				'STATUS_ID' => $arProfile["STATUSES"][$statusKey],
+			];
+			\CSaleOrder::Update($arFields["ORDER_ID"], $arStFields);
+			LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
+		}
+		else {
+			$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_STATUS_UPDATE"));
+		}
+	}
+
+
+	if( $request->get("action") == "state_done" ) {
+		$arOrder = CSaleOrder::GetByID($arFields["ORDER_ID"]);
+		$statusKey = "S_PROCESSING_SHIPPED";
+		$newStatusCode = "PROCESSING SHIPPED";
+		$arStatus = [
+			"PROCESSING",
+			"SHIPPED"
+		];
+		$cl = new YMAPI($arFields["PROFILE_ID"]);
+		$result = $cl->setOrderStatus($arFields["EXT_ID"], $arStatus[0], $arStatus[1]);
+		if ($result["status"] == 200) {
+			$arOUFields = [
+				"STATE" => $statusKey,
+				"STATE_CODE" => $newStatusCode,
+			];
+			OrderTable::update($ID,$arOUFields);
+			$arStFields = [
+				'STATUS_ID' => $arProfile["STATUSES"][$statusKey],
+			];
+			\CSaleOrder::Update($arFields["ORDER_ID"], $arStFields);
+			LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
+		}
+		else {
+			$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_STATUS_UPDATE"));
+		}
+	}
+
+
+	if( $request->get("action") == "state_cancel" ) {
+		$arOrder = CSaleOrder::GetByID($arFields["ORDER_ID"]);
+		$statusKey = "S_CANCELLED_SHOP_FAILED";
+		$newStatusCode = "CANCELLED SHOP_FAILED";
+		$arStatus = [
+			"CANCELLED",
+			"SHOP_FAILED"
+		];
+		$cl = new YMAPI($arFields["PROFILE_ID"]);
+		$result = $cl->setOrderStatus($arFields["EXT_ID"], $arStatus[0], $arStatus[1]);
+		if ($result["status"] == 200) {
+			$arOUFields = [
+				"STATE" => $statusKey,
+				"STATE_CODE" => $newStatusCode,
+			];
+			OrderTable::update($ID,$arOUFields);
+			$arStFields = [
+				'STATUS_ID' => $arProfile["STATUSES"][$statusKey],
+			];
+			\CSaleOrder::Update($arFields["ORDER_ID"], $arStFields);
+			LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
+		}
+		else {
+			$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_STATUS_UPDATE"));
+		}
+	}
+
+
+	if( $request->get("action") == "state_delivery" ) {
+		$arOrder = CSaleOrder::GetByID($arFields["ORDER_ID"]);
+		$statusKey = "S_DELIVERY";
+		$newStatusCode = "DELIVERY";
+		$arStatus = [
+			"DELIVERY",
+			""
+		];
+		$cl = new YMAPI($arFields["PROFILE_ID"]);
+		$result = $cl->setOrderStatus($arFields["EXT_ID"], $arStatus[0], $arStatus[1]);
+		if ($result["status"] == 200) {
+			$arOUFields = [
+				"STATE" => $statusKey,
+				"STATE_CODE" => $newStatusCode,
+				"READY_TIME" => time(),
+			];
+			OrderTable::update($ID,$arOUFields);
+			$arStFields = [
+				'STATUS_ID' => $arProfile["STATUSES"][$statusKey],
+			];
+			\CSaleOrder::Update($arFields["ORDER_ID"], $arStFields);
+			LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
+		}
+		else {
+			$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_STATUS_UPDATE"));
+		}
+	}
+
+
+	if( $request->get("action") == "state_delivered" ) {
+		$arOrder = CSaleOrder::GetByID($arFields["ORDER_ID"]);
+		$statusKey = "S_DELIVERED";
+		$newStatusCode = "DELIVERED";
+		$arStatus = [
+			"DELIVERED",
+			""
+		];
+		$cl = new YMAPI($arFields["PROFILE_ID"]);
+		$result = $cl->setOrderStatus($arFields["EXT_ID"], $arStatus[0], $arStatus[1]);
+		if ($result["status"] == 200) {
+			$arOUFields = [
+				"STATE" => $statusKey,
+				"STATE_CODE" => $newStatusCode,
+			];
+			OrderTable::update($ID,$arOUFields);
+			$arStFields = [
+				'STATUS_ID' => $arProfile["STATUSES"][$statusKey],
+			];
+			\CSaleOrder::Update($arFields["ORDER_ID"], $arStFields);
+			LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
+		}
+		else {
+			$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_STATUS_UPDATE"));
+		}
+	}
+
+
+	if( $request->isPost() && check_bitrix_sessid() ) {
+		if ($request->get("add_box")!="") {
+
+
+			if ($request->get("box-type") == "props") {
+				$arBoxFields = [
+					"ORDER_ID" 		=> $ID,
+					"PROFILE_ID" 	=> $arFields["PROFILE_ID"],
+					"NUM" 			=> (count($arBoxes)+1),
+					"WEIGHT" 		=> $request->get("weight"),
+					"WIDTH" 		=> $request->get("width"),
+					"HEIGHT" 		=> $request->get("height"),
+					"DEPTH" 		=> $request->get("depth"),
+				];
+			}
+			elseif ($request->get("box-type") == "product") {
+				$con = new Control($arFields["PROFILE_ID"]);
+				$boxProduct = $con->getSKU($request->get("product-box"));
+				$weight = $boxProduct["WEIGHT"]*1000;
+				$arDim = explode("/",$boxProduct["DIMENSIONS"]);
+				$arBoxFields = [
+					"ORDER_ID" 		=> $ID,
+					"PROFILE_ID" 	=> $arFields["PROFILE_ID"],
+					"NUM" 			=> (count($arBoxes)+1),
+					"WEIGHT" 		=> $weight,
+					"WIDTH" 		=> $arDim[0],
+					"HEIGHT" 		=> $arDim[1],
+					"DEPTH" 		=> $arDim[2],
+				];
+			}
+			$result = BoxTable::add($arBoxFields);
+			if ($result->isSuccess()) {
+				LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
+			}
+			else {
+				$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_BOX_ADD")."<br>".implode("<br>",$result->getErrorMessages()));
+			}
+		}
+
+	}
 }
-else {
-
-	/* actions */
-	if( $APPLICATION->GetGroupRight($moduleID)=="W"
-		&& $fatalErrors == ""
-	) {
-
-		if( $request->get("action") == "send_boxes" ) {
-			if ($arFields["BOXES_SENT"] == "Y") {
-				$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_BOXES_SENT"));
-			}
-			else {
-				$res = OrderTable::sendOrderBoxes($ID);
-				if ($res["status"]==200) {
-					$arUpdateFields = ["BOXES_SENT"=>"Y"];
-					OrderTable::update($ID,$arUpdateFields);
-					$arSentBoxes = $res["body"]["result"]["boxes"];
-					foreach($arSentBoxes as $arSentBox) {
-						if ($arBoxesIds[$arSentBox["fulfilmentId"]] > 0) {
-							BoxTable::update($arBoxesIds[$arSentBox["fulfilmentId"]], ["EXT_ID"=>$arSentBox["id"]]);
-						}
-					}
-					LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
-				}
-				else {
-					$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_SEND_BOXES")."<br>".$res["error"]);
-				}
-			}
-		}
 
 
-		if( $request->get("action") == "delete_box" && $request->get("box_id")>0 ) {
-			$result = BoxTable::delete($request->get("box_id"));
-			if ($result->isSuccess()) {
-				$i = 1;
-				foreach($arBoxes as $arBox) {
-					if ($arBox["ID"]!=$request->get("box_id")) {
-						BoxTable::update($arBox["ID"],["NUM"=>$i]);
-						$i++;
-					}
-				}
-				LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
-			}
-			else {
-				$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_DELETE")."<br>".implode("<br>",$result->getErrorMessages()));
-			}
-		}
+/* starting output */
+$APPLICATION->SetTitle(Loc::getMessage("IPL_MA_PAGE_TITLE")." ID: ".$arFields["EXT_ID"]);
+require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
 
 
-		if( $request->get("action") == "delete" ) {
-			$result = OrderTable::delete($ID);
-			if ($result->isSuccess()) {
-				LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
-			}
-			else {
-				$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_DELETE")."<br>".implode("<br>",$result->getErrorMessages()));
-			}
-		}
+/* fatal errors */
+if ($fatalErrors != ""){
+	CAdminMessage::ShowMessage($fatalErrors);
+	require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
+	die();
+}
+
+/* ok message */
+if($request->get("mess") === "ok")
+	CAdminMessage::ShowMessage(array("MESSAGE"=>Loc::getMessage("SAVED"), "TYPE"=>"OK"));
 
 
-		if( $request->get("action") == "state_ready" ) {
-			$arOrder = CSaleOrder::GetByID($arFields["ORDER_ID"]); 
-			$statusKey = "S_PROCESSING_READY_TO_SHIP";
-			$newStatusCode = "PROCESSING READY_TO_SHIP";
-			$arStatus = [
-				"PROCESSING", 
-				"READY_TO_SHIP"
-			];
-			$cl = new YMAPI($arFields["PROFILE_ID"]);
-			$result = $cl->setOrderStatus($arFields["EXT_ID"], $arStatus[0], $arStatus[1]);
-			if ($result["status"] == 200) {
-				$arOUFields = [
-					"STATE" => $statusKey,
-					"STATE_CODE" => $newStatusCode,
-					"READY_TIME" => time(),
-				];
-				OrderTable::update($ID,$arOUFields);
-				$arStFields = [
-					'STATUS_ID' => $arProfile["STATUSES"][$statusKey],
-				];
-				\CSaleOrder::Update($arFields["ORDER_ID"], $arStFields);
-				LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
-			}
-			else {
-				$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_STATUS_UPDATE"));
-			}
-		}
+/* action errors */
+if($message)
+	echo $message->Show();
 
 
-		if( $request->get("action") == "state_done" ) {
-			$arOrder = CSaleOrder::GetByID($arFields["ORDER_ID"]); 
-			$statusKey = "S_PROCESSING_SHIPPED";
-			$newStatusCode = "PROCESSING SHIPPED";
-			$arStatus = [
-				"PROCESSING",
-				"SHIPPED"
-			];
-			$cl = new YMAPI($arFields["PROFILE_ID"]);
-			$result = $cl->setOrderStatus($arFields["EXT_ID"], $arStatus[0], $arStatus[1]);
-			if ($result["status"] == 200) {
-				$arOUFields = [
-					"STATE" => $statusKey,
-					"STATE_CODE" => $newStatusCode,
-				];
-				OrderTable::update($ID,$arOUFields);
-				$arStFields = [
-					'STATUS_ID' => $arProfile["STATUSES"][$statusKey],
-				];
-				\CSaleOrder::Update($arFields["ORDER_ID"], $arStFields);
-				LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
-			}
-			else {
-				$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_STATUS_UPDATE"));
-			}
-		}
-
-
-		if( $request->get("action") == "state_cancel" ) {
-			$arOrder = CSaleOrder::GetByID($arFields["ORDER_ID"]); 
-			$statusKey = "S_CANCELLED_SHOP_FAILED";
-			$newStatusCode = "CANCELLED SHOP_FAILED";
-			$arStatus = [
-				"CANCELLED",
-				"SHOP_FAILED"
-			];
-			$cl = new YMAPI($arFields["PROFILE_ID"]);
-			$result = $cl->setOrderStatus($arFields["EXT_ID"], $arStatus[0], $arStatus[1]);
-			if ($result["status"] == 200) {
-				$arOUFields = [
-					"STATE" => $statusKey,
-					"STATE_CODE" => $newStatusCode,
-				];
-				OrderTable::update($ID,$arOUFields);
-				$arStFields = [
-					'STATUS_ID' => $arProfile["STATUSES"][$statusKey],
-				];
-				\CSaleOrder::Update($arFields["ORDER_ID"], $arStFields);
-				LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
-			}
-			else {
-				$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_STATUS_UPDATE"));
-			}
-		}
-
-
-		if( $request->get("action") == "state_delivery" ) {
-			$arOrder = CSaleOrder::GetByID($arFields["ORDER_ID"]);
-			$statusKey = "S_DELIVERY";
-			$newStatusCode = "DELIVERY";
-			$arStatus = [
-				"DELIVERY",
-				""
-			];
-			$cl = new YMAPI($arFields["PROFILE_ID"]);
-			$result = $cl->setOrderStatus($arFields["EXT_ID"], $arStatus[0], $arStatus[1]);
-			if ($result["status"] == 200) {
-				$arOUFields = [
-					"STATE" => $statusKey,
-					"STATE_CODE" => $newStatusCode,
-					"READY_TIME" => time(),
-				];
-				OrderTable::update($ID,$arOUFields);
-				$arStFields = [
-					'STATUS_ID' => $arProfile["STATUSES"][$statusKey],
-				];
-				\CSaleOrder::Update($arFields["ORDER_ID"], $arStFields);
-				LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
-			}
-			else {
-				$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_STATUS_UPDATE"));
-			}
-		}
-
-
-		if( $request->get("action") == "state_delivered" ) {
-			$arOrder = CSaleOrder::GetByID($arFields["ORDER_ID"]);
-			$statusKey = "S_DELIVERED";
-			$newStatusCode = "DELIVERED";
-			$arStatus = [
-				"DELIVERED",
-				""
-			];
-			$cl = new YMAPI($arFields["PROFILE_ID"]);
-			$result = $cl->setOrderStatus($arFields["EXT_ID"], $arStatus[0], $arStatus[1]);
-			if ($result["status"] == 200) {
-				$arOUFields = [
-					"STATE" => $statusKey,
-					"STATE_CODE" => $newStatusCode,
-				];
-				OrderTable::update($ID,$arOUFields);
-				$arStFields = [
-					'STATUS_ID' => $arProfile["STATUSES"][$statusKey],
-				];
-				\CSaleOrder::Update($arFields["ORDER_ID"], $arStFields);
-				LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
-			}
-			else {
-				$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_STATUS_UPDATE"));
-			}
-		}
-
-
-		if( $request->isPost() && check_bitrix_sessid() ) {
-			if ($request->get("add_box")!="") {
-
-
-				if ($request->get("box-type") == "props") {
-					$arBoxFields = [
-						"ORDER_ID" 		=> $ID,
-						"PROFILE_ID" 	=> $arFields["PROFILE_ID"],
-						"NUM" 			=> (count($arBoxes)+1),
-						"WEIGHT" 		=> $request->get("weight"),
-						"WIDTH" 		=> $request->get("width"),
-						"HEIGHT" 		=> $request->get("height"),
-						"DEPTH" 		=> $request->get("depth"),
-					];
-				}
-				elseif ($request->get("box-type") == "product") {
-					$con = new Control($arFields["PROFILE_ID"]);
-					$boxProduct = $con->getSKU($request->get("product-box"));
-					$weight = $boxProduct["WEIGHT"]*1000;
-					$arDim = explode("/",$boxProduct["DIMENSIONS"]);
-					$arBoxFields = [
-						"ORDER_ID" 		=> $ID,
-						"PROFILE_ID" 	=> $arFields["PROFILE_ID"],
-						"NUM" 			=> (count($arBoxes)+1),
-						"WEIGHT" 		=> $weight,
-						"WIDTH" 		=> $arDim[0],
-						"HEIGHT" 		=> $arDim[1],
-						"DEPTH" 		=> $arDim[2],
-					];
-				}
-				$result = BoxTable::add($arBoxFields);
-				if ($result->isSuccess()) {
-					LocalRedirect("/bitrix/admin/iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
-				}
-				else {
-					$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_BOX_ADD")."<br>".implode("<br>",$result->getErrorMessages()));
-				}
-			}
-
+/* content */
+echo "<style>
+	.table-cell { display:table-cell; padding: 0 10px 10px 0; }
+</style>";
+$adminControl->buildPage();
+echo ("<script>
+	function deleteConfirm() {
+		if (window.confirm('".Loc::getMessage("IPL_MA_DELETE_CONF")."')) {
+			window.location.href='iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=delete&lang=".LANG."';
 		}
 	}
-
-
-	/* starting output */
-	$APPLICATION->SetTitle(Loc::getMessage("IPL_MA_PAGE_TITLE")." ID: ".$arFields["EXT_ID"]);
-	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
-
-
-	/* fatal errors */
-	if ($fatalErrors != ""){
-		CAdminMessage::ShowMessage($fatalErrors);
-		require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
-		die();
+	function deleteBoxConfirm(id) {
+		if (window.confirm('".Loc::getMessage("IPL_MA_DELETE_BOX_CONF")."')) {
+			window.location.href='iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=delete_box&box_id='+id+'&lang=".LANG."&tabControl_active_tab=edit2';
+		}
 	}
-
-	/* ok message */
-	if($request->get("mess") === "ok")
-		CAdminMessage::ShowMessage(array("MESSAGE"=>Loc::getMessage("SAVED"), "TYPE"=>"OK"));
-
-
-	/* action errors */
-	if($message)
-		echo $message->Show();
-
-
-	/* content */
-	echo "<style>
-		.table-cell { display:table-cell; padding: 0 10px 10px 0; }
-	</style>";
-	$adminControl->buildPage();
-	echo ("<script>
-		function deleteConfirm() {
-			if (window.confirm('".Loc::getMessage("IPL_MA_DELETE_CONF")."')) {
-				window.location.href='iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=delete&lang=".LANG."';
+	$(document).ready(function(){
+		$('select[name=\"box-type\"]').on('change', function(){ 
+			var type = $('select[name=\"box-type\"]').val();
+			if(type=='props'){
+				$('.box-from-parameters').show();
+				$('.box-from-product').hide();
 			}
-		}
-		function deleteBoxConfirm(id) {
-			if (window.confirm('".Loc::getMessage("IPL_MA_DELETE_BOX_CONF")."')) {
-				window.location.href='iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=delete_box&box_id='+id+'&lang=".LANG."&tabControl_active_tab=edit2';
+			if(type=='product'){
+				$('.box-from-parameters').hide();
+				$('.box-from-product').show();
 			}
-		}
-		$(document).ready(function(){
-			$('select[name=\"box-type\"]').on('change', function(){ 
-				var type = $('select[name=\"box-type\"]').val();
-				if(type=='props'){
-					$('.box-from-parameters').show();
-					$('.box-from-product').hide();
-				}
-				if(type=='product'){
-					$('.box-from-parameters').hide();
-					$('.box-from-product').show();
-				}
-			});
 		});
-	</script>");
+	});
+</script>");
 
-}
 
 require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
 ?>

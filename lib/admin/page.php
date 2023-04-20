@@ -23,6 +23,7 @@ class Page {
 		$errors = [],
 		$saved = "",
 		$POST_RIGHT,
+		$MIN_POST_RIGHT = "W",
 		$catalogIBlockID,
 		$arElementFields,
 		$arProductFields,

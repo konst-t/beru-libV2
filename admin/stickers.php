@@ -2,6 +2,8 @@
 $moduleID = 'iplogic.beru';
 define("ADMIN_MODULE_NAME", $moduleID);
 
+$baseFolder = realpath(__DIR__ . "/../../..");
+
 require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_before.php');
 use \Bitrix\Main\Config\Option,
 	\Bitrix\Main\Localization\Loc,
@@ -18,7 +20,16 @@ $checkParams = [
 	"PROFILE" => true
 ];
 
-require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$moduleID."/prolog.php");
+require_once($baseFolder."/modules/".$moduleID."/prolog.php");
+
+$PROFILE_ACCESS = \Iplogic\Beru\Access::getGroupRight("profile", $PROFILE_ID);
+
+if ($MODULE_ACCESS == "D" || $PROFILE_ACCESS == "D") {
+	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
+	CAdminMessage::ShowMessage(Loc::getMessage("ACCESS_DENIED"));
+	require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
+	die();
+}
 
 
 $adminControl = new \Iplogic\Beru\Admin\Info($moduleID);
@@ -121,127 +132,120 @@ $adminControl->initDetailPage();
 
 
 /* executing */
-if ($adminControl->POST_RIGHT == "D") {
-	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
-	$APPLICATION->AuthForm(Loc::getMessage("ACCESS_DENIED"));
-}
-else {
 
-	/* actions */
-	if( $APPLICATION->GetGroupRight($moduleID)=="W"
-		&& $fatalErrors == ""
-	) {
+/* actions */
+if( $PROFILE_ACCESS >= "W"
+	&& $fatalErrors == ""
+	&& $request->isPost()
+	&& check_bitrix_sessid()
+) {
 
-		if( $request->isPost() && check_bitrix_sessid() ) {
-			if ($request->get("generate")!="") {
-				$error = false;
-				$boxesToGen = $request->get("box");
-				if (count($boxesToGen)) {
-					$dirName = "stickers".time();
-					$stickersDir = "/".Option::get("main", "upload_dir", "upload")."/tmp/iplogic.beru/".$dirName;
-					$boxIDs = [];
-					foreach($boxesToGen as $id => $foo) {
-						if ($request->get("add_act") == 1) {
-							$boxIDs[] = $id;
-						}
-						$res = file_get_contents("https://".Option::get($moduleID,"domen")."/bitrix/services/iplogic/mkpapi/sticker.php?box=".$id."&filename=".urlencode($stickersDir."/".$id.".pdf"));
-						if($res != "OK")
-							$error = Loc::getMessage("IPL_MA_FILE_CREATING_ERROR");
-					}
-					if ($request->get("add_act") == 1) {
-						$rsBoxes = BoxTable::getList(["filter"=>["ID"=>$boxIDs]]);
-						$orderIDs = [];
-						while ($arBox = $rsBoxes->Fetch()) {
-							if (!in_array($arBox["ORDER_ID"], $orderIDs)) {
-								$orderIDs[] = $arBox["ORDER_ID"];
-							}
-						}
-						$stIDs = implode("_",$orderIDs);
-						$res = file_get_contents("https://".Option::get($moduleID,"domen")."/bitrix/services/iplogic/mkpapi/act.php?ids=".$stIDs."&profile_id=".$PROFILE_ID."&dir=".urlencode($stickersDir));
-						if($res != "OK")
-							$error = Loc::getMessage("IPL_MA_FILE_CREATING_ERROR");
-					}
-					if(!extension_loaded('zip')) {
-						$error = Loc::getMessage("IPL_MA_ZIP_EXTENSION_ERROR");
-					}
-					else {
-						$zip = new ZipArchive();
-						$zip->open($_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.$stickersDir.".zip", ZIPARCHIVE::CREATE);
-						$files = scandir($_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.$stickersDir);
-						foreach($files as $file){
-							if ($file == '.' || $file == '..' )
-								continue;
-							$f = $_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.$stickersDir.DIRECTORY_SEPARATOR.$file;
-							$zip->addFile($f,$file);
-						}
-						$zip->close();
-					}
-					//DeleteDirFilesEx("/".Option::get("main", "upload_dir", "upload")."/tmp/iplogic.beru/".$dirName);
+	if ($request->get("generate")!="") {
+		$error = false;
+		$boxesToGen = $request->get("box");
+		if (count($boxesToGen)) {
+			$dirName = "stickers".time();
+			$stickersDir = "/".Option::get("main", "upload_dir", "upload")."/tmp/iplogic.beru/".$dirName;
+			$boxIDs = [];
+			foreach($boxesToGen as $id => $foo) {
+				if ($request->get("add_act") == 1) {
+					$boxIDs[] = $id;
 				}
-				else {
-					$error = Loc::getMessage("IPL_MA_EMPTY_LIST");
-				}
-				if (!$error) {
-					$ref = urlencode("https://".Option::get($moduleID,"domen")."/".Option::get("main", "upload_dir", "upload")."/tmp/iplogic.beru/".$dirName.".zip");
-					LocalRedirect("/bitrix/admin/iplogic_beru_stickers.php?PROFILE_ID=".$PROFILE_ID."&ref=".$ref."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
-				}
-				else {
-					$message = new CAdminMessage($error);
-				}
+				$res = file_get_contents("https://".Option::get($moduleID,"domen")."/bitrix/services/iplogic/mkpapi/sticker.php?box=".$id."&filename=".urlencode($stickersDir."/".$id.".pdf"));
+				if($res != "OK")
+					$error = Loc::getMessage("IPL_MA_FILE_CREATING_ERROR");
 			}
+			if ($request->get("add_act") == 1) {
+				$rsBoxes = BoxTable::getList(["filter"=>["ID"=>$boxIDs]]);
+				$orderIDs = [];
+				while ($arBox = $rsBoxes->Fetch()) {
+					if (!in_array($arBox["ORDER_ID"], $orderIDs)) {
+						$orderIDs[] = $arBox["ORDER_ID"];
+					}
+				}
+				$stIDs = implode("_",$orderIDs);
+				$res = file_get_contents("https://".Option::get($moduleID,"domen")."/bitrix/services/iplogic/mkpapi/act.php?ids=".$stIDs."&profile_id=".$PROFILE_ID."&dir=".urlencode($stickersDir));
+				if($res != "OK")
+					$error = Loc::getMessage("IPL_MA_FILE_CREATING_ERROR");
+			}
+			if(!extension_loaded('zip')) {
+				$error = Loc::getMessage("IPL_MA_ZIP_EXTENSION_ERROR");
+			}
+			else {
+				$zip = new ZipArchive();
+				$zip->open($_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.$stickersDir.".zip", ZIPARCHIVE::CREATE);
+				$files = scandir($_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.$stickersDir);
+				foreach($files as $file){
+					if ($file == '.' || $file == '..' )
+						continue;
+					$f = $_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.$stickersDir.DIRECTORY_SEPARATOR.$file;
+					$zip->addFile($f,$file);
+				}
+				$zip->close();
+			}
+			//DeleteDirFilesEx("/".Option::get("main", "upload_dir", "upload")."/tmp/iplogic.beru/".$dirName);
 		}
-
+		else {
+			$error = Loc::getMessage("IPL_MA_EMPTY_LIST");
+		}
+		if (!$error) {
+			$ref = urlencode("https://".Option::get($moduleID,"domen")."/".Option::get("main", "upload_dir", "upload")."/tmp/iplogic.beru/".$dirName.".zip");
+			LocalRedirect("/bitrix/admin/iplogic_beru_stickers.php?PROFILE_ID=".$PROFILE_ID."&ref=".$ref."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
+		}
+		else {
+			$message = new CAdminMessage($error);
+		}
 	}
-
-
-	/* starting output */
-	$APPLICATION->SetTitle(Loc::getMessage("IPL_MA_PAGE_TITLE")." #".$arProfile["ID"]);
-	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
-
-
-	/* fatal errors */
-	if ($fatalErrors != ""){
-		CAdminMessage::ShowMessage($fatalErrors);
-		require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
-		die();
-	}
-
-
-	/* action errors */
-	if($message)
-		echo $message->Show();
-
-
-	/* ok message */
-	if($request->get("mess") === "ok")
-		CAdminMessage::ShowMessage(array("MESSAGE"=>Loc::getMessage("SAVED"), "TYPE"=>"OK"));
-	if($request->get("ref") != "")
-		echo "<a href=\"".urldecode($request->get("ref"))."\">".urldecode($request->get("ref"))."</a><br><br><br>";
-
-
-	/* content */
-	$adminControl->buildPage();
-	echo ("<script>
-		$(document).ready(function(){
-			$('.check-all').on('click', function(){
-				$('.box-choose').attr('checked','checked');
-			});
-			$('.check-actual').on('click', function(){
-				$('.box-choose').removeAttr('checked');
-				$('.box-choose.actual').attr('checked','checked');
-			});
-			$('.uncheck-all').on('click', function(){
-				$('.box-choose').removeAttr('checked');
-			});
-			$('#actual').on('change', function(){
-				var value = $('#actual').val();
-				window.location.href = \"/bitrix/admin/iplogic_beru_stickers.php?PROFILE_ID=".$PROFILE_ID."&actual=\"+value+\"&lang=".LANG."\";
-			});
-			$('.check-actual').click();
-		});
-	</script>");
-
 }
+
+
+/* starting output */
+$APPLICATION->SetTitle(Loc::getMessage("IPL_MA_PAGE_TITLE")." #".$arProfile["ID"]);
+require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
+
+
+/* fatal errors */
+if ($fatalErrors != ""){
+	CAdminMessage::ShowMessage($fatalErrors);
+	require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
+	die();
+}
+
+
+/* action errors */
+if($message)
+	echo $message->Show();
+
+
+/* ok message */
+if($request->get("mess") === "ok")
+	CAdminMessage::ShowMessage(array("MESSAGE"=>Loc::getMessage("SAVED"), "TYPE"=>"OK"));
+if($request->get("ref") != "")
+	echo "<a href=\"".urldecode($request->get("ref"))."\">".urldecode($request->get("ref"))."</a><br><br><br>";
+
+
+/* content */
+$adminControl->buildPage();
+echo ("<script>
+	$(document).ready(function(){
+		$('.check-all').on('click', function(){
+			$('.box-choose').attr('checked','checked');
+		});
+		$('.check-actual').on('click', function(){
+			$('.box-choose').removeAttr('checked');
+			$('.box-choose.actual').attr('checked','checked');
+		});
+		$('.uncheck-all').on('click', function(){
+			$('.box-choose').removeAttr('checked');
+		});
+		$('#actual').on('change', function(){
+			var value = $('#actual').val();
+			window.location.href = \"/bitrix/admin/iplogic_beru_stickers.php?PROFILE_ID=".$PROFILE_ID."&actual=\"+value+\"&lang=".LANG."\";
+		});
+		$('.check-actual').click();
+	});
+</script>");
+
 
 require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
 ?>

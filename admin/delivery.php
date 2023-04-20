@@ -1,6 +1,8 @@
 <?
-
 $moduleID = 'iplogic.beru';
+define("ADMIN_MODULE_NAME", $moduleID);
+
+$baseFolder = realpath(__DIR__ . "/../../..");
 
 require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_before.php');
 
@@ -13,10 +15,16 @@ $checkParams = [
 	"PROFILE" => true
 ];
 
-include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$moduleID."/prolog.php");
+include($baseFolder."/modules/".$moduleID."/prolog.php");
 
 Loc::loadMessages(__FILE__);
 
+if ($MODULE_ACCESS == "D") {
+	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
+	CAdminMessage::ShowMessage(Loc::getMessage("ACCESS_DENIED"));
+	require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
+	die();
+}
 
 
 class ListEx extends Iplogic\Beru\Admin\TableList
@@ -84,24 +92,25 @@ $arOpts = [
 ];
 
 /* context menu */
-$arContextMenu = [
-	[
+$arContextMenu = [];
+if($MODULE_ACCESS >= "W") {
+	$arContextMenu[] = [
 		"TEXT"  => Loc::getMessage("IPL_MA_COND_ADD"),
 		"TITLE" => Loc::getMessage("IPL_MA_COND_ADD_TITLE"),
 		"ICON"  => "btn_new",
 		"LINK"  => "iplogic_beru_delivery_edit.php?PROFILE_ID=".$PROFILE_ID."&lang=".LANG,
-	],
-	["SEPARATOR"=>"Y"],
-	[
-		"TEXT"  => Loc::getMessage("IPL_MA_PROFILE_SETTINGS"),
-		"TITLE" => Loc::getMessage("IPL_MA_PROFILE_SETTINGS_TITLE"),
-		"LINK"  => "iplogic_beru_profile_edit.php?ID=".$PROFILE_ID."&lang=".LANG,
-	],
-	[
-		"TEXT"  => Loc::getMessage("IPL_MA_ACCORDANCES"),
-		"TITLE" => Loc::getMessage("IPL_MA_ACCORDANCES_TITLE"),
-		"LINK"  => "iplogic_beru_accordances_edit.php?PROFILE_ID=".$PROFILE_ID."&lang=".LANG,
-	],
+	];
+	$arContextMenu[] = ["SEPARATOR"=>"Y"];
+}
+$arContextMenu[] = [
+	"TEXT"  => Loc::getMessage("IPL_MA_PROFILE_SETTINGS"),
+	"TITLE" => Loc::getMessage("IPL_MA_PROFILE_SETTINGS_TITLE"),
+	"LINK"  => "iplogic_beru_profile_edit.php?ID=".$PROFILE_ID."&lang=".LANG,
+];
+$arContextMenu[] = [
+	"TEXT"  => Loc::getMessage("IPL_MA_ACCORDANCES"),
+	"TITLE" => Loc::getMessage("IPL_MA_ACCORDANCES_TITLE"),
+	"LINK"  => "iplogic_beru_accordances_edit.php?PROFILE_ID=".$PROFILE_ID."&lang=".LANG,
 ];
 
 
@@ -130,6 +139,7 @@ $arItemContextMenu = [
 ];
 
 $Messages = [
+	"ACCESS_DENIED" => Loc::getMessage("ACCESS_DENIED"),
 	"DELETE_CONF" => Loc::getMessage("IPL_MA_DELETE_CONF"),
 	"SELECTED" => Loc::getMessage("MAIN_ADMIN_LIST_SELECTED"),
 	"CHECKED" => Loc::getMessage("MAIN_ADMIN_LIST_CHECKED"),
@@ -144,6 +154,7 @@ $Messages = [
 ];
 
 $adminControl = new ListEx($moduleID);
+$adminControl->POST_RIGHT = $MODULE_ACCESS;
 $adminControl->arOpts = $arOpts;
 $adminControl->Mess = $Messages;
 $adminControl->arContextMenu = $arContextMenu;
@@ -153,9 +164,6 @@ $adminControl->sTableClass = "\Iplogic\Beru\DeliveryTable";
 $adminControl->filterFormAction = "/bitrix/admin/iplogic_beru_delivery.php?PROFILE_ID=".$PROFILE_ID;
 
 $adminControl->arGroupActions = [];
-
-
-if ($adminControl->POST_RIGHT == "D") $APPLICATION->AuthForm(Loc::getMessage("ACCESS_DENIED"));
 
 $adminControl->initList("tbl_condition");
 

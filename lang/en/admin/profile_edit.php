@@ -3,6 +3,8 @@ $MESS["IPL_MA_GENERAL"] = "General";
 $MESS["IPL_MA_GENERAL_TITLE"] = "General profile settings";
 $MESS["IPL_MA_API"] = "Configuring the API";
 $MESS["IPL_MA_API_TITLE"] = "Configuring API parameters";
+$MESS["IPL_MA_RIGHTS"] = "Access";
+$MESS["IPL_MA_RIGHTS_TITLE"] = "Access rights";
 $MESS["IPL_MA_PROFILE_PROPS"] = "Profile Properties";
 $MESS["WRONG_PARAMETERS"] = "Invalid request parameters";
 $MESS["IPL_MA_PROFILE_NEW_TITLE"] = "New profile";
@@ -56,6 +58,8 @@ $MESS["IPL_MA_MKTPLS_STATUSES"] = "Statuses set by the marketplace";
 $MESS["IPL_MA_GENERAL_STATUSES"] = "General statuses";
 $MESS["SAVE_ERROR"] = "Error saving to database";
 $MESS["IPL_MA_SCHEME"] = "Work scheme";
+$MESS["IPL_MA_STORE"] = "Store";
+$MESS["MAIN_BY_DEFAULT"] = "By default";
 
 $MESS["IPL_MA_STATUS_NEW"] = "Starting status of a new order";
 $MESS["IPL_MA_STATUS_PROCESSING_STARTED"] = "Accepted, processed";

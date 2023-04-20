@@ -15,9 +15,12 @@ if (!count($arIntervals)) {
 else {
 	foreach($arIntervals as $arInterval) {
 		$body .= '<div class="ipl-row">
-	<div class="ipl-cell">'.Loc::getMessage("IPL_MA_DAY_".$arInterval["DAY"]).'</div>
-	<div class="ipl-cell">'.$arInterval["TIME_FROM"].' - '.$arInterval["TIME_TO"].'</div>
-	<div class="ipl-cell"><span class="adm-table-item-edit-wrap adm-table-item-edit-single"><a class="adm-table-btn-delete" href="javascript:deleteIntConfirm('.$arInterval["ID"].');"></a></span></div>
-</div>';
+			<div class="ipl-cell">'.Loc::getMessage("IPL_MA_DAY_".$arInterval["DAY"]).'</div>
+			<div class="ipl-cell">'.$arInterval["TIME_FROM"].' - '.$arInterval["TIME_TO"].'</div>';
+		if($MODULE_ACCESS >= "W") {
+			$body .= '<div class="ipl-cell" ><span class="adm-table-item-edit-wrap adm-table-item-edit-single" ><a class="adm-table-btn-delete" href =
+				"javascript:deleteIntConfirm('.$arInterval["ID"].');" ></a ></span ></div >';
+		}
+		$body .= '</div>';
 	}
 }

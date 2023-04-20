@@ -10,7 +10,7 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.ph
 
 \Iplogic\Beru\Control::checkIP();
 
-$arParam = explode("__",$_GET["param"]);
+$arParam = explode("__", $_GET["param"]);
 
 \Iplogic\Beru\ProductTable::checkMarketProducts($arParam[0], $arParam[1]);
 

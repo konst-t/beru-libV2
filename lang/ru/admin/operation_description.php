@@ -1,0 +1,19 @@
+<?
+$MESS['OP_NAME_PROFILES_READ'] = "Просмотр профилей";
+$MESS['OP_DESC_PROFILES_READ'] = "Просмотр настроек профилей обмена";
+$MESS['OP_NAME_PROFILES_EDIT'] = "Редактирование профилей";
+$MESS['OP_DESC_PROFILES_EDIT'] = "Создание, удаление и редактирование настроек профилей обмена";
+$MESS['OP_NAME_LOGS_READ'] = "Просмотр логов";
+$MESS['OP_DESC_LOGS_READ'] = "Просмотр записей логов обмена и ошибок";
+$MESS['OP_NAME_LOGS_EDIT'] = "Очистка лога";
+$MESS['OP_DESC_LOGS_EDIT'] = "Полная или частичная очистка записей лога обмена и ошибок";
+$MESS['OP_NAME_TASKS_READ'] = "Просмотр задач";
+$MESS['OP_DESC_TASKS_READ'] = "Просмотр очереди задач";
+$MESS['OP_NAME_TASKS_EDIT'] = "Редактирование задач";
+$MESS['OP_DESC_TASKS_EDIT'] = "Выполнение действий с задачами из очереди";
+$MESS['OP_NAME_OPTIONS_EDIT'] = "Настройка модуля";
+$MESS['OP_DESC_OPTIONS_EDIT'] = "Изменение настроек модуля";
+$MESS['OP_NAME_PROFILE_READ'] = "Просмотр профиля";
+$MESS['OP_DESC_PROFILE_READ'] = "Просмотр товаров и задач профиля";
+$MESS['OP_NAME_PROFILE_EDIT'] = "Работа с профилем";
+$MESS['OP_DESC_PROFILE_EDIT'] = "Выполнение операций с товарами и обработка заказов профиля";

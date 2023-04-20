@@ -2,6 +2,8 @@
 $moduleID = 'iplogic.beru';
 define("ADMIN_MODULE_NAME", $moduleID);
 
+$baseFolder = realpath(__DIR__ . "/../../..");
+
 require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_before.php');
 
 use \Bitrix\Main\Localization\Loc,
@@ -20,7 +22,17 @@ $checkParams = [
 ];
 
 
-require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$moduleID."/prolog.php");
+require_once($baseFolder."/modules/".$moduleID."/prolog.php");
+
+$PROFILE_ACCESS = \Iplogic\Beru\Access::getGroupRight("profile", $PROFILE_ID);
+
+if ($MODULE_ACCESS == "D" || $PROFILE_ACCESS == "D") {
+	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
+	CAdminMessage::ShowMessage(Loc::getMessage("ACCESS_DENIED"));
+	require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
+	die();
+}
+
 
 if ($ID > 0){
 	$arFields["DETAILS"] = unserialize($arFields["DETAILS"]);
@@ -89,6 +101,22 @@ if ($arFields["PRICE"] == "") {
 else {
 	$info .= $arFields["PRICE"];
 }
+$info.= "<br><br>";
+$info.= Loc::getMessage("IPL_MA_OLD_PRICE").": ";
+if ($arFields["OLD_PRICE"] == "") {
+	$info .= Loc::getMessage("IPL_MA_NO");
+}
+else {
+	$info .= $arFields["OLD_PRICE"];
+}
+$info.= "<br><br>";
+$info.= Loc::getMessage("IPL_MA_STOCK_FIT").": ";
+if ($arFields["STOCK_FIT"] == "") {
+	$info .= Loc::getMessage("IPL_MA_NO");
+}
+else {
+	$info .= $arFields["STOCK_FIT"];
+}
 if ($arFields["DETAILS"] != "") {
 	$info.= "<br><br>".Loc::getMessage("IPL_MA_DETAILS").": <hr>".Control::toHtml(print_r($arFields["DETAILS"],true))."<br><br>";
 }
@@ -120,24 +148,25 @@ $arContextMenu = [
 		"SEPARATOR" => "Y"
 	],
 ];
-$arContextMenu[] = [
-	"TEXT"  => Loc::getMessage("IPL_MA_UPDATE_CACHE"),
-	"TITLE" => Loc::getMessage("IPL_MA_UPDATE_CACHE_TITLE"),
-	"LINK"  => "iplogic_beru_product_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=update_cache&lang=".LANG,
-];
-if ($arFields["DETAILS"]["PRICE"]!="" && $arFields["DETAILS"]["PRICE"]>0) {
+if( $PROFILE_ACCESS >= "W") {
 	$arContextMenu[] = [
-		"TEXT"  => Loc::getMessage("IPL_MA_SEND_PRICE"),
-		"TITLE" => Loc::getMessage("IPL_MA_SEND_PRICE_TITLE"),
-		"LINK"  => "iplogic_beru_product_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=send_price&lang=".LANG,
+		"TEXT"  => Loc::getMessage("IPL_MA_UPDATE_CACHE"),
+		"TITLE" => Loc::getMessage("IPL_MA_UPDATE_CACHE_TITLE"),
+		"LINK"  => "iplogic_beru_product_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=update_cache&lang=".LANG,
+	];
+	if ($arFields["DETAILS"]["PRICE"]!="" && $arFields["DETAILS"]["PRICE"]>0) {
+		$arContextMenu[] = [
+			"TEXT"  => Loc::getMessage("IPL_MA_SEND_PRICE"),
+			"TITLE" => Loc::getMessage("IPL_MA_SEND_PRICE_TITLE"),
+			"LINK"  => "iplogic_beru_product_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=send_price&lang=".LANG,
+		];
+	}
+	$arContextMenu[] = [
+		"TEXT"  => Loc::getMessage("IPL_MA_DELETE"),
+		"TITLE" => Loc::getMessage("IPL_MA_DELETE_TITLE"),
+		"LINK"  => "iplogic_beru_product_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=delete&lang=".LANG,
 	];
 }
-$arContextMenu[] = [
-	"TEXT"  => Loc::getMessage("IPL_MA_DELETE"),
-	"TITLE" => Loc::getMessage("IPL_MA_DELETE_TITLE"),
-	"LINK"  => "iplogic_beru_product_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=delete&lang=".LANG,
-];
-
 
 
 /* lang messages in classes */
@@ -157,83 +186,75 @@ $adminControl->initDetailPage();
 
 
 /* executing */
-if ($adminControl->POST_RIGHT == "D") {
-	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
-	$APPLICATION->AuthForm(Loc::getMessage("ACCESS_DENIED"));
-}
-else {
 
-
-
-	/* actions */
-	if( $APPLICATION->GetGroupRight($moduleID)=="W" && $fatalErrors == "" ) {
-		if( $request->get("action") == "delete" ) {
-			$result = ProductTable::delete($ID);
-			if ($result->isSuccess()) {
-				LocalRedirect("/bitrix/admin/iplogic_beru_product_list.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&mess=ok&lang=".LANG);
-			}
-			else {
-				$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_DELETE")." (".$result->getErrorMessages().")");
-			}
+/* actions */
+if( $PROFILE_ACCESS >= "W" && $fatalErrors == "" ) {
+	if( $request->get("action") == "delete" ) {
+		$result = ProductTable::delete($ID);
+		if ($result->isSuccess()) {
+			LocalRedirect("/bitrix/admin/iplogic_beru_product_list.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&mess=ok&lang=".LANG);
 		}
-		if( $request->get("action") == "update_cache" ) {
-			$result = ProductTable::updateCache($ID);
-			if ($result) {
-				LocalRedirect("/bitrix/admin/iplogic_beru_product_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG);
-			}
-			else {
-				$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_UPDATE")." (".$result->getErrorMessages().")");
-			}
-		}
-		if ($request->get("action") == "hide"){
-			TaskTable::hideProductTask($request->get("ID"), $PROFILE_ID);
-			LocalRedirect("/bitrix/admin/iplogic_beru_product_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG);
-		}
-		if ($request->get("action") == "show"){
-			TaskTable::showProductTask($request->get("ID"), $PROFILE_ID);
-			LocalRedirect("/bitrix/admin/iplogic_beru_product_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG);
-		}
-		if ($request->get("action") == "send_price"){
-			TaskTable::addPriceUpdateTask($request->get("ID"), $PROFILE_ID);
-			LocalRedirect("/bitrix/admin/iplogic_beru_product_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG);
+		else {
+			$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_DELETE")." (".$result->getErrorMessages().")");
 		}
 	}
-
-
-	/* starting output */
-	$APPLICATION->SetTitle(Loc::getMessage("IPL_MA_PAGE_TITLE")." SKU: ".$arFields["SKU_ID"]);
-	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
-
-
-	/* fatal errors */
-	if ($fatalErrors != ""){
-		CAdminMessage::ShowMessage($fatalErrors);
-		require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
-		die();
-	}
-
-
-	/* ok message */
-	if($request->get("mess") === "ok")
-		CAdminMessage::ShowMessage(array("MESSAGE"=>Loc::getMessage("SAVED"), "TYPE"=>"OK"));
-
-
-	/* action errors */
-	if($message)
-		echo $message->Show();
-
-
-	/* content */
-	$adminControl->buildPage();
-	echo ("<script>
-		function deleteConfirm() {
-			if (window.confirm('".Loc::getMessage("IPL_MA_DELETE_CONF")."')) {
-				window.location.href='iplogic_beru_product_detail.php?PROFILE_ID=".$PROFILE_ID."&ID=".$ID."&action=delete&lang=".LANG."';
-			}
+	if( $request->get("action") == "update_cache" ) {
+		$result = ProductTable::updateCache($ID);
+		if ($result) {
+			LocalRedirect("/bitrix/admin/iplogic_beru_product_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG);
 		}
-	</script>");
-
+		else {
+			$message = new CAdminMessage(Loc::getMessage("IPL_MA_ERROR_UPDATE")." (".$result->getErrorMessages().")");
+		}
+	}
+	if ($request->get("action") == "hide"){
+		TaskTable::hideProductTask($request->get("ID"), $PROFILE_ID);
+		LocalRedirect("/bitrix/admin/iplogic_beru_product_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG);
+	}
+	if ($request->get("action") == "show"){
+		TaskTable::showProductTask($request->get("ID"), $PROFILE_ID);
+		LocalRedirect("/bitrix/admin/iplogic_beru_product_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG);
+	}
+	if ($request->get("action") == "send_price"){
+		TaskTable::addPriceUpdateTask($request->get("ID"), $PROFILE_ID);
+		LocalRedirect("/bitrix/admin/iplogic_beru_product_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&mess=ok&lang=".LANG);
+	}
 }
+
+
+/* starting output */
+$APPLICATION->SetTitle(Loc::getMessage("IPL_MA_PAGE_TITLE")." SKU: ".$arFields["SKU_ID"]);
+require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
+
+
+/* fatal errors */
+if ($fatalErrors != ""){
+	CAdminMessage::ShowMessage($fatalErrors);
+	require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
+	die();
+}
+
+
+/* ok message */
+if($request->get("mess") === "ok")
+	CAdminMessage::ShowMessage(array("MESSAGE"=>Loc::getMessage("SAVED"), "TYPE"=>"OK"));
+
+
+/* action errors */
+if($message)
+	echo $message->Show();
+
+
+/* content */
+$adminControl->buildPage();
+echo ("<script>
+	function deleteConfirm() {
+		if (window.confirm('".Loc::getMessage("IPL_MA_DELETE_CONF")."')) {
+			window.location.href='iplogic_beru_product_detail.php?PROFILE_ID=".$PROFILE_ID."&ID=".$ID."&action=delete&lang=".LANG."';
+		}
+	}
+</script>");
+
 
 require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
 ?>

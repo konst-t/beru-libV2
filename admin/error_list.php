@@ -2,6 +2,8 @@
 $moduleID = 'iplogic.beru';
 define("ADMIN_MODULE_NAME", $moduleID);
 
+$baseFolder = realpath(__DIR__ . "/../../..");
+
 require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_before.php');
 
 use Bitrix\Main\Localization\Loc,
@@ -10,9 +12,16 @@ use Bitrix\Main\Localization\Loc,
 
 $checkParams = [];
 
-include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$moduleID."/prolog.php");
+include($baseFolder."/modules/".$moduleID."/prolog.php");
 
 Loc::loadMessages(__FILE__);
+
+if ($MODULE_ACCESS == "D") {
+	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
+	CAdminMessage::ShowMessage(Loc::getMessage("ACCESS_DENIED"));
+	require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
+	die();
+}
 
 
 /* add extends class if needed */
@@ -150,20 +159,22 @@ $arOpts = [
 
 
 /* context menu */
-$arContextMenu = [
-	[
-		"TEXT"=>Loc::getMessage("IPL_MA_CLEAN_READ"),
-		"LINK"=>"iplogic_beru_error_list.php?clean_read=Y&lang=".LANG,
-		"TITLE"=>Loc::getMessage("IPL_MA_CLEAN_READ_TITLE"),
-		"ICON"=>"btn_delete",
-	],
-	[
-		"TEXT"=>Loc::getMessage("IPL_MA_ALL_READ"),
-		"LINK"=>"iplogic_beru_error_list.php?all_read=Y&lang=".LANG,
-		"TITLE"=>Loc::getMessage("IPL_MA_ALL_READ_TITLE"),
-	]
-];
-
+$arContextMenu = [];
+if($MODULE_ACCESS >= "W") {
+	$arContextMenu = [
+		[
+			"TEXT"  => Loc::getMessage("IPL_MA_CLEAN_READ"),
+			"LINK"  => "iplogic_beru_error_list.php?clean_read=Y&lang=" . LANG,
+			"TITLE" => Loc::getMessage("IPL_MA_CLEAN_READ_TITLE"),
+			"ICON"  => "btn_delete",
+		],
+		[
+			"TEXT"  => Loc::getMessage("IPL_MA_ALL_READ"),
+			"LINK"  => "iplogic_beru_error_list.php?all_read=Y&lang=" . LANG,
+			"TITLE" => Loc::getMessage("IPL_MA_ALL_READ_TITLE"),
+		]
+	];
+}
 
 
 
@@ -192,6 +203,7 @@ $arItemContextMenu = [
 
 /* lang messages in classes */
 $Messages = [
+	"ACCESS_DENIED" => Loc::getMessage("ACCESS_DENIED"),
 	"SELECTED" => Loc::getMessage("MAIN_ADMIN_LIST_SELECTED"),
 	"CHECKED" => Loc::getMessage("MAIN_ADMIN_LIST_CHECKED"),
 	"DELETE" => Loc::getMessage("MAIN_ADMIN_LIST_DELETE"), 
@@ -208,6 +220,7 @@ $Messages = [
 
 /* prepare control object */
 $adminControl = new ListEx($moduleID);
+$adminControl->POST_RIGHT = $MODULE_ACCESS;
 $adminControl->arOpts = $arOpts;
 $adminControl->Mess = $Messages;
 $adminControl->arContextMenu = $arContextMenu;
@@ -227,14 +240,11 @@ $adminControl->arGroupActions = [
 
 
 
-if ($adminControl->POST_RIGHT == "D") $APPLICATION->AuthForm(Loc::getMessage("ACCESS_DENIED"));
-
-
 /* exec actions */
 $adminControl->initList("tbl_iplogic_beru_errors");
 $adminControl->EditAction();
 $adminControl->GroupAction();
-if ($request->get("clean_read") == "Y"){
+if ($request->get("clean_read") == "Y" && $MODULE_ACCESS >= "W"){
 	if(!ErrorTable::clearRead()){
 		$adminControl->errors = Loc::getMessage("IPL_MA_SAVE_ERROR_DELETE");
 	}
@@ -242,13 +252,19 @@ if ($request->get("clean_read") == "Y"){
 		LocalRedirect("/bitrix/admin/iplogic_beru_error_list.php?lang=".LANG);
 	}
 }
-if ($request->get("all_read") == "Y"){
+elseif ($request->get("clean_read") == "Y" && $MODULE_ACCESS < "W"){
+	$adminControl->errors[] = Loc::getMessage("ACCESS_DENIED");
+}
+if ($request->get("all_read") == "Y" && $MODULE_ACCESS >= "W"){
 	if(!ErrorTable::allRead()){
 		$adminControl->errors = Loc::getMessage("IPL_MA_SAVE_ERROR_UPDATE");
 	}
 	else {
 		LocalRedirect("/bitrix/admin/iplogic_beru_error_list.php?lang=".LANG);
 	}
+}
+elseif ($request->get("all_read") == "Y" && $MODULE_ACCESS < "W"){
+	$adminControl->errors[] = Loc::getMessage("ACCESS_DENIED");
 }
 
 

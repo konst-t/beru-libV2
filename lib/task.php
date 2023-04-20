@@ -9,6 +9,7 @@ use \Bitrix\Main,
 	\Bitrix\Main\Application,
 	\Iplogic\Beru\YMAPI,
 	\Iplogic\Beru\ProductTable,
+	\Iplogic\Beru\ProfileTable,
 	\Iplogic\Beru\ApiLogTable;
 
 IncludeModuleLangFile(Application::getDocumentRoot() . BX_ROOT . "/modules/iplogic.beru/lib/lib.php");
@@ -199,23 +200,24 @@ class TaskTable extends Main\Entity\DataManager
 		$task = $result->Fetch();
 		if(!$task) {
 			self::scheduleCheckTasks();
-		}
-		$strSql = "SELECT * FROM " . $helper->quote(self::getTableName()) . " WHERE " .
-			$helper->quote('UNIX_TIMESTAMP') . "<=" . time() . " AND " .
-			$helper->quote('STATE') . " = 'WT' AND " .
-			$helper->quote('TYPE') . " = 'SP' ORDER BY UNIX_TIMESTAMP ASC";
-		$result = $conn->query($strSql);
-		$task = $result->Fetch();
-		if (!$task) {
 			$strSql = "SELECT * FROM " . $helper->quote(self::getTableName()) . " WHERE " .
 				$helper->quote('UNIX_TIMESTAMP') . "<=" . time() . " AND " .
 				$helper->quote('STATE') . " = 'WT' AND " .
-				$helper->quote('TYPE') . " != 'HP' AND " .
-				$helper->quote('TYPE') . " != 'UP' AND " .
-				$helper->quote('TYPE') . " != 'SP' AND " .
-				$helper->quote('TYPE') . " != 'PR' ORDER BY UNIX_TIMESTAMP ASC";
+				$helper->quote('TYPE') . " = 'SP' ORDER BY UNIX_TIMESTAMP ASC";
 			$result = $conn->query($strSql);
 			$task = $result->Fetch();
+			if (!$task) {
+				$strSql = "SELECT * FROM " . $helper->quote(self::getTableName()) . " WHERE " .
+					$helper->quote('UNIX_TIMESTAMP') . "<=" . time() . " AND " .
+					$helper->quote('STATE') . " = 'WT' AND " .
+					$helper->quote('TYPE') . " != 'HP' AND " .
+					$helper->quote('TYPE') . " != 'UP' AND " .
+					$helper->quote('TYPE') . " != 'SP' AND " .
+					$helper->quote('TYPE') . " != 'ST' AND " .
+					$helper->quote('TYPE') . " != 'PR' ORDER BY UNIX_TIMESTAMP ASC";
+				$result = $conn->query($strSql);
+				$task = $result->Fetch();
+			}
 		}
 		unset($helper, $conn);
 		return $task;
@@ -236,7 +238,7 @@ class TaskTable extends Main\Entity\DataManager
 				self::updateProduct($task);
 			}
 			if( $task["TYPE"] == "SP" ) {
-				self::sendPrice($task);
+				self::sendPriceNStocks($task);
 			}
 			if( $task["TYPE"] == "HS" ) {
 				self::sendHidden($task);
@@ -247,10 +249,10 @@ class TaskTable extends Main\Entity\DataManager
 			if( $task["TYPE"] == "CT" ) {
 				self::checkTasks($task);
 			}
-			exec(
-				"wget --no-check-certificate -b -q -O - https://" . Option::get(self::$moduleID, "domen") .
-				"/bitrix/services/iplogic/mkpapi/task.php"
-			);
+			$v = randString(12, "0123456789");
+			$comm = "wget --no-check-certificate ––tries=0 -b -q -O - https://" .
+				Option::get(self::$moduleID, "domen") . "/bitrix/services/iplogic/mkpapi/task.php?v=" . $v;
+			exec( $comm );
 			//die();
 		}
 		else {
@@ -302,7 +304,7 @@ class TaskTable extends Main\Entity\DataManager
 
 	public static function scheduleCheckTasks()
 	{
-		self::scheduleTask(0, "CT", 300);
+		self::scheduleTask(0, "CT", 600);
 	}
 
 	protected static function checkTasks($task)
@@ -332,112 +334,234 @@ class TaskTable extends Main\Entity\DataManager
 	}
 
 
-	/* PRICE */
+	/* PRICE AND STOCKS */
 
 	public static function addPriceUpdateTask($ID, $PROFILE_ID)
 	{
-		$rsTask = self::getList(
-			["filter" => ["TYPE" => "PR", "STATE" => "WT", "ENTITY_ID" => $ID, "PROFILE_ID" => $PROFILE_ID]]
-		);
-		if( !$rsTask->Fetch() ) {
-			$arFields = [
-				"PROFILE_ID"     => $PROFILE_ID,
-				"UNIX_TIMESTAMP" => time(),
-				"TYPE"           => "PR",
-				"STATE"          => "WT",
-				"ENTITY_ID"      => $ID,
-				"TRYING"         => 0,
-			];
-			self::add($arFields);
-			self::scheduleSendPrice($PROFILE_ID);
+		if(Option::get(self::$moduleID, "send_prices") == "Y") {
+			$rsTask = self::getList(
+				["filter" => ["TYPE" => "PR", "STATE" => "WT", "ENTITY_ID" => $ID, "PROFILE_ID" => $PROFILE_ID]]
+			);
+			if( !$rsTask->Fetch() ) {
+				$arFields = [
+					"PROFILE_ID"     => $PROFILE_ID,
+					"UNIX_TIMESTAMP" => time(),
+					"TYPE"           => "PR",
+					"STATE"          => "WT",
+					"ENTITY_ID"      => $ID,
+					"TRYING"         => 0,
+				];
+				self::add($arFields);
+				self::scheduleSendPriceNStocks($PROFILE_ID);
+			}
 		}
 	}
 
-	public static function scheduleSendPrice($PROFILE_ID)
+	public static function addStockUpdateTask($ID, $PROFILE_ID)
+	{
+		$mod = new Control($PROFILE_ID);
+		if((int)$mod->arProfile["STORE"] > 0 && Option::get(self::$moduleID, "send_stocks") == "Y") {
+			$rsTask = self::getList(
+				["filter" => ["TYPE" => "ST", "STATE" => "WT", "ENTITY_ID" => $ID, "PROFILE_ID" => $PROFILE_ID]]
+			);
+			if( !$rsTask->Fetch() ) {
+				$arFields = [
+					"PROFILE_ID"     => $PROFILE_ID,
+					"UNIX_TIMESTAMP" => time(),
+					"TYPE"           => "ST",
+					"STATE"          => "WT",
+					"ENTITY_ID"      => $ID,
+					"TRYING"         => 0,
+				];
+				self::add($arFields);
+				self::scheduleSendPriceNStocks($PROFILE_ID);
+			}
+		}
+	}
+
+	public static function schedulesendPriceNStocks($PROFILE_ID)
 	{
 		self::scheduleTask($PROFILE_ID, "SP", 60);
 	}
 
-	protected static function sendPrice($task)
+	protected static function sendPriceNStocks($task)
 	{
-		$rsData = self::getList(
-			[
-				"filter" => ["TYPE" => "PR", "PROFILE_ID" => $task["PROFILE_ID"]],
-				"order"  => ["UNIX_TIMESTAMP" => "ASC"],
-				'limit'  => 50,
-				'offset' => 0,
-			]
-		);
-		$IDs = [];
-		while( $arData = $rsData->Fetch() ) {
-			$IDs[$arData["ID"]] = $arData["ENTITY_ID"];
-		}
-		if( count($IDs) ) {
-			$rsData = ProductTable::getList(
+		$mod = new Control($task["PROFILE_ID"]);
+		if(Option::get(self::$moduleID, "send_prices") == "Y") {
+			$rsData = self::getList(
 				[
-					"filter" => ["ID" => $IDs],
+					"filter" => ["TYPE" => "PR", "PROFILE_ID" => $task["PROFILE_ID"]],
+					"order"  => ["UNIX_TIMESTAMP" => "ASC"],
+					'limit'  => 500,
+					'offset' => 0,
 				]
 			);
+			$IDs = [];
 			$arProducts = [];
 			while( $arData = $rsData->Fetch() ) {
-				$arProducts[$arData["ID"]] = $arData;
+				$IDs[$arData["ID"]] = $arData["ENTITY_ID"];
 			}
-		}
-		if( count($arProducts) ) {
-			$arPrices = [];
-			$arResult['offers'] = [];
-			$arMarketSKUs = [];
-			foreach( $IDs as $key => $val ) {
-				if(
-					!isset($arProducts[$val]) ||
-					!$arProducts[$val]["MARKET_SKU"] ||
-					in_array($arProducts[$val]["MARKET_SKU"], $arMarketSKUs)
-				) {
-					self::delete($key);
+			if( count($IDs) ) {
+				$rsData = ProductTable::getList(
+					[
+						"filter" => ["ID" => $IDs],
+					]
+				);
+				while( $arData = $rsData->Fetch() ) {
+					$arProducts[$arData["ID"]] = $arData;
 				}
-				else {
-					$details = unserialize($arProducts[$val]["DETAILS"]);
-					if( $details["PRICE"] > 0 ) {
-						$arMarketSKUs[] = $arProducts[$val]["MARKET_SKU"];
-						$new_price = $details["PRICE"];
-						$old_price = $details["OLD_PRICE"];
-						$arPrices[$val] = $new_price;
-						$price = [
-							"currencyId" => "RUR",
-							"value"      => (double)$new_price,
-						];
-						if ($old_price > $new_price) {
-							$price["discountBase"] = (double)$old_price;
-						}
-						$arResult['offers'][] = [
-							"marketSku" => $arProducts[$val]["MARKET_SKU"],
-							"delete"    => false,
-							"price"     => $price,
-						];
+			}
+			if( count($arProducts) ) {
+				$arPrices = [];
+				$arOldPrices = [];
+				$arResult['offers'] = [];
+				$arMarketSKUs = [];
+				foreach( $IDs as $key => $val ) {
+					if(
+						!isset($arProducts[$val]) ||
+						!$arProducts[$val]["MARKET_SKU"] ||
+						in_array($arProducts[$val]["MARKET_SKU"], $arMarketSKUs)
+					) {
+						self::delete($key);
 					}
 					else {
-						self::delete($key);
+						$details = unserialize($arProducts[$val]["DETAILS"]);
+						if( $details["PRICE"] > 0 ) {
+							$arMarketSKUs[] = $arProducts[$val]["MARKET_SKU"];
+							$new_price = $details["PRICE"];
+							$old_price = $details["OLD_PRICE"];
+							$arPrices[$val] = $new_price;
+							$price = [
+								"currencyId" => "RUR",
+								"value"      => (double)$new_price,
+							];
+							if( $old_price > $new_price ) {
+								$price["discountBase"] = (double)$old_price;
+								$arOldPrices[$val] = $old_price;
+							}
+							$arResult['offers'][] = [
+								"marketSku" => $arProducts[$val]["MARKET_SKU"],
+								"delete"    => false,
+								"price"     => $price,
+							];
+						}
+						else {
+							self::delete($key);
+						}
 					}
 				}
-			}
 
-			$api = new YMAPI($task["PROFILE_ID"]);
-			$res = $api->setPrices($arResult);
-			if( $res["status"] == 200 ) {
-				foreach( $IDs as $key => $val ) {
-					if( array_key_exists($val, $arPrices) ) {
-						ProductTable::update($val, ["PRICE" => $arPrices[$val]]);
-						self::delete($key);
+				$api = new YMAPI($task["PROFILE_ID"]);
+				$res = $api->setPrices($arResult);
+				if( $res["status"] == 200 ) {
+					foreach( $IDs as $key => $val ) {
+						if( array_key_exists($val, $arPrices) ) {
+							$arFields = ["PRICE" => $arPrices[$val]];
+							if(isset($arOldPrices[$val])) {
+								$arFields["OLD_PRICE"] = $arOldPrices[$val];
+							}
+							else{
+								$arFields["OLD_PRICE"] = "";
+							}
+							ProductTable::update($val, $arFields);
+							self::delete($key);
+						}
 					}
 				}
+				else {
+					//AddMessage2Log('Price update error', 'iplogic.beru');
+				}
 			}
-			else {
-				//AddMessage2Log('Price update error', 'iplogic.beru');
-			}
+		}
+		if(Option::get(self::$moduleID, "send_stocks") == "Y") {
+			$bContinue = true;
+			$steps = 1;
+			while ($bContinue == true) {
+				$rsData = self::getList(
+					[
+						"filter" => ["TYPE" => "ST", "PROFILE_ID" => $task["PROFILE_ID"]],
+						"order"  => ["UNIX_TIMESTAMP" => "ASC"],
+						'limit'  => 2000,
+						'offset' => 0,
+					]
+				);
+				$IDs = [];
+				$arProducts = [];
+				while( $arData = $rsData->Fetch() ) {
+					$IDs[$arData["ID"]] = $arData["ENTITY_ID"];
+				}
+				if( count($IDs) ) {
+					$rsData = ProductTable::getList(
+						[
+							"filter" => ["ID" => $IDs],
+						]
+					);
+					while( $arData = $rsData->Fetch() ) {
+						$arProducts[$arData["ID"]] = $arData;
+					}
+				}
+				if( count($arProducts) ) {
+					$arStocks = [];
+					$arResult['offers'] = [];
+					$arRequest = [];
+					foreach( $IDs as $key => $val ) {
+						if(
+							!isset($arProducts[$val]) ||
+							!$arProducts[$val]["MARKET_SKU"] ||
+							(int)$mod->arProfile["STORE"] <= 0
+						) {
+							self::delete($key);
+						}
+						else {
+							$details = unserialize($arProducts[$val]["DETAILS"]);
+							if( $details["STOCK_FIT"] != "" ) {
+								$arStocks[$val] = $details["STOCK_FIT"];
+								$arSelect = ["STOCK_FIT", "CHANGE_TIME"];
+								$arFeatures = $mod->getSKU((string)$arProducts[$val]["SKU_ID"], $arSelect);
+								$arRequest["skus"][] = [
+									"sku"         => (string)$arProducts[$val]["SKU_ID"],
+									"warehouseId" => (int)$mod->arProfile["STORE"],
+									"items"       => [
+										[
+											"count"     => (int)$details["STOCK_FIT"],
+											"type"      => "FIT",
+											"updatedAt" => $arFeatures["CHANGE_TIME"]
+										]
+									]
+								];
+							}
+							else {
+								self::delete($key);
+							}
+						}
+					}
 
+					$api = new YMAPI($task["PROFILE_ID"]);
+					$res = $api->setStocks($arRequest);
+					if( $res["status"] == 200 ) {
+						foreach( $IDs as $key => $val ) {
+							if( array_key_exists($val, $arStocks) ) {
+								ProductTable::update($val, ["STOCK_FIT" => $arStocks[$val]]);
+								self::delete($key);
+							}
+						}
+					}
+					else {
+						//AddMessage2Log('Price update error', 'iplogic.beru');
+					}
+
+					$steps++;
+					if($steps > 500) {
+						$bContinue = false;
+					}
+				}
+				else {
+					$bContinue = false;
+				}
+			}
 		}
 		self::delete($task["ID"]);
-		self::scheduleSendPrice($task["PROFILE_ID"]);
+		self::scheduleSendPriceNStocks($task["PROFILE_ID"]);
 	}
 
 

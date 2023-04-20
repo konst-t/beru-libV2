@@ -154,6 +154,16 @@ class YMAPI {
 
 
 	/*
+	PUT /campaigns/{campaignId}/offers/stocks
+	*/
+	public function setStocks($arRequest) {
+		$data = Control::jsonEncode($arRequest);
+		$path = "campaigns/".$this->arProfile["COMPAIN_ID"]."/offers/stocks.json";
+		return $this->query("PUT", $path, $data);
+	}
+
+
+	/*
 	POST /campaigns/{campaignId}/hidden-offers
 	*/
 	public function setHidden($offers) {

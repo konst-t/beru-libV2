@@ -32,6 +32,8 @@ IncludeModuleLangFile(Application::getDocumentRoot() . BX_ROOT . "/modules/iplog
  * <li> REJECT_NOTES string optional
  * <li> DETAILS string optional
  * <li> PRICE string(12) optional
+ * <li> OLD_PRICE string(12) optional
+ * <li> STOCK_FIT string(5) optional
  * <li> HIDDEN bool optional default 'N'
  * <li> FOR_DELETE bool optional default 'N'
  * </ul>
@@ -122,6 +124,16 @@ class ProductTable extends Main\Entity\DataManager
 				'validation' => [__CLASS__, 'validatePrice'],
 				'title'      => Loc::getMessage('PRODUCT_ENTITY_PRICE_FIELD'),
 			],
+			'OLD_PRICE'         => [
+				'data_type'  => 'string',
+				'validation' => [__CLASS__, 'validateOldPrice'],
+				'title'      => Loc::getMessage('PRODUCT_ENTITY_OLD_PRICE_FIELD'),
+			],
+			'STOCK_FIT'         => [
+				'data_type'  => 'string',
+				'validation' => [__CLASS__, 'validateStockFit'],
+				'title'      => Loc::getMessage('PRODUCT_ENTITY_STOCK_FIT_FIELD'),
+			],
 			'HIDDEN'        => [
 				'data_type' => 'boolean',
 				'values'    => ['N', 'Y'],
@@ -195,6 +207,30 @@ class ProductTable extends Main\Entity\DataManager
 		];
 	}
 
+	/**
+	 * Returns validators for OLD_PRICE field.
+	 *
+	 * @return array
+	 */
+	public static function validateOldPrice()
+	{
+		return [
+			new Main\Entity\Validator\Length(null, 12),
+		];
+	}
+
+	/**
+	 * Returns validators for STOCK_FIT field.
+	 *
+	 * @return array
+	 */
+	public static function validateStockFit()
+	{
+		return [
+			new Main\Entity\Validator\Length(null, 5),
+		];
+	}
+
 
 	public static function getById($ID)
 	{
@@ -244,6 +280,15 @@ class ProductTable extends Main\Entity\DataManager
 		$conn = Application::getConnection();
 		$helper = $conn->getSqlHelper();
 		$conn->query("DELETE FROM " . $helper->quote(self::getTableName()) . " WHERE FOR_DELETE='Y'");
+		unset($helper, $conn);
+		return;
+	}
+
+	public static function deleteByProfile($profileId)
+	{
+		$conn = Application::getConnection();
+		$helper = $conn->getSqlHelper();
+		$conn->query("DELETE FROM " . $helper->quote(self::getTableName()) . " WHERE PROFILE_ID=".$profileId);
 		unset($helper, $conn);
 		return;
 	}
@@ -407,17 +452,16 @@ class ProductTable extends Main\Entity\DataManager
 			}
 			$con = new Control($product["PROFILE_ID"]);
 			$set = $con->getSKU($product["SKU_ID"], [], true);
-			if(
-				$product["PRICE"] != $set["PRICE"] && $set["PRICE"] > 0 &&
-				($product["STATE"] == "READY" || $product["STATE"] == "NEED_CONTENT")
-			) {
-				TaskTable::addPriceUpdateTask($ID, $product["PROFILE_ID"]);
-			}
-			if(
-				$product["OLD_PRICE"] != $set["OLD_PRICE"] &&
-				($product["STATE"] == "READY" || $product["STATE"] == "NEED_CONTENT")
-			) {
-				TaskTable::addPriceUpdateTask($ID, $product["PROFILE_ID"]);
+			if( $product["STATE"] == "READY" || $product["STATE"] == "NEED_CONTENT") {
+				if( $product["PRICE"] != $set["PRICE"] && $set["PRICE"] > 0 ) {
+					TaskTable::addPriceUpdateTask($ID, $product["PROFILE_ID"]);
+				}
+				if( $product["OLD_PRICE"] != $set["OLD_PRICE"] ) {
+					TaskTable::addPriceUpdateTask($ID, $product["PROFILE_ID"]);
+				}
+				if( $product["STOCK_FIT"] != $set["STOCK_FIT"] ) {
+					TaskTable::addStockUpdateTask($ID, $product["PROFILE_ID"]);
+				}
 			}
 			$eventManager = Main\EventManager::getInstance();
 			$eventsList = $eventManager->findEventHandlers('iplogic.beru', 'OnIplogicBeruBeforeProductCacheSave');

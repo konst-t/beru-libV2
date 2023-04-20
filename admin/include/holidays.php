@@ -168,6 +168,10 @@ foreach($arMonths as $arMonth) {
 $body .= "<div style='clear: both;'></div>";
 $body .= "</div>";
 
+if($MODULE_ACCESS < "W") {
+	$body = str_replace("holiday-action", "holiday-action-dis", $body);
+}
+
 /*$body .= "<pre>";
 $body .= print_r($arMonths, true);
 $body .= "</pre>";*/

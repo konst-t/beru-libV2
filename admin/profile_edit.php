@@ -2,6 +2,8 @@
 $moduleID = 'iplogic.beru';
 define("ADMIN_MODULE_NAME", $moduleID);
 
+$baseFolder = realpath(__DIR__ . "/../../..");
+
 require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_before.php');
 
 use \Bitrix\Main\Localization\Loc,
@@ -11,15 +13,24 @@ use \Bitrix\Main\Localization\Loc,
 
 $checkParams = [];
 
-include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$moduleID."/prolog.php");
+include($baseFolder."/modules/".$moduleID."/prolog.php");
 
+Loc::loadMessages($_SERVER['DOCUMENT_ROOT']."/bitrix/modules/main/options.php");
 Loc::loadMessages(__FILE__);
 
+if ($MODULE_ACCESS == "D") {
+	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
+	CAdminMessage::ShowMessage(Loc::getMessage("ACCESS_DENIED"));
+	require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
+	die();
+}
+
 class TableFormEx extends Iplogic\Beru\Admin\TableForm {
+
 	protected function addButtons() {
-		global $PROFILE_ID;
 		$this->tabControl->Buttons(["disabled"=>($this->POST_RIGHT<"W"), "back_url"=>"/bitrix/admin/iplogic_beru_profile_list.php?lang=".LANG]);
 	}
+
 }
 
 $ID = $request->get("ID");
@@ -34,9 +45,31 @@ CJSCore::Init(array("jquery"));
 
 $LID = Iplogic\Beru\Admin\TableForm::getLID();
 
+if( $request->isPost()
+	&& ($request->get("save") != "" || $request->get("apply") != "")
+	&& $MODULE_ACCESS >= "W"
+	&& check_bitrix_sessid()
+	&& $fatalErrors == ""
+) {
+	$POST_REQUEST = true;
+}
+
+$groupRightsBind = "profile";
+$module_id = $moduleID;
+if( $POST_REQUEST ) {
+	$groupRightsAction = "POST";
+	include("group_rights.php");
+	$groupRightsAction = false;
+}
+ob_start();
+include("group_rights.php");
+$sRights = ob_get_contents();
+ob_end_clean();
+
 $aTabs = [
 	["DIV" => "edit1", "TAB" => Loc::getMessage("IPL_MA_GENERAL"), "ICON"=>"main_user_edit", "TITLE"=>Loc::getMessage("IPL_MA_GENERAL_TITLE")],
 	["DIV" => "edit2", "TAB" => Loc::getMessage("IPL_MA_API"), "ICON"=>"main_user_edit", "TITLE"=>Loc::getMessage("IPL_MA_API_TITLE")],
+	["DIV" => "edit10", "TAB" => Loc::getMessage("IPL_MA_RIGHTS"), "TITLE" => Loc::getMessage("IPL_MA_RIGHTS_TITLE")],
 ];
 $arOpts = [
 
@@ -159,6 +192,12 @@ $arOpts = [
 		"TYPE"      => "text", 
 		"DEFAULT"   => "",
 		"NAME"      => Loc::getMessage("IPL_MA_BASE_URL"),
+	],
+	"STORE" => [
+		"TAB"       => "edit2",
+		"TYPE"      => "text",
+		"DEFAULT"   => "",
+		"NAME"      => Loc::getMessage("IPL_MA_STORE"),
 	],
 
 	"heading".randString(8) => [
@@ -326,6 +365,14 @@ $arOpts = [
 		],
 	],
 
+	/* RIGHTS */
+	"html".randString(8) => [
+		"TAB"       => "edit10",
+		"TYPE"      => "html",
+		"NAME"      => "",
+		"HTML"      => $sRights,
+	],
+
 ];
 
 if($arFields["SCHEME"] == "DBS") {
@@ -387,80 +434,78 @@ $Messages = [
 
 
 $adminControl = new TableFormEx($moduleID);
+$adminControl->POST_RIGHT = $MODULE_ACCESS;
 $adminControl->arTabs = $aTabs;
 $adminControl->arOpts = $arOpts;
 $adminControl->Mess = $Messages;
 $adminControl->arContextMenu = $aMenu;
 $adminControl->initDetailPage();
 
-if ($adminControl->POST_RIGHT == "D") {
-	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
-	$APPLICATION->AuthForm(Loc::getMessage("ACCESS_DENIED"));
-}
-else {
-	$adminControl->setFields($arFields);
 
-	if( $request->isPost() 
-		&& ($request->get("save")!="" || $request->get("apply")!="") 
-		&& $APPLICATION->GetGroupRight($moduleID)=="W" 
-		&& check_bitrix_sessid() 
-		&& $fatalErrors == ""
-	) {
+$adminControl->setFields($arFields);
 
-		$adminControl->getRequestData();
+if( $POST_REQUEST ) {
 
-		if( !count($adminControl->errors) ) {
-			$arFields = $adminControl->extractQueryValues(); 
-			if($ID>0) {
-				$res = Profile::update($ID,$arFields);
-				if (is_array($res) && isset($res["error"])) {
-					$adminControl->errors[] = implode("<br>",$res["error"]);
-					$res = false;
-				}
+	$adminControl->getRequestData();
+
+	if( !count($adminControl->errors) ) {
+		$arFields = $adminControl->extractQueryValues();
+		if($ID > 0) {
+			$res = Profile::update($ID,$arFields);
+			if (is_array($res) && isset($res["error"])) {
+				$adminControl->errors[] = implode("<br>",$res["error"]);
+				$res = false;
+			}
+		}
+		else {
+			$ID = Profile::add($arFields);
+			$res = $ID;
+			if (isset($res["error"])) {
+				$adminControl->errors[] = implode("<br>",$res["error"]);
+				$res = false;
+			}
+		}
+		if($res) {
+			if ($request->get("apply") != ""){
+				LocalRedirect("/bitrix/admin/iplogic_beru_profile_edit.php?ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
 			}
 			else {
-				$ID = Profile::add($arFields);
-				$res = $ID;
-				if (isset($res["error"])) {
-					$adminControl->errors[] = implode("<br>",$res["error"]);
-					$res = false;
-				}
-			}
-			if($res) {
-				if ($request->get("apply") != "")
-					LocalRedirect("/bitrix/admin/iplogic_beru_profile_edit.php?ID=".$ID."&mess=ok&lang=".LANG."&".$adminControl->ActiveTabParam());
-				else
-					LocalRedirect("/bitrix/admin/iplogic_beru_profile_list.php?lang=".LANG);
+				LocalRedirect("/bitrix/admin/iplogic_beru_profile_list.php?lang=".LANG);
 			}
 		}
-
 	}
 
-	$APPLICATION->SetTitle(($ID>0 ? Loc::getMessage("IPL_MA_PROFILE_EDIT_TITLE")." ".$arFields["NAME"]." #".$ID : Loc::getMessage("IPL_MA_PROFILE_NEW_TITLE")));
-
-	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
-
-	echo "<style>.order_status{color:#5e5e5e;font-size:12px;}</style>";
-
-	if ($fatalErrors != ""){
-		CAdminMessage::ShowMessage($fatalErrors);
-		require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
-		die();
-	}
-
-	if($request->get("mess") === "ok")
-		CAdminMessage::ShowMessage(array("MESSAGE"=>Loc::getMessage("SAVED"), "TYPE"=>"OK"));
-
-	elseif( count($adminControl->errors) ) {
-		foreach($adminControl->errors as $error) {
-			CAdminMessage::ShowMessage($error);
-		}
-	}
-
-	$adminControl->buildPage();
-
-	$adminControl->getIBlockChooseScript("IBLOCK_ID", "IBLOCK_TYPE", "SITE");
 }
+
+$APPLICATION->SetTitle((
+	$ID > 0 ?
+		Loc::getMessage("IPL_MA_PROFILE_EDIT_TITLE")." ".$arFields["NAME"]." #".$ID :
+		Loc::getMessage("IPL_MA_PROFILE_NEW_TITLE")
+));
+
+require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
+
+echo "<style>.order_status{color:#5e5e5e;font-size:12px;}</style>";
+
+if ($fatalErrors != ""){
+	CAdminMessage::ShowMessage($fatalErrors);
+	require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
+	die();
+}
+
+if($request->get("mess") === "ok")
+	CAdminMessage::ShowMessage(array("MESSAGE"=>Loc::getMessage("SAVED"), "TYPE"=>"OK"));
+
+elseif( count($adminControl->errors) ) {
+	foreach($adminControl->errors as $error) {
+		CAdminMessage::ShowMessage($error);
+	}
+}
+
+$adminControl->buildPage();
+
+$adminControl->getIBlockChooseScript("IBLOCK_ID", "IBLOCK_TYPE", "SITE");
+
 
 require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
 ?>

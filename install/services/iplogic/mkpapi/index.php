@@ -1,1 +1,1 @@
-<? require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/iplogic.beru/services/index.php"); ?>
+<? require($_SERVER["DOCUMENT_ROOT"]."/#dir#/modules/iplogic.beru/services/index.php"); ?>

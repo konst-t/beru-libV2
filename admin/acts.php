@@ -2,6 +2,8 @@
 $moduleID = 'iplogic.beru';
 define("ADMIN_MODULE_NAME", $moduleID);
 
+$baseFolder = realpath(__DIR__ . "/../../..");
+
 require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_before.php');
 
 use \Bitrix\Main\Config\Option,
@@ -19,7 +21,16 @@ $checkParams = [
 	"PROFILE" => true
 ];
 
-include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$moduleID."/prolog.php");
+include($baseFolder."/modules/".$moduleID."/prolog.php");
+
+$PROFILE_ACCESS = \Iplogic\Beru\Access::getGroupRight("profile", $PROFILE_ID);
+
+if ($MODULE_ACCESS == "D" || $PROFILE_ACCESS == "D") {
+	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
+	CAdminMessage::ShowMessage(Loc::getMessage("ACCESS_DENIED"));
+	require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
+	die();
+}
 
 $adminControl = new \Iplogic\Beru\Admin\Info($moduleID);
 
@@ -83,70 +94,64 @@ $adminControl->initDetailPage();
 
 
 /* executing */
-if ($adminControl->POST_RIGHT == "D") {
-	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
-	$APPLICATION->AuthForm(Loc::getMessage("ACCESS_DENIED"));
+
+/* starting output */
+$APPLICATION->SetTitle(Loc::getMessage("IPL_MA_PAGE_TITLE")." #".$arProfile["ID"]);
+require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
+
+
+/* fatal errors */
+if ($fatalErrors != ""){
+	CAdminMessage::ShowMessage($fatalErrors);
+	require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
+	die();
 }
-else {
-
-	/* starting output */
-	$APPLICATION->SetTitle(Loc::getMessage("IPL_MA_PAGE_TITLE")." #".$arProfile["ID"]);
-	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
 
 
-	/* fatal errors */
-	if ($fatalErrors != ""){
-		CAdminMessage::ShowMessage($fatalErrors);
-		require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
-		die();
-	}
+/* action errors */
+if($message)
+	echo $message->Show();
 
 
-	/* action errors */
-	if($message)
-		echo $message->Show();
+/* ok message */
+if($request->get("mess") === "ok")
+	CAdminMessage::ShowMessage(array("MESSAGE"=>Loc::getMessage("SAVED"), "TYPE"=>"OK"));
+if($request->get("ref") != "")
+	echo "<a href=\"".urldecode($request->get("ref"))."\">".urldecode($request->get("ref"))."</a><br><br><br>";
 
 
-	/* ok message */
-	if($request->get("mess") === "ok")
-		CAdminMessage::ShowMessage(array("MESSAGE"=>Loc::getMessage("SAVED"), "TYPE"=>"OK"));
-	if($request->get("ref") != "")
-		echo "<a href=\"".urldecode($request->get("ref"))."\">".urldecode($request->get("ref"))."</a><br><br><br>";
-
-
-	/* content */
-	$adminControl->buildPage();
-	echo ("<script>
-		$(document).ready(function(){
-			$('.check-all').on('click', function(){
-				$('.order-choose').attr('checked','checked');
-			});
-			$('.check-actual').on('click', function(){
-				$('.order-choose').removeAttr('checked');
-				$('.order-choose.actual').attr('checked','checked');
-			});
-			$('.uncheck-all').on('click', function(){
-				$('.order-choose').removeAttr('checked');
-			});
-			$('.generate').on('click', function(){
-				var ids = [];
-				$('.order-choose').each(function(){
-					if ($(this).prop('checked')) {
-						ids.push($(this).attr('data-id'));
-					}
-				});
-				if (ids.length==0) {
-					alert('".Loc::getMessage("IPL_MA_EMPTY_LIST")."');
-				}
-				else {
-					var ref = 'https://".Option::get($moduleID,"domen")."/bitrix/services/iplogic/mkpapi/act.php?ids='+ids.join('_')+'&profile_id=".$arProfile["ID"]."';
-					window.open(ref, '_blank');
-				}
-			});
+/* content */
+$adminControl->buildPage();
+echo ("<script>
+	$(document).ready(function(){
+		$('.check-all').on('click', function(){
+			$('.order-choose').attr('checked','checked');
 		});
-	</script>");
+		$('.check-actual').on('click', function(){
+			$('.order-choose').removeAttr('checked');
+			$('.order-choose.actual').attr('checked','checked');
+		});
+		$('.uncheck-all').on('click', function(){
+			$('.order-choose').removeAttr('checked');
+		});
+		$('.generate').on('click', function(){
+			var ids = [];
+			$('.order-choose').each(function(){
+				if ($(this).prop('checked')) {
+					ids.push($(this).attr('data-id'));
+				}
+			});
+			if (ids.length==0) {
+				alert('".Loc::getMessage("IPL_MA_EMPTY_LIST")."');
+			}
+			else {
+				var ref = 'https://".Option::get($moduleID,"domen")."/bitrix/services/iplogic/mkpapi/act.php?ids='+ids.join('_')+'&profile_id=".$arProfile["ID"]."';
+				window.open(ref, '_blank');
+			}
+		});
+	});
+</script>");
 
-}
 
 require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
 ?>

@@ -45,5 +45,7 @@ $MESS["IPL_SET_TASK_EXECUTE"] = "Resume task execution";
 $MESS["IPL_BACKGROUND_SCRIPTS"] = "Background scripts execution";
 $MESS["IPL_CLI_METHOD"] = "Script run method";
 $MESS["IPL_CLI_MISS_CERT"] = "Dont check certificate";
-$MESS["IPL_PHP_FILE"] = "PHP run file";
+$MESS["IPL_SEND_OPTS"] = "Sending information";
+$MESS["IPL_SEND_PRICES"] = "Send prices";
+$MESS["IPL_SEND_STOCKS"] = "Send stocks without a request from the market";
 ?>

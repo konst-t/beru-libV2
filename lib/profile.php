@@ -31,6 +31,7 @@ IncludeModuleLangFile(Application::getDocumentRoot().BX_ROOT."/modules/iplogic.b
  * <li> COMPAIN_ID string(100) optional
  * <li> SEND_TOKEN string(255) optional
  * <li> GET_TOKEN string(255) optional
+ * <li> STORE string(255) optional
  * <li> USER_ID int optional
  * <li> DELIVERY int optional
  * <li> PAYMENTS int optional
@@ -148,6 +149,11 @@ class ProfileTable extends Main\Entity\DataManager
 				'data_type' => 'string',
 				'validation' => array(__CLASS__, 'validateGetToken'),
 				'title' => Loc::getMessage('PROFILE_ENTITY_GET_TOKEN_FIELD'),
+			),
+			'STORE' => array(
+				'data_type' => 'string',
+				'validation' => array(__CLASS__, 'validateStore'),
+				'title' => Loc::getMessage('PROFILE_ENTITY_STORE_FIELD'),
 			),
 			'USER_ID' => array(
 				'data_type' => 'integer',
@@ -309,6 +315,17 @@ class ProfileTable extends Main\Entity\DataManager
 		);
 	}
 	/**
+	 * Returns validators for STORE field.
+	 *
+	 * @return array
+	 */
+	public static function validateStore()
+	{
+		return array(
+			new Main\Entity\Validator\Length(null, 255),
+		);
+	}
+	/**
 	 * Returns validators for PAYMENT_METHODS field.
 	 *
 	 * @return array
@@ -323,7 +340,6 @@ class ProfileTable extends Main\Entity\DataManager
 
 	public static function getById($ID, $short = false) 
 	{
-		global $DB;
 		$result = parent::getById($ID);
 		if($arFields = $result->Fetch()){
 			$arFields["STATUSES"] = unserialize($arFields["STATUSES"]);
@@ -385,8 +401,12 @@ class ProfileTable extends Main\Entity\DataManager
 		if($ID < 1)
 			return false;
 		$arBefore = self::getById($ID, true);
-		$arFields["STATUSES"] = serialize($arFields["STATUSES"]);
-		$arFields["PAYMENT_METHODS"] = serialize($arFields["PAYMENT_METHODS"]);
+		if(is_array($arFields["STATUSES"])) {
+			$arFields["STATUSES"] = serialize($arFields["STATUSES"]);
+		}
+		if(is_array($arFields["PAYMENT_METHODS"])) {
+			$arFields["PAYMENT_METHODS"] = serialize($arFields["PAYMENT_METHODS"]);
+		}
 		$result = parent::update($ID, $arFields);
 		if ($result->isSuccess()) {
 			if ($arBefore["ACTIVE"] != $arFields["ACTIVE"]) {

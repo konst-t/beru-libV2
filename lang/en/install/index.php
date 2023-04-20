@@ -1,6 +1,6 @@
 <?
 $MESS["IPL_MA_MODULE_NAME"] = "Integration with Yandex.Market";
-$MESS["IPL_MA_MODULE_DESC"] = "Integration of your online shop and marketplace via the provided API and price list in YML format.";
+$MESS["IPL_MA_MODULE_DESC"] = "Integration of your online shop and marketplace via the provided API.";
 $MESS["IPL_MA_PARTNER_NAME"] = "iPloGic";
 $MESS["IPL_MA_PARTNER_URI"] = "https://iplogic.ru";
 $MESS["IPL_MA_MODULE_INSTALLED"] = "Module Integration with Yandex.Market installed";

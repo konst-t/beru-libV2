@@ -171,7 +171,7 @@ class Control
 		];
 	}
 
-	public function getallheaders()
+	public static function getallheaders()
 	{
 		$headers = [];
 		foreach( $_SERVER as $name => $value ) {
@@ -614,7 +614,7 @@ class Control
 	}
 
 
-	public function timeFix($time)
+	public static function timeFix($time)
 	{
 		return $time = substr($time, 0, 22) . ":00";
 	}
@@ -820,6 +820,22 @@ class Control
 	}
 
 
+	public static function groupDeleteHandler($ID) {
+		\Iplogic\Beru\RightsTable::deleteByGroup($ID);
+	}
+
+
+	/*
+	 * Outdated
+	 * Backward compatibility
+	 */
+	public static function statusChangeHandler($event) {
+		return new \Bitrix\Main\EventResult(
+			\Bitrix\Main\EventResult::SUCCESS
+		);
+	}
+
+
 	protected static function discountUpdate($ID)
 	{
 		$dbProductDiscounts = \CCatalogDiscount::GetList(
@@ -902,7 +918,7 @@ class Control
 	}
 
 
-	public function checkIP()
+	public static function checkIP()
 	{
 		$host = gethostname();
 		$ip = gethostbyname($host);

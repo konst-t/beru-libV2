@@ -15,9 +15,14 @@ if (!count($arOutlets)) {
 else {
 	foreach($arOutlets as $arOutlet) {
 		$body .= '<div class="ipl-row">
-	<div class="ipl-cell">'.$arOutlet["CODE"].'</div>
-	<div class="ipl-cell">'.$arOutlet["NAME"].'</div>
-	<div class="ipl-cell"><span class="adm-table-item-edit-wrap adm-table-item-edit-single"><a class="adm-table-btn-delete" href="javascript:deleteOutConfirm('.$arOutlet["ID"].');"></a></span></div>
-</div>';
+			<div class="ipl-cell">'.$arOutlet["CODE"].'</div>
+			<div class="ipl-cell">'.$arOutlet["NAME"].'</div>';
+		if($MODULE_ACCESS >= "W") {
+			$body .= '<div class="ipl-cell"><span class="adm-table-item-edit-wrap adm-table-item-edit-single"><a class="adm-table-btn-delete" href =
+			"javascript:deleteOutConfirm('.$arOutlet["ID"].');"></a></span></div>';
+		}
+		$body .= '</div>';
+	/*<div class="ipl-cell"><span class="adm-table-item-edit-wrap adm-table-item-edit-single"><a class="adm-table-btn-delete" href="javascript:deleteOutConfirm('.$arOutlet["ID"].');"></a></span></div>
+</div>';*/
 	}
 }

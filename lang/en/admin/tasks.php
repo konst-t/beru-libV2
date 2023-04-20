@@ -17,10 +17,14 @@ $MESS["IPL_MA_DELETE_CONF"] = "Are you sure you want to delete the item?";
 $MESS["IPL_MA_TYPE_PU"] = "Product update";
 $MESS["IPL_MA_TYPE_DU"] = "Product update (deferred)";
 $MESS["IPL_MA_TYPE_PR"] = "Price update";
-$MESS["IPL_MA_TYPE_SP"] = "Sending prices";
+$MESS["IPL_MA_TYPE_SP"] = "Sending prices and stocks";
 $MESS["IPL_MA_TYPE_HP"] = "Hide product";
 $MESS["IPL_MA_TYPE_UP"] = "Show product";
 $MESS["IPL_MA_TYPE_RQ"] = "Repeat request";
 $MESS["IPL_MA_TYPE_HS"] = "Send hidden";
 $MESS["IPL_MA_TYPE_US"] = "Send hide cancellation";
 $MESS["IPL_MA_TYPE_CT"] = "Check tasks";
+$MESS["IPL_MA_TYPE_ST"] = "Stock update";
+
+$MESS["IPL_MA_STATE_WT"] = "Waiting";
+$MESS["IPL_MA_STATE_IW"] = "In work";

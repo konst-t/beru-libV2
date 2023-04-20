@@ -16,7 +16,6 @@ use \Bitrix\Main\Config\Option,
 
 class Info extends Detail {
 
-
 	protected function buildContent() {
 		foreach ( $this->arTabs as $num => $a ) {
 			$this->tabControl->BeginNextTab();

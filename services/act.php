@@ -1,26 +1,33 @@
 <?
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 include_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/iplogic.beru/lib/dompdf/autoload.inc.php");
 
-use \Dompdf\Dompdf,
-	\Dompdf\Options,
-	\Bitrix\Main\Localization\Loc,
-	\Bitrix\Main\Loader,
-	\Iplogic\Beru\Control,
-	\Iplogic\Beru\ProfileTable,
-	\Iplogic\Beru\BoxTable,
-	\Iplogic\Beru\OrderTable;
+use \Dompdf\Dompdf;
+use \Dompdf\Options;
+use \Bitrix\Main\Localization\Loc;
+use \Bitrix\Main\Loader;
+use \Bitrix\Main\Application;
+use \Iplogic\Beru\Control;
+use \Iplogic\Beru\ProfileTable;
+use \Iplogic\Beru\BoxTable;
+use \Iplogic\Beru\OrderTable;
 
 Loader::includeModule("iplogic.beru");
 Loader::includeModule("sale");
 
 Loc::loadMessages(__FILE__);
 
+$request = Application::getInstance()->getContext()->getRequest();
 
-$arIDs = explode("_",$_GET["ids"]);
 
-$arProfile = ProfileTable::getById($_GET["profile_id"],true);
+$arIDs = explode("_", $request->get("ids"));
+
+$arProfile = ProfileTable::getById($request->get("profile_id"), true);
 
 $arOrders = [];
 
@@ -144,9 +151,9 @@ $signature = '
 	<div>
 	<table>
 		<tr class="side">
-			<td>'.Loc::getMessage("SHIPMENT_GIVE_OUT").'</td>
+			<td width="45%">'.Loc::getMessage("SHIPMENT_GIVE_OUT").'</td>
 			<td class="separator">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-			<td>'.Loc::getMessage("SHIPMENT_ACCEPT").'</td>
+			<td width="45%">'.Loc::getMessage("SHIPMENT_ACCEPT").'</td>
 		</tr>
 		<tr>
 			<td class="underline"></td>
@@ -188,8 +195,8 @@ $html = '<html>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<style type="text/css">
 		* { 
-			font-family: arial;
-			font-size: 14px;
+			font-family: "DejaVu Sans", sans-serif;
+			font-size: 12px;
 			line-height: 16px;
 		}
 		html { padding:0; margin:0; }
@@ -220,7 +227,7 @@ $html = '<html>
 			padding-bottom:30px;
 			padding-top:70px;
 		}
-		.separator { width:50px; }
+		.separator { width:10%; }
 		.page_wrapper { vertical-align:top;}
 	</style>
 </head>
@@ -283,9 +290,9 @@ $dompdf->loadHtml($html, "UTF-8");
 $dompdf->setPaper('A4', 'portrait');
 $dompdf->render();
 $filename = 'act-ym-'.time();
-if ($_GET["dir"] != "") {
+if ($request->get("dir") != "") {
 	$pdf_gen = $dompdf->output();
-	if(!file_put_contents(urldecode($_SERVER["DOCUMENT_ROOT"]."/".$_GET["dir"])."/".$filename.".pdf", $pdf_gen)){
+	if(!file_put_contents(urldecode($_SERVER["DOCUMENT_ROOT"]."/".$request->get("dir"))."/".$filename.".pdf", $pdf_gen)){
 		echo 'ERROR';
 	}else{
 		echo 'OK';

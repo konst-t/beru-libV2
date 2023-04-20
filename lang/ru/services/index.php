@@ -1,2 +1,2 @@
 <?
-$MESS["INCOMING_REQUEST_ERROR"] = "Îòêëîíåí âõîäÿùèé çàïðîñ";
+$MESS["INCOMING_REQUEST_ERROR"] = "ÐžÑ‚ÐºÐ»Ð¾Ð½ÐµÐ½ Ð²Ñ…Ð¾Ð´ÑÑ‰Ð¸Ð¹ Ð·Ð°Ð¿Ñ€Ð¾Ñ";

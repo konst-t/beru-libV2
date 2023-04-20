@@ -13,3 +13,4 @@ DROP TABLE if exists b_iplogicberu_interval;
 DROP TABLE if exists b_iplogicberu_outlet;
 DROP TABLE if exists b_iplogicberu_delivery;
 DROP TABLE if exists b_iplogicberu_holiday;
+DROP TABLE if exists b_iplogicberu_rights;

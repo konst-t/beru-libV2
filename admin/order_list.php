@@ -2,6 +2,8 @@
 $moduleID = 'iplogic.beru';
 define("ADMIN_MODULE_NAME", $moduleID);
 
+$baseFolder = realpath(__DIR__ . "/../../..");
+
 require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_before.php');
 
 use Bitrix\Main\Localization\Loc,
@@ -17,7 +19,16 @@ $checkParams = [
 	"PROFILE" => true
 ];
 
-include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$moduleID."/prolog.php");
+include($baseFolder."/modules/".$moduleID."/prolog.php");
+
+$PROFILE_ACCESS = \Iplogic\Beru\Access::getGroupRight("profile", $PROFILE_ID);
+
+if ($MODULE_ACCESS == "D" || $PROFILE_ACCESS == "D") {
+	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
+	CAdminMessage::ShowMessage(Loc::getMessage("ACCESS_DENIED"));
+	require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
+	die();
+}
 
 
 /* add extends class if needed */
@@ -266,6 +277,7 @@ $arItemContextMenu = [
 
 /* lang messages in classes */
 $Messages = [
+	"ACCESS_DENIED" => Loc::getMessage("ACCESS_DENIED"),
 	"DELETE_CONF" => Loc::getMessage("IPL_MA_DELETE_CONF"),
 	"SELECTED" => Loc::getMessage("MAIN_ADMIN_LIST_SELECTED"),
 	"CHECKED" => Loc::getMessage("MAIN_ADMIN_LIST_CHECKED"),
@@ -283,6 +295,7 @@ $Messages = [
 
 /* prepare control object */
 $adminControl = new ListEx($moduleID);
+$adminControl->POST_RIGHT = $PROFILE_ACCESS;
 $adminControl->arOpts = $arOpts;
 $adminControl->Mess = $Messages;
 $adminControl->arContextMenu = $arContextMenu;
@@ -303,95 +316,107 @@ $adminControl->arGroupActions = [
 ];
 
 
-if ($adminControl->POST_RIGHT == "D") $APPLICATION->AuthForm(Loc::getMessage("ACCESS_DENIED"));
-
-
 /* exec actions */
 $adminControl->initList("tbl_order");
 $adminControl->EditAction();
 $adminControl->GroupAction();
 
 
-if (count($adminControl->ready_to_ship)) { 
-	$statusKey = "S_PROCESSING_READY_TO_SHIP";
-	$newStatusCode = "PROCESSING READY_TO_SHIP";
-	$oredersParts = array_chunk($adminControl->ready_to_ship, 30);
-	foreach($oredersParts as $oredersPart) {
-		$orders = [];
-		foreach($oredersPart as $order) {
-			$orders[] = [
-				"id" => $order["EXT_ID"],
-				"status" => "PROCESSING",
-				"substatus" => "READY_TO_SHIP",
-			];
-		} 
-		$api = new YMAPI($arProfile["ID"]);
-		$res = $api->setOrderStatuses($orders);
-		if ($res["status"]==200) {
-			foreach($res["body"]["result"]["orders"] as $res_order) { 
-				if ($res_order["updateStatus"] == "OK") {
-					$order = $adminControl->ready_to_ship[$res_order["id"]];
-					$arOUFields = [
-						"STATE" => $statusKey,
-						"STATE_CODE" => $newStatusCode,
-						"READY_TIME" => time(),
-					];
-					OrderTable::update($order["ID"],$arOUFields);
-					$arStFields = [
-						'STATUS_ID' => $arProfile["STATUSES"][$statusKey],
-					];
-					\CSaleOrder::Update($order["ORDER_ID"], $arStFields);
-				}
-				else {
-					$adminControl->addError(Loc::getMessage("IPL_MA_SAVE_ERROR_UPDATE")." [#".$res_order["id"]."]<br>".$res_order["errorDetails"]);
+if( $PROFILE_ACCESS >= "W"
+	&& $fatalErrors == ""
+) {
+	if( is_array($adminControl->ready_to_ship) && count($adminControl->ready_to_ship) ) {
+		$statusKey = "S_PROCESSING_READY_TO_SHIP";
+		$newStatusCode = "PROCESSING READY_TO_SHIP";
+		$oredersParts = array_chunk($adminControl->ready_to_ship, 30);
+		foreach( $oredersParts as $oredersPart ) {
+			$orders = [];
+			foreach( $oredersPart as $order ) {
+				$orders[] = [
+					"id"        => $order["EXT_ID"],
+					"status"    => "PROCESSING",
+					"substatus" => "READY_TO_SHIP",
+				];
+			}
+			$api = new YMAPI($arProfile["ID"]);
+			$res = $api->setOrderStatuses($orders);
+			if( $res["status"] == 200 ) {
+				foreach( $res["body"]["result"]["orders"] as $res_order ) {
+					if( $res_order["updateStatus"] == "OK" ) {
+						$order = $adminControl->ready_to_ship[$res_order["id"]];
+						$arOUFields = [
+							"STATE"      => $statusKey,
+							"STATE_CODE" => $newStatusCode,
+							"READY_TIME" => time(),
+						];
+						OrderTable::update($order["ID"], $arOUFields);
+						$arStFields = [
+							'STATUS_ID' => $arProfile["STATUSES"][$statusKey],
+						];
+						\CSaleOrder::Update($order["ORDER_ID"], $arStFields);
+					}
+					else {
+						$adminControl->addError(
+							Loc::getMessage("IPL_MA_SAVE_ERROR_UPDATE") . " [#" . $res_order["id"] . "]<br>" .
+							$res_order["errorDetails"]
+						);
+					}
 				}
 			}
+			else {
+				$adminControl->addError(
+					Loc::getMessage("IPL_MA_SAVE_ERROR_UPDATE") . "<br>" . $res["body"]["errors"][0]["code"] . " - " .
+					$res["body"]["errors"][0]["message"]
+				);
+			}
 		}
-		else {
-			$adminControl->addError(Loc::getMessage("IPL_MA_SAVE_ERROR_UPDATE")."<br>".$res["body"]["errors"][0]["code"]." - ".$res["body"]["errors"][0]["message"]);
+	}
+	if( is_array($adminControl->shipped) && count($adminControl->shipped) ) {
+		$statusKey = "S_PROCESSING_SHIPPED";
+		$newStatusCode = "PROCESSING SHIPPED";
+		$oredersParts = array_chunk($adminControl->shipped, 30);
+		foreach( $oredersParts as $oredersPart ) {
+			$orders = [];
+			foreach( $oredersPart as $order ) {
+				$orders[] = [
+					"id"        => $order["EXT_ID"],
+					"status"    => "PROCESSING",
+					"substatus" => "SHIPPED",
+				];
+			}
+			$api = new YMAPI($arProfile["ID"]);
+			$res = $api->setOrderStatuses($orders);
+			if( $res["status"] == 200 ) {
+				foreach( $res["body"]["result"]["orders"] as $res_order ) {
+					if( $res_order["updateStatus"] == "OK" ) {
+						$order = $adminControl->shipped[$res_order["id"]];
+						$arOUFields = [
+							"STATE"      => $statusKey,
+							"STATE_CODE" => $newStatusCode,
+						];
+						OrderTable::update($order["ID"], $arOUFields);
+						$arStFields = [
+							'STATUS_ID' => $arProfile["STATUSES"][$statusKey],
+						];
+						\CSaleOrder::Update($order["ORDER_ID"], $arStFields);
+					}
+					else {
+						$adminControl->addError(
+							Loc::getMessage("IPL_MA_SAVE_ERROR_UPDATE") . " [#" . $res_order["id"] . "]<br>" .
+							$res_order["errorDetails"]
+						);
+					}
+				}
+			}
+			else {
+				$adminControl->addError(
+					Loc::getMessage("IPL_MA_SAVE_ERROR_UPDATE") . "<br>" . $res["body"]["errors"][0]["code"] . " - " .
+					$res["body"]["errors"][0]["message"]
+				);
+			}
 		}
 	}
 }
-if (count($adminControl->shipped)) {
-	$statusKey = "S_PROCESSING_SHIPPED";
-	$newStatusCode = "PROCESSING SHIPPED";
-	$oredersParts = array_chunk($adminControl->shipped, 30);
-	foreach($oredersParts as $oredersPart) {
-		$orders = [];
-		foreach($oredersPart as $order) {
-			$orders[] = [
-				"id" => $order["EXT_ID"],
-				"status" => "PROCESSING",
-				"substatus" => "SHIPPED",
-			];
-		} 
-		$api = new YMAPI($arProfile["ID"]);
-		$res = $api->setOrderStatuses($orders);
-		if ($res["status"]==200) {
-			foreach($res["body"]["result"]["orders"] as $res_order) { 
-				if ($res_order["updateStatus"] == "OK") {
-					$order = $adminControl->shipped[$res_order["id"]];
-					$arOUFields = [
-						"STATE" => $statusKey,
-						"STATE_CODE" => $newStatusCode,
-					];
-					OrderTable::update($order["ID"],$arOUFields);
-					$arStFields = [
-						'STATUS_ID' => $arProfile["STATUSES"][$statusKey],
-					];
-					\CSaleOrder::Update($order["ORDER_ID"], $arStFields);
-				}
-				else {
-					$adminControl->addError(Loc::getMessage("IPL_MA_SAVE_ERROR_UPDATE")." [#".$res_order["id"]."]<br>".$res_order["errorDetails"]);
-				}
-			}
-		}
-		else {
-			$adminControl->addError(Loc::getMessage("IPL_MA_SAVE_ERROR_UPDATE")."<br>".$res["body"]["errors"][0]["code"]." - ".$res["body"]["errors"][0]["message"]);
-		}
-	}
-}
-
 
 
 /* get list and put it in control object */

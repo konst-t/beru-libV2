@@ -16,6 +16,7 @@ create table if not exists b_iplogicberu_profile
 	COMPAIN_ID varchar(100) NULL,
 	SEND_TOKEN varchar(255) NULL,
 	GET_TOKEN varchar(255) NULL,
+	STORE VARCHAR(255) NULL,
 	USER_ID INT(11) NULL,
 	DELIVERY INT(11) NULL,
 	PAYMENTS INT(11) NULL,
@@ -132,6 +133,8 @@ create table if not exists b_iplogicberu_product
 	REJECT_NOTES text NULL,
 	DETAILS mediumtext NULL,
 	PRICE varchar(12) NULL,
+	OLD_PRICE VARCHAR(12) NULL,
+    STOCK_FIT VARCHAR(5) NULL
 	HIDDEN char(1) NULL DEFAULT "N",
 	FOR_DELETE char(1) NULL DEFAULT "N",
 	PRIMARY KEY (ID),
@@ -154,14 +157,24 @@ create table if not exists b_iplogicberu_box
 	INDEX (ORDER_ID)
 );
 
+create table if not exists b_iplogicberu_box_link
+(
+	ID int(11) NOT NULL auto_increment,
+	PROFILE_ID int(5) NOT NULL,
+	ORDER_ID int(11) NOT NULL,
+	BOX_ID int(11) NOT NULL,
+	SKU_ID varchar(150) NOT NULL,
+	PRIMARY KEY (ID)
+);
+
 create table if not exists b_iplogicberu_interval
 (
 	ID int(11) NOT NULL auto_increment,
 	PROFILE_ID int(5) NOT NULL,
 	DELIVERY_ID int(11) NOT NULL,
 	DAY varchar(3) NOT NULL,
-	FROM varchar(5) NOT NULL,
-	TO varchar(5) NOT NULL,
+	TIME_FROM varchar(5) NOT NULL,
+	TIME_TO varchar(5) NOT NULL,
 	PRIMARY KEY (ID),
 	INDEX (ID)
 );
@@ -201,4 +214,16 @@ create table if not exists b_iplogicberu_holiday
 	TIMESTAMP int(15) NOT NULL,
 	PRIMARY KEY (ID),
 	INDEX (TIMESTAMP)
+);
+
+create table if not exists b_iplogicberu_rights
+(
+	ID int(10) NOT NULL auto_increment,
+	ENTITY_TYPE varchar(20) NOT NULL,
+	ENTITY_ID int(10) NOT NULL,
+	GROUP_ID int(10) NOT NULL,
+	TASK_ID int(10) NOT NULL,
+	PRIMARY KEY (ID),
+	INDEX (ENTITY_ID),
+	INDEX (GROUP_ID)
 );

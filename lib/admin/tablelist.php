@@ -28,7 +28,7 @@ class TableList extends AdminList {
 
 	protected function getById($ID) {
 		$class = $this->sTableClass;
-		return $class::getById($ID);
+		return $class::getRowById($ID);
 	}
 
 
@@ -50,8 +50,8 @@ class TableList extends AdminList {
 	}
 
 
-	public function GroupAction() { 
-		if(($arID = $this->obList->GroupAction()) && $this->POST_RIGHT=="W") { 
+	public function GroupAction() {
+		if(($arID = $this->obList->GroupAction()) && $this->POST_RIGHT >= $this->MIN_POST_RIGHT) {
 
 			if($_REQUEST['action_target']=='selected') {
 				$rsData = $this->getList(['filter' => $this->arFilter]);
@@ -60,7 +60,7 @@ class TableList extends AdminList {
 			}
 
 			foreach($arID as $ID) {
-				if(strlen($ID)<=0)
+				if(strlen($ID) <= 0)
 					continue;
 				$ID = IntVal($ID);
 
@@ -88,6 +88,9 @@ class TableList extends AdminList {
 				}
 			}
 			return true;
+		}
+		elseif (($arID = $this->obList->GroupAction()) && $this->POST_RIGHT < $this->MIN_POST_RIGHT) {
+			$this->obList->AddGroupError($this->Mess["ACCESS_DENIED"]);
 		}
 		return false;
 	}

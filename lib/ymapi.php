@@ -17,6 +17,7 @@ class YMAPI {
 	public static $moduleID = "iplogic.beru";
 	private $arProfile,
 			$url = "https://api.partner.market.yandex.ru/v2/",
+			$urlb = "https://api.partner.market.yandex.ru/businesses/",
 			$cl,
 			$headers;
 
@@ -29,6 +30,7 @@ class YMAPI {
 			"Content-Type" => "application/json; charset=UTF-8",
 			"Authorization" => 'OAuth oauth_token="'.$this->arProfile["SEND_TOKEN"].'", oauth_client_id="'.$this->arProfile["CLIENT_ID"].'"'
 		];
+		//$this->headers["Authorization"] = 'Bearer '.$this->arProfile["SEND_TOKEN"];
 		foreach($this->headers as $key => $val) {
 			$this->cl->setHeader($key, $val);
 		}
@@ -42,7 +44,7 @@ class YMAPI {
 	public function getMPDeliveryList()
 	{
 		$path = "delivery/services.json";
-		return $this->query("GET", $path);
+		return $this->query("GET", $this->url.$path);
 	}
 
 
@@ -58,7 +60,7 @@ class YMAPI {
 			]
 		]);
 		$path = "campaigns/".$this->arProfile["COMPAIN_ID"]."/orders/".$order_id."/status.json";
-		return $this->query("PUT", $path, $data);
+		return $this->query("PUT", $this->url.$path, $data);
 	}
 
 
@@ -71,7 +73,7 @@ class YMAPI {
 			"orders" => $orders
 		]);
 		$path = "campaigns/".$this->arProfile["COMPAIN_ID"]."/orders/status-update.json";
-		return $this->query("POST", $path, $data);
+		return $this->query("POST", $this->url.$path, $data);
 	}
 
 
@@ -88,7 +90,7 @@ class YMAPI {
 			$arStParams[] = "page_token=".$arParams["page_token"];
 		}
 		if(isset($arParams["shop_sku"])) {
-			if (is_array($sku)) {
+			if (is_array($arParams["shop_sku"])) {
 				foreach ($arParams["shop_sku"] as $sku) {
 					$arStParams[] = "shop_sku=".$sku;
 				}
@@ -100,7 +102,39 @@ class YMAPI {
 			$stParams = "?".implode("&", $arStParams);
 		}
 		$path = "campaigns/".$this->arProfile["COMPAIN_ID"]."/offer-mapping-entries.json".$stParams;
-		return $this->query("GET", $path);
+		return $this->query("GET", $this->url.$path);
+	}
+
+
+	/*
+	POST https://api.partner.market.yandex.ru/businesses/{businessId}/offer-mappings
+	*/
+	public function getOffers($arParams = [], $body = "") {
+		if ($body == "") {
+			$data = "{}";
+		}
+		else {
+			$data = Json::encode($body);
+		}
+		$stParams = "";
+		$arStParams = [];
+		if(isset($arParams["limit"])) {
+			$arStParams[] = "limit=".$arParams["limit"];
+		}
+		if(isset($arParams["page_token"])) {
+			$arStParams[] = "page_token=".$arParams["page_token"];
+		}
+		if(isset($arParams["offset"])) {
+			$arStParams[] = "offset=".$arParams["offset"];
+		}
+		if(isset($arParams["page_number"])) {
+			$arStParams[] = "page_number=".$arParams["page_number"];
+		}
+		if (count($arStParams)) {
+			$stParams = "?".implode("&", $arStParams);
+		}
+		$path = $this->arProfile["BUSINESS_ID"]."/offer-mappings".$stParams;
+		return $this->query("POST", $this->urlb.$path, $data);
 	}
 
 
@@ -127,7 +161,7 @@ class YMAPI {
 			}
 			$path = $path.".json".$stParams;
 		}
-		return $this->query("GET", $path);
+		return $this->query("GET", $this->url.$path);
 	}
 
 
@@ -139,7 +173,7 @@ class YMAPI {
 			"boxes" => $boxes
 		]);
 		$path = "campaigns/".$this->arProfile["COMPAIN_ID"]."/orders/".$order."/delivery/shipments/".$shipment."/boxes.json";
-		return $this->query("PUT", $path, $data);
+		return $this->query("PUT", $this->url.$path, $data);
 	}
 
 
@@ -149,7 +183,7 @@ class YMAPI {
 	public function setPrices($offers) {
 		$data = Control::jsonEncode($offers);
 		$path = "campaigns/".$this->arProfile["COMPAIN_ID"]."/offer-prices/updates.json";
-		return $this->query("POST", $path, $data);
+		return $this->query("POST", $this->url.$path, $data);
 	}
 
 
@@ -159,7 +193,7 @@ class YMAPI {
 	public function setStocks($arRequest) {
 		$data = Control::jsonEncode($arRequest);
 		$path = "campaigns/".$this->arProfile["COMPAIN_ID"]."/offers/stocks.json";
-		return $this->query("PUT", $path, $data);
+		return $this->query("PUT", $this->url.$path, $data);
 	}
 
 
@@ -169,7 +203,7 @@ class YMAPI {
 	public function setHidden($offers) {
 		$data = Control::jsonEncode($offers);
 		$path = "campaigns/".$this->arProfile["COMPAIN_ID"]."/hidden-offers.json";
-		return $this->query("POST", $path, $data);
+		return $this->query("POST", $this->url.$path, $data);
 	}
 
 
@@ -179,7 +213,7 @@ class YMAPI {
 	public function setShown($offers) {
 		$data = Control::jsonEncode($offers);
 		$path = "campaigns/".$this->arProfile["COMPAIN_ID"]."/hidden-offers.json";
-		return $this->query("DELETE", $path, $data);
+		return $this->query("DELETE", $this->url.$path, $data);
 	}
 
 
@@ -188,7 +222,7 @@ class YMAPI {
 	*/
 	public function getHidden() {
 		$path = "campaigns/".$this->arProfile["COMPAIN_ID"]."/hidden-offers.json";
-		return $this->query("GET", $path);
+		return $this->query("GET", $this->url.$path);
 	}
 
 
@@ -197,12 +231,11 @@ class YMAPI {
 	*/
 	public function getLabel($arParams) {
 		$path = "campaigns/".$this->arProfile["COMPAIN_ID"]."/orders/".$arParams["ORDER_ID"]."/delivery/shipments/".$arParams["SHIPMENT_ID"]."/boxes/".$arParams["BOX_ID"]."/label.json";
-		return $this->query("GET", $path, null, false, true);
+		return $this->query("GET", $this->url.$path, null, false, true);
 	}
 
 
 	public function query($type, $path, $data = null, $task = false, $stop_repeating = null) {
-		if (!$task) { $path = $this->url.$path; }
 		$arFields = [
 			"PROFILE_ID" 		=> $this->arProfile["ID"],
 			"TYPE" 				=> "OG",

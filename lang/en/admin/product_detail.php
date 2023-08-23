@@ -15,6 +15,8 @@ $MESS["IPL_MA_HIDE"] = "Hide";
 $MESS["IPL_MA_HIDE_TITLE"] = "Hide product from display on marketplace";
 $MESS["IPL_MA_SEND_PRICE"] = "Set price";
 $MESS["IPL_MA_SEND_PRICE_TITLE"] = "Set a price on the marketplace";
+$MESS["IPL_MA_PRICE_TIME"] = "Price send time";
+$MESS["IPL_MA_STOCK_TIME"] = "Stock send time";
 
 $MESS["IPL_MA_STATE_FEED_ONLY"] = "Only in YML";
 $MESS["IPL_MA_STATE_READY"] = "Ready";

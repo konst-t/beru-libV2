@@ -34,6 +34,8 @@ IncludeModuleLangFile(Application::getDocumentRoot() . BX_ROOT . "/modules/iplog
  * <li> PRICE string(12) optional
  * <li> OLD_PRICE string(12) optional
  * <li> STOCK_FIT string(5) optional
+ * <li> PRICE_TIME string(19) optional
+ * <li> STOCK_TIME string(19) optional
  * <li> HIDDEN bool optional default 'N'
  * <li> FOR_DELETE bool optional default 'N'
  * </ul>
@@ -134,6 +136,16 @@ class ProductTable extends Main\Entity\DataManager
 				'validation' => [__CLASS__, 'validateStockFit'],
 				'title'      => Loc::getMessage('PRODUCT_ENTITY_STOCK_FIT_FIELD'),
 			],
+			'PRICE_TIME'         => [
+				'data_type'  => 'string',
+				'validation' => [__CLASS__, 'validatePriceTime'],
+				'title'      => Loc::getMessage('PRODUCT_ENTITY_PRICE_TIME_FIELD'),
+			],
+			'STOCK_TIME'         => [
+				'data_type'  => 'string',
+				'validation' => [__CLASS__, 'validateStockTime'],
+				'title'      => Loc::getMessage('PRODUCT_ENTITY_STOCK_TIME_FIELD'),
+			],
 			'HIDDEN'        => [
 				'data_type' => 'boolean',
 				'values'    => ['N', 'Y'],
@@ -231,6 +243,30 @@ class ProductTable extends Main\Entity\DataManager
 		];
 	}
 
+	/**
+	 * Returns validators for PRICE_TIME field.
+	 *
+	 * @return array
+	 */
+	public static function validatePriceTime()
+	{
+		return [
+			new Main\Entity\Validator\Length(null, 19),
+		];
+	}
+
+	/**
+	 * Returns validators for STOCK_TIME field.
+	 *
+	 * @return array
+	 */
+	public static function validateStockTime()
+	{
+		return [
+			new Main\Entity\Validator\Length(null, 19),
+		];
+	}
+
 
 	public static function getById($ID)
 	{
@@ -291,6 +327,12 @@ class ProductTable extends Main\Entity\DataManager
 		$conn->query("DELETE FROM " . $helper->quote(self::getTableName()) . " WHERE PROFILE_ID=".$profileId);
 		unset($helper, $conn);
 		return;
+	}
+
+
+	public static function getBusinessProducts($busines_id = false, $page_token = false)
+	{
+		$rsProfiles = ProfileTable::getList(["filter" => ["ACTIVE" => "Y", "!COMPAIN_ID" => "", "!BUSINESS_ID" => ""]]);
 	}
 
 

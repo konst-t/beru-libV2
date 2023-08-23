@@ -15,6 +15,8 @@ $MESS["IPL_MA_HIDE"] = "Скрыть";
 $MESS["IPL_MA_HIDE_TITLE"] = "Скрыть товар из показа на маркетплейсе";
 $MESS["IPL_MA_SEND_PRICE"] = "Установить цену";
 $MESS["IPL_MA_SEND_PRICE_TITLE"] = "Установить цену на маркетплейсе";
+$MESS["IPL_MA_PRICE_TIME"] = "Время отправки цены";
+$MESS["IPL_MA_STOCK_TIME"] = "Время отправки остатка";
 
 $MESS["IPL_MA_STATE_FEED_ONLY"] = "Только в YML";
 $MESS["IPL_MA_STATE_READY"] = "Готов";

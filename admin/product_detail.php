@@ -60,14 +60,14 @@ $info = "SKU ID: <b>".$arFields["SKU_ID"]."</b><br><br>".
 		Loc::getMessage("IPL_MA_NAME").": ".$arFields["NAME"]."<br><br>".
 		Loc::getMessage("IPL_MA_PROFILE").": <a href=\"/bitrix/admin/iplogic_beru_profile_edit.php?ID=".
 			$arFields["PROFILE_ID"]."&lang=".LANGUAGE_ID."\">".$arProfile["NAME"]."</a><br><br>".
-		Loc::getMessage("IPL_MA_MARKET_SKU").": ";
+		/*Loc::getMessage("IPL_MA_MARKET_SKU").": ";
 if ($arFields["MARKET_SKU"] == "") {
 	$info .= Loc::getMessage("IPL_MA_NO");
 }
 else {
 	$info .= $arFields["MARKET_SKU"];
-}
-$info.= "<br><br>".Loc::getMessage("IPL_MA_PRODUCT_ID").": ";
+}*/
+$info.= /*"<br><br>".*/Loc::getMessage("IPL_MA_PRODUCT_ID").": ";
 if ($arFields["PRODUCT_ID"] < 1) {
 	$info .= Loc::getMessage("IPL_MA_NO");
 }
@@ -88,12 +88,12 @@ else {
 $info.= "<br><br>";
 
 $info.= Loc::getMessage("IPL_MA_STATE").": ".$arState[$arFields["STATE"]]."<br><br>";
-if ($arFields["REJECT_REASON"] != "") {
+/*if ($arFields["REJECT_REASON"] != "") {
 	$info.= Loc::getMessage("IPL_MA_REJECT_REASON").": ".$arFields["REJECT_REASON"]."<br><br>";
 }
 if ($arFields["REJECT_NOTES"] != "") {
 	$info.= Loc::getMessage("IPL_MA_REJECT_NOTES").": ".$arFields["REJECT_NOTES"]."<br><br>";
-}
+}*/
 $info.= Loc::getMessage("IPL_MA_PRICE").": ";
 if ($arFields["PRICE"] == "") {
 	$info .= Loc::getMessage("IPL_MA_NO");
@@ -110,12 +110,28 @@ else {
 	$info .= $arFields["OLD_PRICE"];
 }
 $info.= "<br><br>";
+$info.= Loc::getMessage("IPL_MA_PRICE_TIME").": ";
+if ($arFields["PRICE_TIME"] == "") {
+	$info .= Loc::getMessage("IPL_MA_NO");
+}
+else {
+	$info .= $arFields["PRICE_TIME"];
+}
+$info.= "<br><br>";
 $info.= Loc::getMessage("IPL_MA_STOCK_FIT").": ";
 if ($arFields["STOCK_FIT"] == "") {
 	$info .= Loc::getMessage("IPL_MA_NO");
 }
 else {
 	$info .= $arFields["STOCK_FIT"];
+}
+$info.= "<br><br>";
+$info.= Loc::getMessage("IPL_MA_STOCK_TIME").": ";
+if ($arFields["STOCK_TIME"] == "") {
+	$info .= Loc::getMessage("IPL_MA_NO");
+}
+else {
+	$info .= $arFields["STOCK_TIME"];
 }
 if ($arFields["DETAILS"] != "") {
 	$info.= "<br><br>".Loc::getMessage("IPL_MA_DETAILS").": <hr>".Control::toHtml(print_r($arFields["DETAILS"],true))."<br><br>";

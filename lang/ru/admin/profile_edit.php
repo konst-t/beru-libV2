@@ -59,6 +59,7 @@ $MESS["IPL_MA_GENERAL_STATUSES"] = "Общие статусы";
 $MESS["SAVE_ERROR"] = "Ошибка сохранения в базу данных";
 $MESS["IPL_MA_SCHEME"] = "Схема работы";
 $MESS["IPL_MA_STORE"] = "Склад";
+$MESS["IPL_MA_BUSINESS_ID"] = "Идентификатор магазина";
 $MESS["MAIN_BY_DEFAULT"] = "По умолчанию";
 
 $MESS["IPL_MA_STATUS_NEW"] = "Стартовый статус нового заказа";

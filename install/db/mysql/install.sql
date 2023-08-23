@@ -17,6 +17,7 @@ create table if not exists b_iplogicberu_profile
 	SEND_TOKEN varchar(255) NULL,
 	GET_TOKEN varchar(255) NULL,
 	STORE VARCHAR(255) NULL,
+	BUSINESS_ID varchar(100) NULL,
 	USER_ID INT(11) NULL,
 	DELIVERY INT(11) NULL,
 	PAYMENTS INT(11) NULL,
@@ -134,7 +135,9 @@ create table if not exists b_iplogicberu_product
 	DETAILS mediumtext NULL,
 	PRICE varchar(12) NULL,
 	OLD_PRICE VARCHAR(12) NULL,
-    STOCK_FIT VARCHAR(5) NULL
+    STOCK_FIT VARCHAR(5) NULL,
+    PRICE_TIME VARCHAR(19) NULL,
+    STOCK_TIME VARCHAR(19) NULL,
 	HIDDEN char(1) NULL DEFAULT "N",
 	FOR_DELETE char(1) NULL DEFAULT "N",
 	PRIMARY KEY (ID),

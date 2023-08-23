@@ -37,6 +37,8 @@ $MESS["SAVED"] = "Сохранено";
 $MESS["IPL_MA_DELETE_CONFIRM"] = "Вы действительно хотите удалить товар?";
 $MESS["IPL_MA_DELETE_ALL_CONFIRM"] = "Вы действительно хотите удалить все товары профиля?";
 $MESS["SAVED_DELETED"] = "Успешно удалено";
+$MESS["IPL_MA_CAPTION_PRICE_TIME"] = "Время отправки цены";
+$MESS["IPL_MA_CAPTION_STOCK_TIME"] = "Время отправки остатка";
 
 $MESS["IPL_MA_STATE_FEED_ONLY"] = "Только в YML";
 $MESS["IPL_MA_STATE_READY"] = "Готов";

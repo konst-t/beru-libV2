@@ -3,7 +3,7 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.ph
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+error_reporting(E_ERROR);
 
 include_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/iplogic.beru/lib/dompdf/autoload.inc.php");
 

@@ -59,6 +59,7 @@ $MESS["IPL_MA_GENERAL_STATUSES"] = "General statuses";
 $MESS["SAVE_ERROR"] = "Error saving to database";
 $MESS["IPL_MA_SCHEME"] = "Work scheme";
 $MESS["IPL_MA_STORE"] = "Store";
+$MESS["IPL_MA_BUSINESS_ID"] = "Business ID";
 $MESS["MAIN_BY_DEFAULT"] = "By default";
 
 $MESS["IPL_MA_STATUS_NEW"] = "Starting status of a new order";

@@ -71,13 +71,13 @@ $arOpts = [
 			],
 		],
 	],
-	[
+	/*[
 		"NAME" => "market_sku",
 		"CAPTION" => Loc::getMessage("IPL_MA_CAPTION_MARKET_SKU"),
 		"FILTER" => [
 			"COMPARE" => "%",
 		],
-	],
+	],*/
 	[
 		"NAME" => "product_id",
 		"CAPTION" => Loc::getMessage("IPL_MA_CAPTION_PRODUCT_ID"),
@@ -168,7 +168,7 @@ $arOpts = [
 			],
 		],
 	],
-	[
+	/*[
 		"NAME" => "reject_reason",
 		"CAPTION" => Loc::getMessage("IPL_MA_CAPTION_REJECT_REASON"),
 		"FILTER" => [
@@ -177,7 +177,7 @@ $arOpts = [
 		"HEADER_KEY" => [
 			"default" => false,
 		],
-	],
+	],*/
 	[
 		"NAME" => "price",
 		"CAPTION" => Loc::getMessage("IPL_MA_CAPTION_PRICE"),
@@ -190,8 +190,16 @@ $arOpts = [
 		"CAPTION" => Loc::getMessage("IPL_MA_CAPTION_OLD_PRICE"),
 	],
 	[
+		"NAME" => "price_time",
+		"CAPTION" => Loc::getMessage("IPL_MA_CAPTION_PRICE_TIME"),
+	],
+	[
 		"NAME" => "stock_fit",
 		"CAPTION" => Loc::getMessage("IPL_MA_CAPTION_STOCK_FIT"),
+	],
+	[
+		"NAME" => "stock_time",
+		"CAPTION" => Loc::getMessage("IPL_MA_CAPTION_STOCK_TIME"),
 	],
 	[
 		"NAME" => "hidden",

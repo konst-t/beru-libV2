@@ -199,6 +199,12 @@ $arOpts = [
 		"DEFAULT"   => "",
 		"NAME"      => Loc::getMessage("IPL_MA_STORE"),
 	],
+	"BUSINESS_ID" => [
+		"TAB"       => "edit2",
+		"TYPE"      => "text",
+		"DEFAULT"   => "",
+		"NAME"      => Loc::getMessage("IPL_MA_BUSINESS_ID"),
+	],
 
 	"heading".randString(8) => [
 		"TAB"       => "edit2", 

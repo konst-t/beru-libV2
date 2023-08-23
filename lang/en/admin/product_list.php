@@ -37,6 +37,8 @@ $MESS["SAVED"] = "Saved";
 $MESS["IPL_MA_DELETE_CONFIRM"] = "Do you really want to delete the product?";
 $MESS["IPL_MA_DELETE_ALL_CONFIRM"] = "Do you really want to delete all profile products?";
 $MESS["SAVED_DELETED"] = "Successful deleted";
+$MESS["IPL_MA_CAPTION_PRICE_TIME"] = "Price send time";
+$MESS["IPL_MA_CAPTION_STOCK_TIME"] = "Stock send time";
 
 $MESS["IPL_MA_STATE_FEED_ONLY"] = "Only in YML";
 $MESS["IPL_MA_STATE_READY"] = "Ready";

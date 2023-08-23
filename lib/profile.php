@@ -32,6 +32,7 @@ IncludeModuleLangFile(Application::getDocumentRoot().BX_ROOT."/modules/iplogic.b
  * <li> SEND_TOKEN string(255) optional
  * <li> GET_TOKEN string(255) optional
  * <li> STORE string(255) optional
+ * <li> BUSINESS_ID string(100) optional
  * <li> USER_ID int optional
  * <li> DELIVERY int optional
  * <li> PAYMENTS int optional
@@ -154,6 +155,11 @@ class ProfileTable extends Main\Entity\DataManager
 				'data_type' => 'string',
 				'validation' => array(__CLASS__, 'validateStore'),
 				'title' => Loc::getMessage('PROFILE_ENTITY_STORE_FIELD'),
+			),
+			'BUSINESS_ID' => array(
+				'data_type' => 'string',
+				'validation' => array(__CLASS__, 'validateBusinessId'),
+				'title' => Loc::getMessage('PROFILE_ENTITY_BUSINESS_ID_FIELD'),
 			),
 			'USER_ID' => array(
 				'data_type' => 'integer',
@@ -323,6 +329,17 @@ class ProfileTable extends Main\Entity\DataManager
 	{
 		return array(
 			new Main\Entity\Validator\Length(null, 255),
+		);
+	}
+	/**
+	 * Returns validators for BUSINESS_ID field.
+	 *
+	 * @return array
+	 */
+	public static function validateBusinessId()
+	{
+		return array(
+			new Main\Entity\Validator\Length(null, 100),
 		);
 	}
 	/**

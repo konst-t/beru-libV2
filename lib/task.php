@@ -419,15 +419,18 @@ class TaskTable extends Main\Entity\DataManager
 				foreach( $IDs as $key => $val ) {
 					if(
 						!isset($arProducts[$val]) ||
-						!$arProducts[$val]["MARKET_SKU"] ||
-						in_array($arProducts[$val]["MARKET_SKU"], $arMarketSKUs)
+						/*!$arProducts[$val]["MARKET_SKU"] ||
+						in_array($arProducts[$val]["MARKET_SKU"], $arMarketSKUs)*/
+						!$arProducts[$val]["SKU_ID"] ||
+						in_array($arProducts[$val]["SKU_ID"], $arMarketSKUs)
 					) {
 						self::delete($key);
 					}
 					else {
 						$details = unserialize($arProducts[$val]["DETAILS"]);
 						if( $details["PRICE"] > 0 ) {
-							$arMarketSKUs[] = $arProducts[$val]["MARKET_SKU"];
+							//$arMarketSKUs[] = $arProducts[$val]["MARKET_SKU"];
+							$arMarketSKUs[] = $arProducts[$val]["SKU_ID"];
 							$new_price = $details["PRICE"];
 							$old_price = $details["OLD_PRICE"];
 							$arPrices[$val] = $new_price;
@@ -440,7 +443,8 @@ class TaskTable extends Main\Entity\DataManager
 								$arOldPrices[$val] = $old_price;
 							}
 							$arResult['offers'][] = [
-								"marketSku" => $arProducts[$val]["MARKET_SKU"],
+								//"marketSku" => $arProducts[$val]["MARKET_SKU"],
+								"offerId"   => $arProducts[$val]["SKU_ID"],
 								"delete"    => false,
 								"price"     => $price,
 							];
@@ -456,14 +460,17 @@ class TaskTable extends Main\Entity\DataManager
 				if( $res["status"] == 200 ) {
 					foreach( $IDs as $key => $val ) {
 						if( array_key_exists($val, $arPrices) ) {
-							$arFields = ["PRICE" => $arPrices[$val]];
+							$arFields = [
+								"PRICE" => $arPrices[$val],
+								"PRICE_TIME" => date('d.m.Y H:i:s', time())
+							];
 							if(isset($arOldPrices[$val])) {
 								$arFields["OLD_PRICE"] = $arOldPrices[$val];
 							}
 							else{
 								$arFields["OLD_PRICE"] = "";
 							}
-							ProductTable::update($val, $arFields);
+							$res = ProductTable::update($val, $arFields);
 							self::delete($key);
 						}
 					}
@@ -504,10 +511,11 @@ class TaskTable extends Main\Entity\DataManager
 					$arStocks = [];
 					$arResult['offers'] = [];
 					$arRequest = [];
+					$arRequest["skus"] = [];
 					foreach( $IDs as $key => $val ) {
 						if(
 							!isset($arProducts[$val]) ||
-							!$arProducts[$val]["MARKET_SKU"] ||
+							!$arProducts[$val]["SKU_ID"] ||
 							(int)$mod->arProfile["STORE"] <= 0
 						) {
 							self::delete($key);
@@ -536,18 +544,23 @@ class TaskTable extends Main\Entity\DataManager
 						}
 					}
 
-					$api = new YMAPI($task["PROFILE_ID"]);
-					$res = $api->setStocks($arRequest);
-					if( $res["status"] == 200 ) {
-						foreach( $IDs as $key => $val ) {
-							if( array_key_exists($val, $arStocks) ) {
-								ProductTable::update($val, ["STOCK_FIT" => $arStocks[$val]]);
-								self::delete($key);
+					if (count($arRequest["skus"])) {
+						$api = new YMAPI($task["PROFILE_ID"]);
+						$res = $api->setStocks($arRequest);
+						if( $res["status"] == 200 ) {
+							foreach( $IDs as $key => $val ) {
+								if( array_key_exists($val, $arStocks) ) {
+									$res = ProductTable::update($val, [
+										"STOCK_FIT" => $arStocks[$val],
+										"STOCK_TIME" => date('d.m.Y H:i:s', time())
+									]);
+									self::delete($key);
+								}
 							}
 						}
-					}
-					else {
-						//AddMessage2Log('Price update error', 'iplogic.beru');
+						else {
+							//AddMessage2Log('Price update error', 'iplogic.beru');
+						}
 					}
 
 					$steps++;

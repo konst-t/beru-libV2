@@ -12,6 +12,9 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.ph
 
 $arParam = explode("__", $_GET["param"]);
 
-\Iplogic\Beru\ProductTable::checkMarketProducts($arParam[0], $arParam[1]);
+// depricated
+//\Iplogic\Beru\ProductTable::checkMarketProducts($arParam[0], $arParam[1]);
+
+\Iplogic\Beru\ProductTable::getBusinessProducts($arParam[0], $arParam[1]);
 
 ?>

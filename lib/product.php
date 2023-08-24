@@ -330,12 +330,149 @@ class ProductTable extends Main\Entity\DataManager
 	}
 
 
-	public static function getBusinessProducts($busines_id = false, $page_token = false)
+	public static function getBusinessProducts($business_id = false, $page_token = false)
 	{
+		$arProfiles = [];
+		$arBusinesses = [];
 		$rsProfiles = ProfileTable::getList(["filter" => ["ACTIVE" => "Y", "!COMPAIN_ID" => "", "!BUSINESS_ID" => ""]]);
+		while( $ar_Profile = $rsProfiles->Fetch() ) {
+			$arProfiles[$ar_Profile["COMPAIN_ID"]] = ProfileTable::getById($ar_Profile["ID"]);
+			if(!in_array($ar_Profile["BUSINESS_ID"], $arBusinesses)) {
+				$arBusinesses[] = $ar_Profile["BUSINESS_ID"];
+			}
+		}
+		if( !count($arBusinesses) ) {
+			return;
+		}
+		sort($arBusinesses);
+		// first step
+		if( !$business_id ) {
+			$business_id = $arBusinesses[0];
+			self::markAllForDelete();
+			Option::set(self::$moduleID, "products_check_last_time", time());
+		}
+		// not first step - next business
+		elseif( $business_id && $page_token == "" ) {
+			foreach($arBusinesses as $key => $bid) {
+				if($bid == $business_id) {
+					// next business exists
+					if(array_key_exists($key+1, $arBusinesses)) {
+						$business_id = $arBusinesses[$key+1];
+					}
+					// no next business - end of execution
+					else {                                                       //             echo "все<br>";
+						self::deleteMarked();
+						Option::set(self::$moduleID, "products_check_last_time", time());
+						return;
+					}
+					break;
+				}
+			}
+		}
+		if( !$business_id ) {
+			return;
+		}
+		$arProfile = false;
+		foreach($arProfiles as $ar_Profile) {
+			if(
+				$ar_Profile["BUSINESS_ID"] == $business_id &&
+				$ar_Profile["CLIENT_ID"] != "" &&
+				$ar_Profile["SEND_TOKEN"] != ""
+			) {
+				$arProfile = $ar_Profile;
+			}
+		}
+		if( !$arProfile ) {
+			return;
+		}
+
+		$con = new Control();
+		$api = new YMAPI();
+
+		$arHidden = [];
+		foreach($arProfiles as $ar_Profile) {
+			$api->setProfile($ar_Profile);
+			$arHidden[$ar_Profile["COMPAIN_ID"]] = [];
+			$result = $api->getHidden();
+			foreach( $result["body"]["result"]["hiddenOffers"] as $offer ) {
+				$arHidden[$ar_Profile["COMPAIN_ID"]][] = $offer["offerId"];
+			}
+		}
+
+		$arParams = ["limit" => Option::get(self::$moduleID, "products_add_num", 50)];
+
+		for( $i = 0; $i < 5; $i++ ) {
+			if( $page_token ) {
+				$arParams["page_token"] = $page_token;
+			}
+			$api = new YMAPI();
+			$api->setProfile($arProfile);
+			$result = $api->getOffers($arParams);       //     echo "получено " . count($result["body"]["result"]["offerMappings"]) . "<br>";
+			if( $result["status"] != 200 ) {
+				$page_token = "";
+				break;
+			}
+			if( !count($result["body"]["result"]["offerMappings"]) ) {
+				$page_token = "";
+				break;
+			}
+			foreach( $result["body"]["result"]["offerMappings"] as $offer ) {
+				if(is_array($offer["offer"]["campaigns"]) && count($offer["offer"]["campaigns"])) {
+					$arFields = [
+						"SKU_ID"        => $offer["offer"]["offerId"],
+						"NAME"          => $offer["offer"]["name"],
+						"VENDOR"        => $offer["offer"]["vendor"],
+						//"AVAILABILITY"  => ($offer["offer"]["availability"] == "ACTIVE" ? "Y" : "N"),
+						"FOR_DELETE"    => "N"
+					];
+					foreach($offer["offer"]["campaigns"] as $arComp) {
+						if(isset($arProfiles[$arComp["campaignId"]])) {
+							$con->arProfile = $arProfiles[$arComp["campaignId"]];
+							$id = $con->getProductId($offer["offer"]["offerId"]);
+							$hidden = "N";
+							if(
+								$offer["offer"]["offerId"] &&
+								in_array($offer["offer"]["offerId"], $arHidden[$arComp["campaignId"]])
+							) {
+								$hidden = "Y";
+							}
+							$arFields["PROFILE_ID"] = $con->arProfile["ID"];
+							$arFields["PRODUCT_ID"] = $id;
+							$arFields["STATE"] = $arComp["status"];
+							$arFields["HIDDEN"] = $hidden;
+							$res = self::getList(
+								["filter" => ["PROFILE_ID" => $con->arProfile["ID"], "SKU_ID" => $offer["offer"]["offerId"]]]
+							);
+							if( $pr = $res->Fetch() ) {                          //             echo "update " . $offer["offer"]["offerId"] . "<br>";
+								self::update($pr["ID"], $arFields);
+							}
+							else {                                                //             echo "add " . $offer["offer"]["offerId"] . "<br>";
+								self::add($arFields);
+							}
+						}
+					}
+				}
+			}
+			if( $result["body"]["result"]["paging"]["nextPageToken"] != "" ) {
+				$page_token = $result["body"]["result"]["paging"]["nextPageToken"];
+			}
+			else {
+				$page_token = "";
+			}
+		}
+		/*$p = "https://" . Option::get(self::$moduleID, "domen") . "/test.php?param=" . $business_id . "__" . $page_token;
+		echo "<a href='" . $p . "'>" . $p . "</a>";*/
+		exec(
+			"wget --no-check-certificate -b -q -O - https://" . Option::get(self::$moduleID, "domen") .
+			"/bitrix/services/iplogic/mkpapi/products.php?param=" . $business_id . "__" . $page_token
+		);
+		die();
 	}
 
 
+	/*
+	 * Depricated
+	 */
 	public static function checkMarketProducts($profile_id = false, $page_token = false)
 	{
 		$rsProfiles = ProfileTable::getList(["order" => ["ID" => "ASC"], "filter" => ["ACTIVE" => "Y"]]);
@@ -494,7 +631,14 @@ class ProductTable extends Main\Entity\DataManager
 			}
 			$con = new Control($product["PROFILE_ID"]);
 			$set = $con->getSKU($product["SKU_ID"], [], true);
-			if( $product["STATE"] == "READY" || $product["STATE"] == "NEED_CONTENT") {
+			if(
+				// old statuses
+				$product["STATE"] == "READY" ||
+				$product["STATE"] == "NEED_CONTENT" ||
+				// new statuses
+				$product["STATE"] == "PUBLISHED" ||
+				$product["STATE"] == "NO_STOCKS"
+			) {
 				if( $product["PRICE"] != $set["PRICE"] && $set["PRICE"] > 0 ) {
 					TaskTable::addPriceUpdateTask($ID, $product["PROFILE_ID"]);
 				}

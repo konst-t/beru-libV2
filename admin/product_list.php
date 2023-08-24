@@ -102,7 +102,7 @@ $arOpts = [
 			"default" => false,
 		],
 	],
-	[
+	/*[
 		"NAME" => "availability",
 		"CAPTION" => Loc::getMessage("IPL_MA_CAPTION_AVAILABILITY"),
 		"FILTER" => [
@@ -125,7 +125,7 @@ $arOpts = [
 				"TYPE" => "HTML",
 			],
 		],
-	],
+	],*/
 	[
 		"NAME" => "state",
 		"CAPTION" => Loc::getMessage("IPL_MA_CAPTION_STATE"),
@@ -133,6 +133,7 @@ $arOpts = [
 			"VIEW" => "select",
 			"VALUES" => [
 				"reference" => [
+					// old
 					Loc::getMessage("IPL_MA_STATE_READY"),
 					Loc::getMessage("IPL_MA_STATE_IN_WORK"),
 					Loc::getMessage("IPL_MA_STATE_NEED_INFO"),
@@ -140,8 +141,18 @@ $arOpts = [
 					Loc::getMessage("IPL_MA_STATE_REJECTED"),
 					Loc::getMessage("IPL_MA_STATE_SUSPENDED"),
 					Loc::getMessage("IPL_MA_STATE_OTHER"),
+					// new
+					Loc::getMessage("IPL_MA_STATE_PUBLISHED"),
+					Loc::getMessage("IPL_MA_STATE_CHECKING"),
+					Loc::getMessage("IPL_MA_STATE_DISABLED_BY_PARTNER"),
+					Loc::getMessage("IPL_MA_STATE_REJECTED_BY_MARKET"),
+					Loc::getMessage("IPL_MA_STATE_DISABLED_AUTOMATICALLY"),
+					Loc::getMessage("IPL_MA_STATE_CREATING_CARD"),
+					Loc::getMessage("IPL_MA_STATE_NO_CARD"),
+					Loc::getMessage("IPL_MA_STATE_NO_STOCKS"),
 				],
 				"reference_id" => [
+					// old
 					"READY",
 					"IN_WORK",
 					"NEED_INFO",
@@ -149,11 +160,21 @@ $arOpts = [
 					"REJECTED",
 					"SUSPENDED",
 					"OTHER",
+					// new
+					"PUBLISHED",
+					"CHECKING",
+					"DISABLED_BY_PARTNER",
+					"REJECTED_BY_MARKET",
+					"DISABLED_AUTOMATICALLY",
+					"CREATING_CARD",
+					"NO_CARD",
+					"NO_STOCKS",
 				]
 			],
 			"DEFAULT" => Loc::getMessage("IPL_MA_ALL"),
 		],
 		"REPLACE" => [
+			// old
 			"READY" 		=> "<span style='color:#1cc43b;'>".Loc::getMessage("IPL_MA_STATE_READY")."</span>",
 			"IN_WORK" 		=> "<span style='color:#1d2bec;'>".Loc::getMessage("IPL_MA_STATE_IN_WORK")."</span>",
 			"NEED_INFO" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_NEED_INFO")."</span>",
@@ -161,6 +182,15 @@ $arOpts = [
 			"REJECTED" 		=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_REJECTED")."</span>",
 			"SUSPENDED" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_SUSPENDED")."</span>",
 			"OTHER" 		=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_OTHER")."</span>",
+			// new
+			"PUBLISHED" 	=> "<span style='color:#1cc43b;'>".Loc::getMessage("IPL_MA_STATE_PUBLISHED")."</span>",
+			"CHECKING" 	=> "<span style='color:#1d2bec;'>".Loc::getMessage("IPL_MA_STATE_CHECKING")."</span>",
+			"DISABLED_BY_PARTNER" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_DISABLED_BY_PARTNER")."</span>",
+			"REJECTED_BY_MARKET" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_REJECTED_BY_MARKET")."</span>",
+			"DISABLED_AUTOMATICALLY" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_DISABLED_AUTOMATICALLY")."</span>",
+			"CREATING_CARD" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_CREATING_CARD")."</span>",
+			"NO_CARD" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_NO_CARD")."</span>",
+			"NO_STOCKS" 	=> "<span style='color:#ff8c00;'>" .Loc::getMessage("IPL_MA_STATE_NO_STOCKS")."</span>",
 		],
 		"VIEW" => [
 			"AddField" => [

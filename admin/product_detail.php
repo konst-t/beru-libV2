@@ -47,6 +47,7 @@ $res = CIblockElement::getById($arFields["PRODUCT_ID"]);
 $arElement = $res->Fetch();
 
 $arState = [
+	// old
 	"READY" 		=> "<span style='color:#1cc43b;'>".Loc::getMessage("IPL_MA_STATE_READY")." [READY]</span>",
 	"IN_WORK" 		=> "<span style='color:#1d2bec;'>".Loc::getMessage("IPL_MA_STATE_IN_WORK")." [IN_WORK]</span>",
 	"NEED_INFO" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_NEED_INFO")." [NEED_INFO]</span>",
@@ -54,7 +55,27 @@ $arState = [
 	"REJECTED" 		=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_REJECTED")." [REJECTED]</span>",
 	"SUSPENDED" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_SUSPENDED")." [SUSPENDED]</span>",
 	"OTHER" 		=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_OTHER")." [OTHER]</span>",
+	// new
+	"PUBLISHED" 	=> "<span style='color:#1cc43b;'>".Loc::getMessage("IPL_MA_STATE_PUBLISHED")." [PUBLISHED]</span>",
+	"CHECKING" 	=> "<span style='color:#1d2bec;'>".Loc::getMessage("IPL_MA_STATE_CHECKING")." [CHECKING]</span>",
+	"DISABLED_BY_PARTNER" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_DISABLED_BY_PARTNER")." [DISABLED_BY_PARTNER]</span>",
+	"REJECTED_BY_MARKET" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_REJECTED_BY_MARKET")." [REJECTED_BY_MARKET]</span>",
+	"DISABLED_AUTOMATICALLY" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_DISABLED_AUTOMATICALLY")." [DISABLED_AUTOMATICALLY]</span>",
+	"CREATING_CARD" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_CREATING_CARD")." [CREATING_CARD]</span>",
+	"NO_CARD" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_NO_CARD")." [NO_CARD]</span>",
+	"NO_STOCKS" 	=> "<span style='color:#ff8c00;'>" .Loc::getMessage("IPL_MA_STATE_NO_STOCKS")." [NO_STOCKS]</span>",
 ];
+
+/*
+    PUBLISHED — Готов к продаже.
+    CHECKING — На проверке.
+    DISABLED_BY_PARTNER — Скрыт вами.
+    REJECTED_BY_MARKET — Отклонен.
+    DISABLED_AUTOMATICALLY — Исправьте ошибки.
+    CREATING_CARD — Создается карточка.
+    NO_CARD — Нужна карточка.
+    NO_STOCKS — Нет на складе.
+ * */
 
 $info = "SKU ID: <b>".$arFields["SKU_ID"]."</b><br><br>".
 		Loc::getMessage("IPL_MA_NAME").": ".$arFields["NAME"]."<br><br>".
@@ -78,13 +99,13 @@ elseif ($arElement) {
 else {
 	$info .= $arFields["PRODUCT_ID"];
 }
-$info.= "<br><br>".Loc::getMessage("IPL_MA_VENDOR").": ".$arFields["VENDOR"]."<br><br>".Loc::getMessage("IPL_MA_AVAILABILITY").": ";
-if ($arFields["AVAILABILITY"] == "Y") {
+$info.= "<br><br>".Loc::getMessage("IPL_MA_VENDOR").": ".$arFields["VENDOR"]/*."<br><br>".Loc::getMessage("IPL_MA_AVAILABILITY").": "*/;
+/*if ($arFields["AVAILABILITY"] == "Y") {
 	$info .= "<span style=\"color:green;\">".Loc::getMessage("IPL_MA_YES")."</span>";
 }
 else {
 	$info .= "<span style=\"color:red;\">".Loc::getMessage("IPL_MA_NO")."</span>";
-}
+}*/
 $info.= "<br><br>";
 
 $info.= Loc::getMessage("IPL_MA_STATE").": ".$arState[$arFields["STATE"]]."<br><br>";

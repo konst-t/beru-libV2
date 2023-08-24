@@ -22,14 +22,23 @@ class YMAPI {
 			$headers;
 
 
-	function __construct($profileID) 
+	function __construct($profileID = false)
 	{
-		$this->arProfile = Profile::getById($profileID);
 		$this->cl = new HttpClient(['socketTimeout' => 10]);
 		$this->headers = [
 			"Content-Type" => "application/json; charset=UTF-8",
-			"Authorization" => 'OAuth oauth_token="'.$this->arProfile["SEND_TOKEN"].'", oauth_client_id="'.$this->arProfile["CLIENT_ID"].'"'
 		];
+		if($profileID) {
+			$this->setProfile(Profile::getById($profileID));
+		}
+		return;
+	}
+
+
+	public function setProfile($arProfile)
+	{
+		$this->arProfile = $arProfile;
+		$this->headers["Authorization"] = 'OAuth oauth_token="'.$this->arProfile["SEND_TOKEN"].'", oauth_client_id="'.$this->arProfile["CLIENT_ID"].'"';
 		//$this->headers["Authorization"] = 'Bearer '.$this->arProfile["SEND_TOKEN"];
 		foreach($this->headers as $key => $val) {
 			$this->cl->setHeader($key, $val);

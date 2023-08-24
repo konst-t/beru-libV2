@@ -26,6 +26,14 @@ $MESS["IPL_MA_STATE_NEED_CONTENT"] = "Отклонен - не найдена к�
 $MESS["IPL_MA_STATE_REJECTED"] = "Отклонен - не планируется к продаже";
 $MESS["IPL_MA_STATE_SUSPENDED"] = "Отклонен - товар еще не создан";
 $MESS["IPL_MA_STATE_OTHER"] = "Отклонен - другие причины";
+$MESS["IPL_MA_STATE_PUBLISHED"] = "Готов к продаже";
+$MESS["IPL_MA_STATE_CHECKING"] = "На проверке";
+$MESS["IPL_MA_STATE_DISABLED_BY_PARTNER"] = "Скрыт вами";
+$MESS["IPL_MA_STATE_REJECTED_BY_MARKET"] = "Отклонен";
+$MESS["IPL_MA_STATE_DISABLED_AUTOMATICALLY"] = "Исправьте ошибки";
+$MESS["IPL_MA_STATE_CREATING_CARD"] = "Создается карточка";
+$MESS["IPL_MA_STATE_NO_CARD"] = "Нужна карточка";
+$MESS["IPL_MA_STATE_NO_STOCKS"] = "Нет на складе";
 
 $MESS["IPL_MA_YES"] = "Да";
 $MESS["IPL_MA_NO"] = "Нет";

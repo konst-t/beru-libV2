@@ -26,6 +26,14 @@ $MESS["IPL_MA_STATE_NEED_CONTENT"] = "Rejected - no card found";
 $MESS["IPL_MA_STATE_REJECTED"] = "Rejected - not planned for sale";
 $MESS["IPL_MA_STATE_SUSPENDED"] = "Rejected-product not created yet";
 $MESS["IPL_MA_STATE_OTHER"] = "Rejected - other reasons";
+$MESS["IPL_MA_STATE_PUBLISHED"] = "Ready";
+$MESS["IPL_MA_STATE_CHECKING"] = "Checking";
+$MESS["IPL_MA_STATE_DISABLED_BY_PARTNER"] = "Hidden by you";
+$MESS["IPL_MA_STATE_REJECTED_BY_MARKET"] = "Rejected";
+$MESS["IPL_MA_STATE_DISABLED_AUTOMATICALLY"] = "Fix errors";
+$MESS["IPL_MA_STATE_CREATING_CARD"] = "Card is creating";
+$MESS["IPL_MA_STATE_NO_CARD"] = "No card";
+$MESS["IPL_MA_STATE_NO_STOCKS"] = "No stock";
 
 $MESS["IPL_MA_YES"] = "Yes";
 $MESS["IPL_MA_NO"] = "No";

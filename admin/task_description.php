@@ -1,6 +1,5 @@
 <?
-if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true)
-	die();
+if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
 use Bitrix\Main\Localization\Loc;
 
@@ -18,10 +17,6 @@ return array(
 	"IPLOGIC_BERU_WRITE" => array(
 		"title" => Loc::getMessage('TASK_NAME_IPLOGIC_BERU_WRITE'),
 		"description" => Loc::getMessage('TASK_DESC_IPLOGIC_BERU_WRITE'),
-	),
-	"IPLOGIC_BERU_FULL" => array(
-		"title" => Loc::getMessage('TASK_NAME_IPLOGIC_BERU_FULL'),
-		"description" => Loc::getMessage('TASK_DESC_IPLOGIC_BERU_FULL'),
 	),
 	"IPLOGIC_BERU_PROFILE_DENIED" => array(
 		"title" => Loc::getMessage('TASK_NAME_IPLOGIC_BERU_PROFILE_DENIED'),

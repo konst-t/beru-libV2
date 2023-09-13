@@ -360,7 +360,7 @@ class ProductTable extends Main\Entity\DataManager
 						$business_id = $arBusinesses[$key+1];
 					}
 					// no next business - end of execution
-					else {                                                       //             echo "все<br>";
+					else {
 						self::deleteMarked();
 						Option::set(self::$moduleID, "products_check_last_time", time());
 						return;
@@ -407,7 +407,7 @@ class ProductTable extends Main\Entity\DataManager
 			}
 			$api = new YMAPI();
 			$api->setProfile($arProfile);
-			$result = $api->getOffers($arParams);       //     echo "получено " . count($result["body"]["result"]["offerMappings"]) . "<br>";
+			$result = $api->getOffers($arParams);
 			if( $result["status"] != 200 ) {
 				$page_token = "";
 				break;
@@ -443,10 +443,10 @@ class ProductTable extends Main\Entity\DataManager
 							$res = self::getList(
 								["filter" => ["PROFILE_ID" => $con->arProfile["ID"], "SKU_ID" => $offer["offer"]["offerId"]]]
 							);
-							if( $pr = $res->Fetch() ) {                          //             echo "update " . $offer["offer"]["offerId"] . "<br>";
+							if( $pr = $res->Fetch() ) {
 								self::update($pr["ID"], $arFields);
 							}
-							else {                                                //             echo "add " . $offer["offer"]["offerId"] . "<br>";
+							else {
 								self::add($arFields);
 							}
 						}
@@ -460,8 +460,6 @@ class ProductTable extends Main\Entity\DataManager
 				$page_token = "";
 			}
 		}
-		/*$p = "https://" . Option::get(self::$moduleID, "domen") . "/test.php?param=" . $business_id . "__" . $page_token;
-		echo "<a href='" . $p . "'>" . $p . "</a>";*/
 		exec(
 			"wget --no-check-certificate -b -q -O - https://" . Option::get(self::$moduleID, "domen") .
 			"/bitrix/services/iplogic/mkpapi/products.php?param=" . $business_id . "__" . $page_token

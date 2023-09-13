@@ -341,23 +341,10 @@ if( !class_exists("iplogic_beru") ) {
 						"profiles_read",
 						"logs_read",
 						"tasks_read",
-						"tasks_read",
 					],
 				],
 				"iplogic_beru_write" => [
 					"LETTER" => "W",
-					"BINDING" => "module",
-					"OPERATIONS" => [
-						"profiles_read",
-						"profiles_edit",
-						"logs_read",
-						"logs_edit",
-						"tasks_read",
-						"tasks_edit",
-					],
-				],
-				"iplogic_beru_full" => [
-					"LETTER" => "X",
 					"BINDING" => "module",
 					"OPERATIONS" => [
 						"profiles_read",

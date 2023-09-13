@@ -325,8 +325,7 @@ if($PROFILE_ACCESS >= "W") {
 		$arContextMenu[] = [
 			"TEXT"  => Loc::getMessage("IPL_MA_STATE_CANCEL"),
 			"TITLE" => Loc::getMessage("IPL_MA_STATE_CANCEL_TITLE"),
-			"LINK"  => "iplogic_beru_order_detail.php?PROFILE_ID=" . $arFields["PROFILE_ID"] . "&ID=" . $ID .
-				"&action=state_cancel&lang=" . LANG,
+			"LINK"  => "javascript:cancelConfirm();",
 		];
 	}
 	$arContextMenu[] = [
@@ -631,6 +630,11 @@ echo ("<script>
 	function deleteConfirm() {
 		if (window.confirm('".Loc::getMessage("IPL_MA_DELETE_CONF")."')) {
 			window.location.href='iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=delete&lang=".LANG."';
+		}
+	}
+	function cancelConfirm() {
+		if (window.confirm('".Loc::getMessage("IPL_MA_CANCEL_CONF")."')) {
+			window.location.href='iplogic_beru_order_detail.php?PROFILE_ID=".$arFields["PROFILE_ID"]."&ID=".$ID."&action=state_cancel&lang=".LANG."';
 		}
 	}
 	function deleteBoxConfirm(id) {

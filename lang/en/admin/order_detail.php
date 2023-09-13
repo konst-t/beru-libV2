@@ -15,6 +15,7 @@ $MESS["IPL_MA_LIST_TITLE"] = "Return to order list";
 $MESS["IPL_MA_DELETE"] = "Delete";
 $MESS["IPL_MA_DELETE_TITLE"] = "Delete order";
 $MESS["IPL_MA_DELETE_CONF"] = "Are you sure you want to delete the order";
+$MESS["IPL_MA_CANCEL_CONF"] = "Are you sure you want to cancel the order";
 $MESS["IPL_MA_YES"] = "Yes";
 $MESS["IPL_MA_NO"] = "No";
 $MESS["IPL_MA_NAME"] = "Name";

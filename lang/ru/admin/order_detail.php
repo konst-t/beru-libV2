@@ -15,6 +15,7 @@ $MESS["IPL_MA_LIST_TITLE"] = "Вернуться к списку заказов"
 $MESS["IPL_MA_DELETE"] = "Удалить";
 $MESS["IPL_MA_DELETE_TITLE"] = "Удалить заказ";
 $MESS["IPL_MA_DELETE_CONF"] = "Вы уверены, что хотите удалить заказ";
+$MESS["IPL_MA_CANCEL_CONF"] = "Вы уверены, что хотите отменить заказ";
 $MESS["IPL_MA_YES"] = "Да";
 $MESS["IPL_MA_NO"] = "Нет";
 $MESS["IPL_MA_NAME"] = "Название";

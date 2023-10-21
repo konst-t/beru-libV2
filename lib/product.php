@@ -623,6 +623,12 @@ class ProductTable extends Main\Entity\DataManager
 	public static function updateCache($ID)
 	{
 		if( $product = self::getById($ID) ) {
+			$arProfile = ProfileTable::getById($product["PROFILE_ID"]);
+			if( $arProfile["ACTIVE"] != "Y" ) {
+				return false;
+			}
+			$con = new Control($product["PROFILE_ID"]);
+			$set = $con->getSKU($product["SKU_ID"], [], true);
 			$eventManager = Main\EventManager::getInstance();
 			$eventsList = $eventManager->findEventHandlers('iplogic.beru', 'OnIplogicBeruBeforeProductCacheSave');
 			foreach( $eventsList as $arEvent ) {
@@ -630,12 +636,6 @@ class ProductTable extends Main\Entity\DataManager
 					return false;
 				}
 			}
-			$arProfile = ProfileTable::getById($product["PROFILE_ID"]);
-			if( $arProfile["ACTIVE"] != "Y" ) {
-				return false;
-			}
-			$con = new Control($product["PROFILE_ID"]);
-			$set = $con->getSKU($product["SKU_ID"], [], true);
 			if(
 				// old statuses
 				$product["STATE"] == "READY" ||

@@ -27,7 +27,7 @@ IncludeModuleLangFile(Application::getDocumentRoot() . BX_ROOT . "/modules/iplog
  * <li> NAME string optional
  * <li> VENDOR string(255) optional
  * <li> AVAILABILITY bool optional default 'N'
- * <li> STATE string(12) optional
+ * <li> STATE string(100) optional
  * <li> REJECT_REASON string(255) optional
  * <li> REJECT_NOTES string optional
  * <li> DETAILS string optional
@@ -191,7 +191,7 @@ class ProductTable extends Main\Entity\DataManager
 	public static function validateState()
 	{
 		return [
-			new Main\Entity\Validator\Length(null, 12),
+			new Main\Entity\Validator\Length(null, 100),
 		];
 	}
 
@@ -420,8 +420,10 @@ class ProductTable extends Main\Entity\DataManager
 				if(is_array($offer["offer"]["campaigns"]) && count($offer["offer"]["campaigns"])) {
 					$arFields = [
 						"SKU_ID"        => $offer["offer"]["offerId"],
+						"MARKET_SKU"    => $offer["mapping"]["marketSku"],
 						"NAME"          => $offer["offer"]["name"],
 						"VENDOR"        => $offer["offer"]["vendor"],
+						"STATE"         => $offer["offer"]["cardStatus"],
 						//"AVAILABILITY"  => ($offer["offer"]["availability"] == "ACTIVE" ? "Y" : "N"),
 						"FOR_DELETE"    => "N"
 					];
@@ -438,7 +440,7 @@ class ProductTable extends Main\Entity\DataManager
 							}
 							$arFields["PROFILE_ID"] = $con->arProfile["ID"];
 							$arFields["PRODUCT_ID"] = $id;
-							$arFields["STATE"] = $arComp["status"];
+							//$arFields["STATE"] = $arComp["status"];
 							$arFields["HIDDEN"] = $hidden;
 							$res = self::getList(
 								["filter" => ["PROFILE_ID" => $con->arProfile["ID"], "SKU_ID" => $offer["offer"]["offerId"]]]
@@ -629,6 +631,9 @@ class ProductTable extends Main\Entity\DataManager
 			}
 			$con = new Control($product["PROFILE_ID"]);
 			$set = $con->getSKU($product["SKU_ID"], [], true);
+			if($set["STOCK_FIT"] === NULL || $set["STOCK_FIT"] === "") {
+				$set["STOCK_FIT"] = 0;
+			}
 			$eventManager = Main\EventManager::getInstance();
 			$eventsList = $eventManager->findEventHandlers('iplogic.beru', 'OnIplogicBeruBeforeProductCacheSave');
 			foreach( $eventsList as $arEvent ) {
@@ -637,20 +642,26 @@ class ProductTable extends Main\Entity\DataManager
 				}
 			}
 			if(
-				// old statuses
+				(// very old statuses
 				$product["STATE"] == "READY" ||
 				$product["STATE"] == "NEED_CONTENT" ||
-				// new statuses
+				// old statuses
 				$product["STATE"] == "PUBLISHED" ||
-				$product["STATE"] == "NO_STOCKS"
+				$product["STATE"] == "NO_STOCKS" ||
+				// new statuses
+				$product["STATE"] == "HAS_CARD_CAN_NOT_UPDATE" ||
+				$product["STATE"] == "HAS_CARD_CAN_UPDATE" ||
+				$product["STATE"] == "HAS_CARD_CAN_UPDATE_ERRORS" ||
+				$product["STATE"] == "HAS_CARD_CAN_UPDATE_PROCESSING") &&
+				$product["PRODUCT_ID"] > 0
 			) {
-				if( $product["PRICE"] != $set["PRICE"] && $set["PRICE"] > 0 ) {
+				if( intval($product["PRICE"]) != intval($set["PRICE"]) && intval($set["PRICE"]) > 0 ) {
 					TaskTable::addPriceUpdateTask($ID, $product["PROFILE_ID"]);
 				}
-				if( $product["OLD_PRICE"] != $set["OLD_PRICE"] ) {
+				if( intval($product["OLD_PRICE"]) != intval($set["OLD_PRICE"]) &&  intval($set["OLD_PRICE"]) > intval($set["PRICE"])) {
 					TaskTable::addPriceUpdateTask($ID, $product["PROFILE_ID"]);
 				}
-				if( $product["STOCK_FIT"] != $set["STOCK_FIT"] ) {
+				if( $product["STOCK_FIT"] !== $set["STOCK_FIT"] ) {
 					TaskTable::addStockUpdateTask($ID, $product["PROFILE_ID"]);
 				}
 			}

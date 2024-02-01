@@ -71,13 +71,13 @@ $arOpts = [
 			],
 		],
 	],
-	/*[
+	[
 		"NAME" => "market_sku",
 		"CAPTION" => Loc::getMessage("IPL_MA_CAPTION_MARKET_SKU"),
 		"FILTER" => [
 			"COMPARE" => "%",
 		],
-	],*/
+	],
 	[
 		"NAME" => "product_id",
 		"CAPTION" => Loc::getMessage("IPL_MA_CAPTION_PRODUCT_ID"),
@@ -133,7 +133,7 @@ $arOpts = [
 			"VIEW" => "select",
 			"VALUES" => [
 				"reference" => [
-					// old
+					// very old
 					Loc::getMessage("IPL_MA_STATE_READY"),
 					Loc::getMessage("IPL_MA_STATE_IN_WORK"),
 					Loc::getMessage("IPL_MA_STATE_NEED_INFO"),
@@ -141,7 +141,7 @@ $arOpts = [
 					Loc::getMessage("IPL_MA_STATE_REJECTED"),
 					Loc::getMessage("IPL_MA_STATE_SUSPENDED"),
 					Loc::getMessage("IPL_MA_STATE_OTHER"),
-					// new
+					// old
 					Loc::getMessage("IPL_MA_STATE_PUBLISHED"),
 					Loc::getMessage("IPL_MA_STATE_CHECKING"),
 					Loc::getMessage("IPL_MA_STATE_DISABLED_BY_PARTNER"),
@@ -150,6 +150,16 @@ $arOpts = [
 					Loc::getMessage("IPL_MA_STATE_CREATING_CARD"),
 					Loc::getMessage("IPL_MA_STATE_NO_CARD"),
 					Loc::getMessage("IPL_MA_STATE_NO_STOCKS"),
+					// new
+					Loc::getMessage("HAS_CARD_CAN_NOT_UPDATE"),
+					Loc::getMessage("HAS_CARD_CAN_UPDATE"),
+					Loc::getMessage("HAS_CARD_CAN_UPDATE_ERRORS"),
+					Loc::getMessage("HAS_CARD_CAN_UPDATE_PROCESSING"),
+					Loc::getMessage("NO_CARD_NEED_CONTENT"),
+					Loc::getMessage("NO_CARD_MARKET_WILL_CREATE"),
+					Loc::getMessage("NO_CARD_ERRORS"),
+					Loc::getMessage("NO_CARD_PROCESSING"),
+					Loc::getMessage("NO_CARD_ADD_TO_CAMPAIGN"),
 				],
 				"reference_id" => [
 					// old
@@ -174,7 +184,7 @@ $arOpts = [
 			"DEFAULT" => Loc::getMessage("IPL_MA_ALL"),
 		],
 		"REPLACE" => [
-			// old
+			// very old
 			"READY" 		=> "<span style='color:#1cc43b;'>".Loc::getMessage("IPL_MA_STATE_READY")."</span>",
 			"IN_WORK" 		=> "<span style='color:#1d2bec;'>".Loc::getMessage("IPL_MA_STATE_IN_WORK")."</span>",
 			"NEED_INFO" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_NEED_INFO")."</span>",
@@ -182,7 +192,7 @@ $arOpts = [
 			"REJECTED" 		=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_REJECTED")."</span>",
 			"SUSPENDED" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_SUSPENDED")."</span>",
 			"OTHER" 		=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_OTHER")."</span>",
-			// new
+			// old
 			"PUBLISHED" 	=> "<span style='color:#1cc43b;'>".Loc::getMessage("IPL_MA_STATE_PUBLISHED")."</span>",
 			"CHECKING" 	=> "<span style='color:#1d2bec;'>".Loc::getMessage("IPL_MA_STATE_CHECKING")."</span>",
 			"DISABLED_BY_PARTNER" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_DISABLED_BY_PARTNER")."</span>",
@@ -191,6 +201,16 @@ $arOpts = [
 			"CREATING_CARD" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_CREATING_CARD")."</span>",
 			"NO_CARD" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_NO_CARD")."</span>",
 			"NO_STOCKS" 	=> "<span style='color:#ff8c00;'>" .Loc::getMessage("IPL_MA_STATE_NO_STOCKS")."</span>",
+			// new
+			"HAS_CARD_CAN_NOT_UPDATE" 	=> "<span style='color:#1cc43b;'>" .Loc::getMessage("IPL_MA_STATE_HAS_CARD_CAN_NOT_UPDATE")."</span>",
+			"HAS_CARD_CAN_UPDATE" 	=> "<span style='color:#1d2bec;'>" .Loc::getMessage("IPL_MA_STATE_HAS_CARD_CAN_UPDATE")."</span>",
+			"HAS_CARD_CAN_UPDATE_ERRORS" 	=> "<span style='color:#ff8c00;'>" .Loc::getMessage("IPL_MA_STATE_HAS_CARD_CAN_UPDATE_ERRORS")."</span>",
+			"HAS_CARD_CAN_UPDATE_PROCESSING" 	=> "<span style='color:#ff8c00;'>" .Loc::getMessage("IPL_MA_STATE_HAS_CARD_CAN_UPDATE_PROCESSING")."</span>",
+			"NO_CARD_NEED_CONTENT" 	=> "<span style='color:#ff0000;'>" .Loc::getMessage("IPL_MA_STATE_NO_CARD_NEED_CONTENT")."</span>",
+			"NO_CARD_MARKET_WILL_CREATE" 	=> "<span style='color:#ff0000;'>" .Loc::getMessage("IPL_MA_STATE_NO_CARD_MARKET_WILL_CREATE")."</span>",
+			"NO_CARD_ERRORS" 	=> "<span style='color:#ff0000;'>" .Loc::getMessage("IPL_MA_STATE_NO_CARD_ERRORS")."</span>",
+			"NO_CARD_PROCESSING" 	=> "<span style='color:#ff0000;'>" .Loc::getMessage("IPL_MA_STATE_NO_CARD_PROCESSING")."</span>",
+			"NO_CARD_ADD_TO_CAMPAIGN" 	=> "<span style='color:#ff0000;'>" .Loc::getMessage("IPL_MA_STATE_NO_CARD_ADD_TO_CAMPAIGN")."</span>",
 		],
 		"VIEW" => [
 			"AddField" => [

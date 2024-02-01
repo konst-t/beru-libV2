@@ -261,8 +261,13 @@ class YMAPI {
 
 		$error = null;
 		if ($state == "RJ") {
-			$res = Json::decode($this->cl->getResult());
-			$error = $this->cl->getStatus().": ".$res["errors"][0]["code"]." - ".$res["errors"][0]["message"];
+			if(Control::isJson($this->cl->getResult())) {
+				$res = Json::decode($this->cl->getResult());
+				$error = $this->cl->getStatus().": ".$res["errors"][0]["code"]." - ".$res["errors"][0]["message"];
+			}
+			else {
+				$error = $this->cl->getStatus()."Bad response status";
+			}
 		}
 		$arLogFields = [
 			"REQUEST_H" 		=> $this->getRequestHeaders(),

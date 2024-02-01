@@ -34,6 +34,15 @@ $MESS["IPL_MA_STATE_DISABLED_AUTOMATICALLY"] = "Fix errors";
 $MESS["IPL_MA_STATE_CREATING_CARD"] = "Card is creating";
 $MESS["IPL_MA_STATE_NO_CARD"] = "No card";
 $MESS["IPL_MA_STATE_NO_STOCKS"] = "No stock";
+$MESS["IPL_MA_STATE_HAS_CARD_CAN_NOT_UPDATE"] = "Market Card";
+$MESS["IPL_MA_STATE_HAS_CARD_CAN_UPDATE"] = "Can be added";
+$MESS["IPL_MA_STATE_HAS_CARD_CAN_UPDATE_ERRORS"] = "Changes not accepted";
+$MESS["IPL_MA_STATE_HAS_CARD_CAN_UPDATE_PROCESSING"] = "Changes during verification";
+$MESS["IPL_MA_STATE_NO_CARD_NEED_CONTENT"] = "Create a card";
+$MESS["IPL_MA_STATE_NO_CARD_MARKET_WILL_CREATE"] = "Will create a Market";
+$MESS["IPL_MA_STATE_NO_CARD_ERRORS"] = "Not created due to an error";
+$MESS["IPL_MA_STATE_NO_CARD_PROCESSING"] = "Checking data";
+$MESS["IPL_MA_STATE_NO_CARD_ADD_TO_CAMPAIGN"] = "Place the product in the store";
 
 $MESS["IPL_MA_YES"] = "Yes";
 $MESS["IPL_MA_NO"] = "No";

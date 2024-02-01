@@ -47,7 +47,7 @@ $res = CIblockElement::getById($arFields["PRODUCT_ID"]);
 $arElement = $res->Fetch();
 
 $arState = [
-	// old
+	// very old
 	"READY" 		=> "<span style='color:#1cc43b;'>".Loc::getMessage("IPL_MA_STATE_READY")." [READY]</span>",
 	"IN_WORK" 		=> "<span style='color:#1d2bec;'>".Loc::getMessage("IPL_MA_STATE_IN_WORK")." [IN_WORK]</span>",
 	"NEED_INFO" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_NEED_INFO")." [NEED_INFO]</span>",
@@ -55,7 +55,7 @@ $arState = [
 	"REJECTED" 		=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_REJECTED")." [REJECTED]</span>",
 	"SUSPENDED" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_SUSPENDED")." [SUSPENDED]</span>",
 	"OTHER" 		=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_OTHER")." [OTHER]</span>",
-	// new
+	// old
 	"PUBLISHED" 	=> "<span style='color:#1cc43b;'>".Loc::getMessage("IPL_MA_STATE_PUBLISHED")." [PUBLISHED]</span>",
 	"CHECKING" 	=> "<span style='color:#1d2bec;'>".Loc::getMessage("IPL_MA_STATE_CHECKING")." [CHECKING]</span>",
 	"DISABLED_BY_PARTNER" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_DISABLED_BY_PARTNER")." [DISABLED_BY_PARTNER]</span>",
@@ -64,31 +64,31 @@ $arState = [
 	"CREATING_CARD" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_CREATING_CARD")." [CREATING_CARD]</span>",
 	"NO_CARD" 	=> "<span style='color:red;'>".Loc::getMessage("IPL_MA_STATE_NO_CARD")." [NO_CARD]</span>",
 	"NO_STOCKS" 	=> "<span style='color:#ff8c00;'>" .Loc::getMessage("IPL_MA_STATE_NO_STOCKS")." [NO_STOCKS]</span>",
+	// new
+	"HAS_CARD_CAN_NOT_UPDATE" 	=> "<span style='color:#1cc43b;'>" .Loc::getMessage("IPL_MA_STATE_HAS_CARD_CAN_NOT_UPDATE")."</span>",
+	"HAS_CARD_CAN_UPDATE" 	=> "<span style='color:#1d2bec;'>" .Loc::getMessage("IPL_MA_STATE_HAS_CARD_CAN_UPDATE")."</span>",
+	"HAS_CARD_CAN_UPDATE_ERRORS" 	=> "<span style='color:#ff8c00;'>" .Loc::getMessage("IPL_MA_STATE_HAS_CARD_CAN_UPDATE_ERRORS")."</span>",
+	"HAS_CARD_CAN_UPDATE_PROCESSING" 	=> "<span style='color:#ff8c00;'>" .Loc::getMessage("IPL_MA_STATE_HAS_CARD_CAN_UPDATE_PROCESSING")."</span>",
+	"NO_CARD_NEED_CONTENT" 	=> "<span style='color:#ff0000;'>" .Loc::getMessage("IPL_MA_STATE_NO_CARD_NEED_CONTENT")."</span>",
+	"NO_CARD_MARKET_WILL_CREATE" 	=> "<span style='color:#ff0000;'>" .Loc::getMessage("IPL_MA_STATE_NO_CARD_MARKET_WILL_CREATE")."</span>",
+	"NO_CARD_ERRORS" 	=> "<span style='color:#ff0000;'>" .Loc::getMessage("IPL_MA_STATE_NO_CARD_ERRORS")."</span>",
+	"NO_CARD_PROCESSING" 	=> "<span style='color:#ff0000;'>" .Loc::getMessage("IPL_MA_STATE_NO_CARD_PROCESSING")."</span>",
+	"NO_CARD_ADD_TO_CAMPAIGN" 	=> "<span style='color:#ff0000;'>" .Loc::getMessage("IPL_MA_STATE_NO_CARD_ADD_TO_CAMPAIGN")."</span>",
 ];
 
-/*
-    PUBLISHED — Готов к продаже.
-    CHECKING — На проверке.
-    DISABLED_BY_PARTNER — Скрыт вами.
-    REJECTED_BY_MARKET — Отклонен.
-    DISABLED_AUTOMATICALLY — Исправьте ошибки.
-    CREATING_CARD — Создается карточка.
-    NO_CARD — Нужна карточка.
-    NO_STOCKS — Нет на складе.
- * */
 
 $info = "SKU ID: <b>".$arFields["SKU_ID"]."</b><br><br>".
 		Loc::getMessage("IPL_MA_NAME").": ".$arFields["NAME"]."<br><br>".
 		Loc::getMessage("IPL_MA_PROFILE").": <a href=\"/bitrix/admin/iplogic_beru_profile_edit.php?ID=".
 			$arFields["PROFILE_ID"]."&lang=".LANGUAGE_ID."\">".$arProfile["NAME"]."</a><br><br>".
-		/*Loc::getMessage("IPL_MA_MARKET_SKU").": ";
+		Loc::getMessage("IPL_MA_MARKET_SKU").": ";
 if ($arFields["MARKET_SKU"] == "") {
 	$info .= Loc::getMessage("IPL_MA_NO");
 }
 else {
 	$info .= $arFields["MARKET_SKU"];
-}*/
-$info.= /*"<br><br>".*/Loc::getMessage("IPL_MA_PRODUCT_ID").": ";
+}
+$info.= "<br><br>".Loc::getMessage("IPL_MA_PRODUCT_ID").": ";
 if ($arFields["PRODUCT_ID"] < 1) {
 	$info .= Loc::getMessage("IPL_MA_NO");
 }

@@ -129,9 +129,14 @@ class Control
 				$prefix = "YM";
 				$actionfile = trim($prefix . str_replace("/", "_", $this->serverMethod), "_") . ".php";
 				if(
-				!file_exists(
-					$_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . self::$moduleID . "/services/" . $actionfile
-				)
+					(is_dir($_SERVER["DOCUMENT_ROOT"] . "/local/modules/" . self::$moduleID) &&
+					!file_exists(
+						$_SERVER["DOCUMENT_ROOT"] . "/local/modules/" . self::$moduleID . "/services/" . $actionfile
+					)) ||
+					(is_dir($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . self::$moduleID) &&
+						!file_exists(
+							$_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . self::$moduleID . "/services/" . $actionfile
+						))
 				) {
 					$this->error = [
 						"405",
@@ -655,8 +660,9 @@ class Control
 
 	public static function isJson($string)
 	{
-		json_decode($string);
+		@json_decode($string);
 		return (json_last_error() == JSON_ERROR_NONE);
+		//return json_validate($string);  // from php 8.3
 	}
 
 

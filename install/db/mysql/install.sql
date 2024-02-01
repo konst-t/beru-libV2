@@ -129,7 +129,7 @@ create table if not exists b_iplogicberu_product
 	NAME text NULL,
 	VENDOR varchar(255) NULL,
 	AVAILABILITY char(1) NULL DEFAULT "N",
-	STATE varchar(12) NULL,
+	STATE varchar(100) NULL,
 	REJECT_REASON varchar(255) NULL,
 	REJECT_NOTES text NULL,
 	DETAILS mediumtext NULL,

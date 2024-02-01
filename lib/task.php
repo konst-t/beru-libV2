@@ -148,13 +148,15 @@ class TaskTable extends Main\Entity\DataManager
 	}
 
 
-	public static function add(array $arFields) {
+	public static function add(array $arFields)
+	{
 		$arFields["HUMAN_TIME"] = date('d.m.Y H:i:s', $arFields["UNIX_TIMESTAMP"]);
 		return parent::add($arFields);
 	}
 
 
-	public static function update($ID, array $arFields) {
+	public static function update($ID, array $arFields)
+	{
 		if (isset($arFields["UNIX_TIMESTAMP"])) {
 			$arFields["HUMAN_TIME"] = date('d.m.Y H:i:s', $arFields["UNIX_TIMESTAMP"]);
 		}
@@ -249,6 +251,8 @@ class TaskTable extends Main\Entity\DataManager
 			if( $task["TYPE"] == "CT" ) {
 				self::checkTasks($task);
 			}
+			//sleep(1);
+			//usleep(500000);
 			$v = randString(12, "0123456789");
 			$comm = "wget --no-check-certificate ––tries=0 -b -q -O - https://" .
 				Option::get(self::$moduleID, "domen") . "/bitrix/services/iplogic/mkpapi/task.php?v=" . $v;
@@ -384,7 +388,7 @@ class TaskTable extends Main\Entity\DataManager
 		self::scheduleTask($PROFILE_ID, "SP", 60);
 	}
 
-	protected static function sendPriceNStocks($task)
+	public static function sendPriceNStocks($task)
 	{
 		$mod = new Control($task["PROFILE_ID"]);
 		if(Option::get(self::$moduleID, "send_prices") == "Y") {
@@ -755,14 +759,17 @@ class TaskTable extends Main\Entity\DataManager
 
 	public static function scheduleTask($PROFILE_ID, $CODE, $DELAY)
 	{
-		$conn = Application::getConnection();
+		/*$conn = Application::getConnection();
 		$helper = $conn->getSqlHelper();
 		$strSql =
 			"SELECT * FROM " . $helper->quote(self::getTableName()) . " WHERE " . $helper->quote('TYPE') . " = '" .
 			$CODE . "' AND " . $helper->quote('PROFILE_ID') . " = " . $PROFILE_ID . " AND " .
 			$helper->quote('STATE') . " = 'WT'";
 		$result = $conn->query($strSql);
-		unset($helper, $conn);
+		unset($helper, $conn);*/
+		$result = self::getList(
+			["filter" => ["TYPE" => $CODE, "STATE" => "WT", "PROFILE_ID" => $PROFILE_ID]]
+		);
 		$task = $result->Fetch();
 		if( !$task ) {
 			$arFields = [
@@ -774,13 +781,6 @@ class TaskTable extends Main\Entity\DataManager
 			];
 			self::add($arFields);
 		}
-		/*else {
-			$arFields = [
-				"UNIX_TIMESTAMP" 	=> time() + $DELAY,
-				"STATE" 			=> "WT",
-			];
-			self::update($task["ID"],$arFields);
-		}*/
 	}
 
 }

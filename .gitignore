@@ -3,6 +3,8 @@
 .idea
 /.idea
 
+/.ver/*
+
 Thumbs.db
 .DS_Store
 

@@ -27,7 +27,7 @@ $conn = Application::getConnection();
 
 echo $ver;
 
-if($ver < "3.3.2") {
+if($ver < "3.3.0") {
 	$strSql = "ALTER TABLE `b_iplogicberu_box_link`
 ADD ORDER_PROD_ID int(11) NULL,
 ADD IS_PART varchar(1) NOT NULL DEFAULT 'N',
@@ -47,6 +47,8 @@ MODIFY COLUMN DEPTH int(64) NULL";
 	CopyDirFiles(__DIR__ . '/3.3.0/', $moduleDir, true, true);
 }
 
-
+if($ver < "3.3.1") {
+	CopyDirFiles(__DIR__ . '/3.3.1/', $moduleDir, true, true);
+}
 
 

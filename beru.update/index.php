@@ -51,4 +51,12 @@ if($ver < "3.3.1") {
 	CopyDirFiles(__DIR__ . '/3.3.1/', $moduleDir, true, true);
 }
 
+if($ver < "3.3.2") {
+	CopyDirFiles(__DIR__ . '/3.3.2/', $moduleDir, true, true);
+}
+
+if($ver < "3.3.3") {
+	CopyDirFiles(__DIR__ . '/3.3.3/', $moduleDir, true, true);
+}
+
 

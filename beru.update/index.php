@@ -25,7 +25,7 @@ $ver = getModuleVersion($MODULE_ID);
 
 $conn = Application::getConnection();
 
-echo $ver;
+echo $ver . "<br>";
 
 if($ver < "3.3.0") {
 	$strSql = "ALTER TABLE `b_iplogicberu_box_link`
@@ -45,24 +45,35 @@ MODIFY COLUMN DEPTH int(64) NULL";
 	$result = $conn->query($strSql);
 
 	CopyDirFiles(__DIR__ . '/3.3.0/', $moduleDir, true, true);
+	echo "Установлен 3.3.0<br>";
 }
 
 if($ver < "3.3.1") {
 	CopyDirFiles(__DIR__ . '/3.3.1/', $moduleDir, true, true);
+	echo "Установлен 3.3.1<br>";
 }
 
 if($ver < "3.3.2") {
 	CopyDirFiles(__DIR__ . '/3.3.2/', $moduleDir, true, true);
+	echo "Установлен 3.3.2<br>";
 }
 
 if($ver < "3.3.3") {
 	CopyDirFiles(__DIR__ . '/3.3.3/', $moduleDir, true, true);
+	echo "Установлен 3.3.3<br>";
 }
 
 if($ver < "3.3.4") {
 	CopyDirFiles(__DIR__ . '/3.3.4/', $moduleDir, true, true);
+	echo "Установлен 3.3.4<br>";
 }
 
 if($ver < "3.3.5") {
 	CopyDirFiles(__DIR__ . '/3.3.5/', $moduleDir, true, true);
+	echo "Установлен 3.3.5<br>";
+}
+
+if($ver < "3.3.6") {
+	CopyDirFiles(__DIR__ . '/3.3.6/', $moduleDir, true, true);
+	echo "Установлен 3.3.6<br>";
 }

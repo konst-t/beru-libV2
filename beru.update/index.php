@@ -77,3 +77,8 @@ if($ver < "3.3.6") {
 	CopyDirFiles(__DIR__ . '/3.3.6/', $moduleDir, true, true);
 	echo "Установлен 3.3.6<br>";
 }
+
+if($ver < "3.3.7") {
+	CopyDirFiles(__DIR__ . '/3.3.7/', $moduleDir, true, true);
+	echo "Установлен 3.3.7<br>";
+}

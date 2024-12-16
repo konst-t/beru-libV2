@@ -1,7 +1,9 @@
 <?php
 namespace Iplogic\Beru\V2\Command;
 
+use \Iplogic\Beru\V2\Product;
 use \Iplogic\Beru\V2\ORM\ProfileTable;
+use \Iplogic\Beru\V2\ORM\ProductTable;
 
 /**
  * Updates product cache
@@ -28,16 +30,16 @@ class updateCache implements CommandInterface
 
 	public function execute(): void
 	{
-		if( $product = self::getById($this->ID) ) {
+		$this->status = "Started";
+		if( $product = ProductTable::getRowById($this->ID) ) {
 			if($product["PRODUCT_ID"] == 0 || $product["PRODUCT_ID"] == "") {
 				return false;
 			}
-			$arProfile = ProfileTable::getById($product["PROFILE_ID"]);
+			$arProfile = ProfileTable::getRowById($product["PROFILE_ID"]);
 			if( $arProfile["ACTIVE"] != "Y" ) {
 				return false;
 			}
-			$con = new Control($product["PROFILE_ID"]);
-			$set = $con->getSKU($product["SKU_ID"], [], true);
+			$set = Product::getSKU($product["SKU_ID"], [], true);
 			if($set["STOCK_FIT"] === NULL || $set["STOCK_FIT"] === "") {
 				$set["STOCK_FIT"] = 0;
 			}
@@ -49,7 +51,7 @@ class updateCache implements CommandInterface
 				}
 			}
 			if(
-				(// very old statuses
+				(   // very old statuses
 					$product["STATE"] == "READY" ||
 					$product["STATE"] == "NEED_CONTENT" ||
 					// old statuses
@@ -63,13 +65,13 @@ class updateCache implements CommandInterface
 				$product["PRODUCT_ID"] > 0
 			) {
 				if( intval($product["PRICE"]) != intval($set["PRICE"]) && intval($set["PRICE"]) > 0 ) {
-					TaskTable::addPriceUpdateTask($ID, $product["PROFILE_ID"]);
+					TaskTable::addPriceUpdateTask($this->ID, $product["PROFILE_ID"]);
 				}
 				if( intval($product["OLD_PRICE"]) != intval($set["OLD_PRICE"]) &&  intval($set["OLD_PRICE"]) > intval($set["PRICE"])) {
-					TaskTable::addPriceUpdateTask($ID, $product["PROFILE_ID"]);
+					TaskTable::addPriceUpdateTask($this->ID, $product["PROFILE_ID"]);
 				}
 				if( $product["STOCK_FIT"] !== $set["STOCK_FIT"] ) {
-					TaskTable::addStockUpdateTask($ID, $product["PROFILE_ID"]);
+					TaskTable::addStockUpdateTask($this->ID, $product["PROFILE_ID"]);
 				}
 			}
 			$eventManager = \Bitrix\Main\EventManager::getInstance();
@@ -81,8 +83,10 @@ class updateCache implements CommandInterface
 			}
 			$cache = serialize($set);
 			$arFields = ["DETAILS" => $cache];
-			return self::update($ID, $arFields);
+			$this->status = "Finished";
+			return ProductTable::update($this->ID, $arFields);
 		}
+		$this->status = "Product not found";
 		return false;
 	}
 

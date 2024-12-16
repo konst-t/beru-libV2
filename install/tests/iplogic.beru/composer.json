@@ -1,0 +1,6 @@
+{
+    "name": "iplogic/beru",
+    "scripts": {
+        "test": "phpunit"
+    }
+}

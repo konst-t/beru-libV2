@@ -38,12 +38,12 @@ class updateCache implements CommandInterface
 				$this->status = "Error: Product ID is empty";
 				return;
 			}
-			$arProfile = ProfileTable::getRowById($product["PROFILE_ID"]);
+			$arProfile = ProfileTable::getByIdFull($product["PROFILE_ID"]);
 			if( $arProfile["ACTIVE"] != "Y" ) {
 				$this->status = "Error: Product is not empty";
 				return;
 			}
-			$set = Product::getSKU($product["SKU_ID"], [], true);
+			$set = Product::getSKU($product["SKU_ID"], $arProfile, [], true);
 			if( $set["STOCK_FIT"] === NULL || $set["STOCK_FIT"] === "" ) {
 				$set["STOCK_FIT"] = 0;
 			}
@@ -70,16 +70,16 @@ class updateCache implements CommandInterface
 				$product["PRODUCT_ID"] > 0
 			) {
 				if( intval($product["PRICE"]) != intval($set["PRICE"]) && intval($set["PRICE"]) > 0 ) {
-					Task::addPriceUpdateTask($this->ID, $product["PROFILE_ID"]);
+					Task::addPriceUpdateTask($this->ID, $arProfile["ID"]);
 				}
 				if(
 					intval($product["OLD_PRICE"]) != intval($set["OLD_PRICE"]) &&
 					intval($set["OLD_PRICE"]) > intval($set["PRICE"])
 				) {
-					Task::addPriceUpdateTask($this->ID, $product["PROFILE_ID"]);
+					Task::addPriceUpdateTask($this->ID, $arProfile["ID"]);
 				}
 				if( $product["STOCK_FIT"] !== $set["STOCK_FIT"] ) {
-					Task::addStockUpdateTask($this->ID, $product["PROFILE_ID"]);
+					Task::addStockUpdateTask($this->ID, $arProfile);
 				}
 			}
 			$eventManager = \Bitrix\Main\EventManager::getInstance();

@@ -72,7 +72,7 @@ class Task
 	public static function addPriceUpdateTask($ID, $PROFILE_ID)
 	{
 		if( Option::get(self::$moduleID, "send_prices") == "Y" ) {
-			$rsTask = self::getList(
+			$rsTask = TaskTable::getList(
 				["filter" => ["TYPE" => "PR", "STATE" => "WT", "ENTITY_ID" => $ID, "PROFILE_ID" => $PROFILE_ID]]
 			);
 			if( !$rsTask->Fetch() ) {
@@ -84,30 +84,29 @@ class Task
 					"ENTITY_ID"      => $ID,
 					"TRYING"         => 0,
 				];
-				self::add($arFields);
+				TaskTable::add($arFields);
 				self::scheduleTask($PROFILE_ID, "SP", 60);
 			}
 		}
 	}
 
-	public static function addStockUpdateTask($ID, $PROFILE_ID)
+	public static function addStockUpdateTask($ID, $arProfile)
 	{
-		$mod = new Control($PROFILE_ID);
-		if( (int)$mod->arProfile["STORE"] > 0 && Option::get(self::$moduleID, "send_stocks") == "Y" ) {
-			$rsTask = self::getList(
-				["filter" => ["TYPE" => "ST", "STATE" => "WT", "ENTITY_ID" => $ID, "PROFILE_ID" => $PROFILE_ID]]
+		if( (int)$arProfile["STORE"] > 0 && Option::get(self::$moduleID, "send_stocks") == "Y" ) {
+			$rsTask = TaskTable::getList(
+				["filter" => ["TYPE" => "ST", "STATE" => "WT", "ENTITY_ID" => $ID, "PROFILE_ID" => $arProfile["ID"]]]
 			);
 			if( !$rsTask->Fetch() ) {
 				$arFields = [
-					"PROFILE_ID"     => $PROFILE_ID,
+					"PROFILE_ID"     => $arProfile["ID"],
 					"UNIX_TIMESTAMP" => time(),
 					"TYPE"           => "ST",
 					"STATE"          => "WT",
 					"ENTITY_ID"      => $ID,
 					"TRYING"         => 0,
 				];
-				self::add($arFields);
-				self::scheduleTask($PROFILE_ID, "SP", 60);
+				TaskTable::add($arFields);
+				self::scheduleTask($arProfile["ID"], "SP", 60);
 			}
 		}
 	}

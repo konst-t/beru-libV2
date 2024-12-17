@@ -57,7 +57,7 @@ class getMpOffers implements CommandInterface
 		}
 
 		if( $this->DEBUG ) {
-			$logFileName = realpath(__DIR__ . "/../../..") . "tmp/" . time() . "-" .
+			$logFileName = realpath(__DIR__ . "/../../..") . "/tmp/" . time() . "-" .
 				randString(3, ["0123456789"]) . ".log";
 		}
 

@@ -133,7 +133,7 @@ class TaskTable extends DataManager
 	 * @param array $arFields
 	 * @return object AddResult Contains ID of inserted row
 	 */
-	public static function add(array $arFields): AddResult
+	public static function add(array $arFields): \Bitrix\Main\ORM\Data\AddResult
 	{
 		$arFields["HUMAN_TIME"] = date('d.m.Y H:i:s', $arFields["UNIX_TIMESTAMP"]);
 		return parent::add($arFields);
@@ -147,7 +147,7 @@ class TaskTable extends DataManager
 	 * @param array $arFields
 	 * @return UpdateResult
 	 */
-	public static function update($ID, array $arFields): UpdateResult
+	public static function update($ID, array $arFields): \Bitrix\Main\ORM\Data\UpdateResult
 	{
 		if( isset($arFields["UNIX_TIMESTAMP"]) ) {
 			$arFields["HUMAN_TIME"] = date('d.m.Y H:i:s', $arFields["UNIX_TIMESTAMP"]);

@@ -113,7 +113,7 @@ class Task
 
 	public static function hideProductTask($ID, $PROFILE_ID)
 	{
-		$rsTask = self::getList(["filter" => ["TYPE" => "HP", "STATE" => "WT", "ENTITY_ID" => $ID]]);
+		$rsTask = TaskTable::getList(["filter" => ["TYPE" => "HP", "STATE" => "WT", "ENTITY_ID" => $ID]]);
 		if( !$rsTask->Fetch() ) {
 			$arFields = [
 				"PROFILE_ID"     => $PROFILE_ID,
@@ -123,14 +123,14 @@ class Task
 				"ENTITY_ID"      => $ID,
 				"TRYING"         => 0,
 			];
-			self::add($arFields);
+			TaskTable::add($arFields);
 			self::scheduleTask($PROFILE_ID, "HS", 60);
 		}
 	}
 
 	public static function showProductTask($ID, $PROFILE_ID)
 	{
-		$rsTask = self::getList(["filter" => ["TYPE" => "UP", "STATE" => "WT", "ENTITY_ID" => $ID]]);
+		$rsTask = TaskTable::getList(["filter" => ["TYPE" => "UP", "STATE" => "WT", "ENTITY_ID" => $ID]]);
 		if( !$rsTask->Fetch() ) {
 			$arFields = [
 				"PROFILE_ID"     => $PROFILE_ID,
@@ -140,7 +140,7 @@ class Task
 				"ENTITY_ID"      => $ID,
 				"TRYING"         => 0,
 			];
-			self::add($arFields);
+			TaskTable::add($arFields);
 			self::scheduleTask($PROFILE_ID, "US", 60);
 		}
 	}

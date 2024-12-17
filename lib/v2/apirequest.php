@@ -1,4 +1,5 @@
 <?
+
 namespace Iplogic\Beru\V2;
 
 use \Bitrix\Main\Config\Option;
@@ -7,8 +8,8 @@ use \Bitrix\Main\Web\Json;
 
 use \Iplogic\Beru\V2\ORM\ProfileTable;
 use \Iplogic\Beru\V2\ORM\TaskTable;
-use	\Iplogic\Beru\V2\ORM\ErrorTable;
-use	\Iplogic\Beru\V2\ORM\ApiLogTable;
+use \Iplogic\Beru\V2\ORM\ErrorTable;
+use \Iplogic\Beru\V2\ORM\ApiLogTable;
 
 
 /**

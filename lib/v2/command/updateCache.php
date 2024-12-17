@@ -1,7 +1,9 @@
 <?php
+
 namespace Iplogic\Beru\V2\Command;
 
 use \Iplogic\Beru\V2\Product;
+use \Iplogic\Beru\V2\Task;
 use \Iplogic\Beru\V2\ORM\ProfileTable;
 use \Iplogic\Beru\V2\ORM\ProductTable;
 
@@ -32,22 +34,25 @@ class updateCache implements CommandInterface
 	{
 		$this->status = "Started";
 		if( $product = ProductTable::getRowById($this->ID) ) {
-			if($product["PRODUCT_ID"] == 0 || $product["PRODUCT_ID"] == "") {
-				return false;
+			if( $product["PRODUCT_ID"] == 0 || $product["PRODUCT_ID"] == "" ) {
+				$this->status = "Error: Product ID is empty";
+				return;
 			}
 			$arProfile = ProfileTable::getRowById($product["PROFILE_ID"]);
 			if( $arProfile["ACTIVE"] != "Y" ) {
-				return false;
+				$this->status = "Error: Product is not empty";
+				return;
 			}
 			$set = Product::getSKU($product["SKU_ID"], [], true);
-			if($set["STOCK_FIT"] === NULL || $set["STOCK_FIT"] === "") {
+			if( $set["STOCK_FIT"] === NULL || $set["STOCK_FIT"] === "" ) {
 				$set["STOCK_FIT"] = 0;
 			}
 			$eventManager = \Bitrix\Main\EventManager::getInstance();
 			$eventsList = $eventManager->findEventHandlers('iplogic.beru', 'OnIplogicBeruBeforeProductCacheSave');
 			foreach( $eventsList as $arEvent ) {
 				if( ExecuteModuleEventEx($arEvent, [$product["PRODUCT_ID"], &$set]) === false ) {
-					return false;
+					$this->status = "Stopped by event handler";
+					return;
 				}
 			}
 			if(
@@ -65,29 +70,32 @@ class updateCache implements CommandInterface
 				$product["PRODUCT_ID"] > 0
 			) {
 				if( intval($product["PRICE"]) != intval($set["PRICE"]) && intval($set["PRICE"]) > 0 ) {
-					TaskTable::addPriceUpdateTask($this->ID, $product["PROFILE_ID"]);
+					Task::addPriceUpdateTask($this->ID, $product["PROFILE_ID"]);
 				}
-				if( intval($product["OLD_PRICE"]) != intval($set["OLD_PRICE"]) &&  intval($set["OLD_PRICE"]) > intval($set["PRICE"])) {
-					TaskTable::addPriceUpdateTask($this->ID, $product["PROFILE_ID"]);
+				if(
+					intval($product["OLD_PRICE"]) != intval($set["OLD_PRICE"]) &&
+					intval($set["OLD_PRICE"]) > intval($set["PRICE"])
+				) {
+					Task::addPriceUpdateTask($this->ID, $product["PROFILE_ID"]);
 				}
 				if( $product["STOCK_FIT"] !== $set["STOCK_FIT"] ) {
-					TaskTable::addStockUpdateTask($this->ID, $product["PROFILE_ID"]);
+					Task::addStockUpdateTask($this->ID, $product["PROFILE_ID"]);
 				}
 			}
 			$eventManager = \Bitrix\Main\EventManager::getInstance();
 			$eventsList = $eventManager->findEventHandlers('iplogic.beru', 'OnIplogicBeruProductCacheSave');
 			foreach( $eventsList as $arEvent ) {
 				if( ExecuteModuleEventEx($arEvent, [$product["PRODUCT_ID"], &$set]) === false ) {
-					return false;
+					$this->status = "Stopped by event handler";
+					return;
 				}
 			}
 			$cache = serialize($set);
 			$arFields = ["DETAILS" => $cache];
 			$this->status = "Finished";
-			return ProductTable::update($this->ID, $arFields);
+			ProductTable::update($this->ID, $arFields);
 		}
 		$this->status = "Product not found";
-		return false;
 	}
 
 	public function getStatus(): string

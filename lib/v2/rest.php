@@ -59,13 +59,13 @@ class REST
 			$length = strlen($arProfile["BASE_URL"]);
 			if( substr($APPLICATION->GetCurPage(false), 0, $length) == $arProfile["BASE_URL"] ) {
 				$allowedMethods = [
-					"cart" => "Cart",
+					"cart"         => "Cart",
 					"order_accept" => "Accept",
 					"order_status" => "Status",
-					"stocks" => "Stocks",
+					"stocks"       => "Stocks",
 				];
 				$this->serverMethod = substr($APPLICATION->GetCurPage(false), $length - 1);
-				if(array_key_exists($this->serverMethod, $allowedMethods)) {
+				if( array_key_exists($this->serverMethod, $allowedMethods) ) {
 					$this->error = [
 						"405",
 						"Method Not Allowed",
@@ -90,7 +90,8 @@ class REST
 		return false;
 	}
 
-	public function executeMethod() {
+	public function executeMethod()
+	{
 		// TODO: Перенести из services/index.php
 	}
 

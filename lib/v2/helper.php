@@ -1,4 +1,5 @@
 <?php
+
 namespace Iplogic\Beru\V2;
 
 use \Bitrix\Main\Config\Option;

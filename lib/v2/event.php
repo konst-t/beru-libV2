@@ -1,4 +1,5 @@
 <?php
+
 namespace Iplogic\Beru\V2;
 
 use \Iplogic\Beru\V2\ORM\ProductTable;
@@ -68,22 +69,22 @@ class Event
 		$dbProductDiscounts = \CCatalogDiscount::GetList(
 			[],
 			[
-				"ID" => $ID,
+				"ID"     => $ID,
 				"ACTIVE" => "Y",
-				"COUPON" => ""
+				"COUPON" => "",
 			],
 			false,
 			false,
 			["ID", "PRODUCT_ID"]
 		);
-		while ($arProductDiscounts = $dbProductDiscounts->Fetch())
-		{
+		while( $arProductDiscounts = $dbProductDiscounts->Fetch() ) {
 			self::setUpdateTask($arProductDiscounts["PRODUCT_ID"]);
 		}
 	}
 
 
-	public static function groupDeleteHandler($ID) {
+	public static function groupDeleteHandler($ID)
+	{
 		\Iplogic\Beru\V2\ORM\RightsTable::deleteByGroup($ID);
 	}
 
@@ -93,23 +94,22 @@ class Event
 		$dbProductDiscounts = \CCatalogDiscount::GetList(
 			[],
 			[
-				"ID" => $ID,
+				"ID"     => $ID,
 				"ACTIVE" => "Y",
-				"COUPON" => ""
+				"COUPON" => "",
 			],
 			false,
 			false,
 			["ID", "ACTIVE_FROM", "ACTIVE_TO", "PRODUCT_ID"]
 		);
-		while ($arProductDiscounts = $dbProductDiscounts->Fetch())
-		{
-			if($arProductDiscounts["ACTIVE_FROM"] != "") {
+		while( $arProductDiscounts = $dbProductDiscounts->Fetch() ) {
+			if( $arProductDiscounts["ACTIVE_FROM"] != "" ) {
 				self::setDeferredUpdateTask($arProductDiscounts["PRODUCT_ID"], $arProductDiscounts["ACTIVE_FROM"]);
 			}
 			else {
 				self::setUpdateTask($arProductDiscounts["PRODUCT_ID"]);
 			}
-			if($arProductDiscounts["ACTIVE_TO"] != "") {
+			if( $arProductDiscounts["ACTIVE_TO"] != "" ) {
 				self::setDeferredUpdateTask($arProductDiscounts["PRODUCT_ID"], $arProductDiscounts["ACTIVE_TO"]);
 			}
 		}

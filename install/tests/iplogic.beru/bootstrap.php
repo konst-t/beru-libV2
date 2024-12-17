@@ -6,7 +6,7 @@ use Bitrix\Main\Loader;
 
 $_SERVER["DOCUMENT_ROOT"] = __DIR__ . '/../../..';
 
-require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
+require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php");
 
 // искуственная авторизация в роли админа
 //$_SESSION['SESS_AUTH']['USER_ID'] = 1;

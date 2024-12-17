@@ -1,4 +1,5 @@
 <?php
+
 namespace Iplogic\Beru\Tests;
 
 /**
@@ -32,7 +33,7 @@ class CTTest extends BitrixTestCase
 		$this->resultMock = \Mockery::mock(\Bitrix\Main\ORM\Query\Result::class);
 		$this->taskSpy = \Mockery::spy('alias:' . \Iplogic\Beru\V2\Task::class);
 
-		$this->resultMock->shouldReceive( 'fetch' )->andReturn(["ID" => 0], ["ID" => 0], false);
+		$this->resultMock->shouldReceive('fetch')->andReturn(["ID" => 0], ["ID" => 0], false);
 		$this->taskTableMock->shouldReceive('getList')->once()->andReturn($this->resultMock);
 		$this->taskTableMock->shouldReceive('delete')->atLeast()->times(2)->andReturn(null);
 	}

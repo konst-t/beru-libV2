@@ -1,9 +1,9 @@
 <?php
+
 namespace Iplogic\Beru\V2;
 
 use \Bitrix\Main\Config\Option;
-use	\Iplogic\Beru\V2\ORM\ApiLogTable;
-
+use \Iplogic\Beru\V2\ORM\ApiLogTable;
 use \Iplogic\Beru\TaskTable;
 
 

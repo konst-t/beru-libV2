@@ -56,7 +56,7 @@ class getMpOffers implements CommandInterface
 			return;
 		}
 
-		if($this->DEBUG) {
+		if( $this->DEBUG ) {
 			$logFileName = realpath(__DIR__ . "/../../..") . "tmp/" . time() . "-" .
 				randString(3, ["0123456789"]) . ".log";
 		}
@@ -97,17 +97,17 @@ class getMpOffers implements CommandInterface
 			$arFieldsSet = [];
 			$arForCheck = [];
 			foreach( $result["body"]["result"]["offerMappings"] as $offer ) {
-				if($this->DEBUG) {
+				if( $this->DEBUG ) {
 					file_put_contents($logFileName, print_r($offer, true), FILE_APPEND);
 				}
 				if( is_array($offer["offer"]["campaigns"]) && count($offer["offer"]["campaigns"]) ) {
 					// common data for all campaigns
 					$arFields = [
-						"SKU_ID" => $offer["offer"]["offerId"],
+						"SKU_ID"     => $offer["offer"]["offerId"],
 						"MARKET_SKU" => $offer["mapping"]["marketSku"],
-						"NAME" => $offer["offer"]["name"],
-						"VENDOR" => $offer["offer"]["vendor"],
-						"STATE" => $offer["offer"]["cardStatus"],
+						"NAME"       => $offer["offer"]["name"],
+						"VENDOR"     => $offer["offer"]["vendor"],
+						"STATE"      => $offer["offer"]["cardStatus"],
 						"FOR_DELETE" => "N",
 					];
 					// data for every campaign
@@ -142,7 +142,7 @@ class getMpOffers implements CommandInterface
 				);
 				if( isset($res["body"]["result"]["offers"]) ) {
 					foreach( $res["body"]["result"]["offers"] as $offer ) {
-						if($this->DEBUG) {
+						if( $this->DEBUG ) {
 							file_put_contents($logFileName, $profileId, FILE_APPEND);
 							file_put_contents($logFileName, print_r($offer, true), FILE_APPEND);
 						}
@@ -201,7 +201,7 @@ class getMpOffers implements CommandInterface
 	public function setParams(array $arParams = []): void
 	{
 		$this->businessId = $arParams['business_id'];
-		if ($this->businessId > 0) {
+		if( $this->businessId > 0 ) {
 			$this->arProfiles = $this->getBusinessProfiles(BusinessTable::getById($this->businessId)->fetch());
 		}
 		$this->pageToken = $arParams['page_token'];
@@ -209,14 +209,14 @@ class getMpOffers implements CommandInterface
 
 	protected function getBusinessAndProfiles(): bool
 	{
-		if($this->businessId > 0 && $this->pageToken != "") {
+		if( $this->businessId > 0 && $this->pageToken != "" ) {
 			return true;
 		}
 		$arBusinesses = [];
 		$rsBusinesses = BusinessTable::getList();
 		while( $arBusiness = $rsBusinesses->Fetch() ) {
 			$arProfiles = $this->getBusinessProfiles($arBusiness);
-			if(count($arProfiles)) {
+			if( count($arProfiles) ) {
 				$arBusiness["PROFILES"] = $arProfiles;
 				$arBusinesses[] = $arBusiness;
 			}
@@ -263,7 +263,7 @@ class getMpOffers implements CommandInterface
 	{
 		$arProfiles = [];
 		$arFilter = ["=ACTIVE" => "Y", "!COMPAIN_ID" => "", "BUSINESS_ID" => $arBusiness["BID"]];
-		if($arBusiness["API_KEY"] == "") {
+		if( $arBusiness["API_KEY"] == "" ) {
 			$arFilter["!CLIENT_ID"] = "";
 			$arFilter["!SEND_TOKEN"] = "";
 		}

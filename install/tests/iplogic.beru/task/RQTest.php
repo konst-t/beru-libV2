@@ -1,4 +1,5 @@
 <?php
+
 namespace Iplogic\Beru\Tests;
 
 /**

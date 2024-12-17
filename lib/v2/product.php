@@ -1,9 +1,4 @@
 <?php
-/**
- *
- *   IN WORK!!! NOT FINISHED
- *
- */
 
 namespace Iplogic\Beru\V2;
 
@@ -244,7 +239,7 @@ class Product extends ORM\ProductTable
 				"#SECTION_CODE_PATH#",
 			],
 			[
-				"https://" . self::getOption("domen"),
+				"https://" . Helper::getOption("domen"),
 				$code,
 				$arEl["ID"],
 				$code,
@@ -307,7 +302,7 @@ class Product extends ORM\ProductTable
 						$arProfile["PROP"][$prop]["VALUE"] == "PREVIEW_PICTURE"
 						|| $arProfile["PROP"][$prop]["VALUE"] == "DETAIL_PICTURE"
 					) {
-						$arResult[$prop] = "https://" . self::getOption("domen") . \CFile::GetPath($arResult[$prop]);
+						$arResult[$prop] = "https://" . Helper::getOption("domen") . \CFile::GetPath($arResult[$prop]);
 					}
 					break;
 
@@ -346,11 +341,11 @@ class Product extends ORM\ProductTable
 					break;
 
 				case 'current_time':
-					$arResult[$prop] = self::timeFix(date(DATE_ISO8601, time()));
+					$arResult[$prop] = Helper::timeFix(date(DATE_ISO8601, time()));
 					break;
 
 				case 'element_last_change':
-					$arResult[$prop] = self::timeFix(date(DATE_ISO8601, $arEl["TIMESTAMP_X_UNIX"]));
+					$arResult[$prop] = Helper::timeFix(date(DATE_ISO8601, $arEl["TIMESTAMP_X_UNIX"]));
 					break;
 
 				case 'prices':

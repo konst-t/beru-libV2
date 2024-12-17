@@ -1,4 +1,5 @@
 <?php
+
 namespace Iplogic\Beru\V2;
 
 /**
@@ -12,7 +13,7 @@ class Executor
 
 	public static function go(Command\CommandInterface $command, array $arParams = []): string
 	{
-		if(!empty($arParams)) {
+		if( !empty($arParams) ) {
 			$command->setParams($arParams);
 		}
 		$command->execute();

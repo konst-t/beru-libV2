@@ -1,9 +1,4 @@
 <?
-/**
- *
- *   IN WORK!!! NOT FINISHED
- *
- */
 
 namespace Iplogic\Beru\V2;
 
@@ -42,7 +37,7 @@ class Task
 			$v = randString(12, "0123456789");
 			$comm = "wget --no-check-certificate ––tries=0 -b -q -O - https://" .
 				Option::get(self::$moduleID, "domen") . "/bitrix/services/iplogic/mkpapi/task.php?v=" . $v;
-			exec( $comm );
+			exec($comm);
 		}
 		else {
 			if(
@@ -74,19 +69,9 @@ class Task
 	}
 
 
-
-	/**
-	 *
-	 *   TODO: Всё что ниже привести в порядок
-	 *
-	 */
-
-
-	/* PRICE AND STOCKS */
-
 	public static function addPriceUpdateTask($ID, $PROFILE_ID)
 	{
-		if(Option::get(self::$moduleID, "send_prices") == "Y") {
+		if( Option::get(self::$moduleID, "send_prices") == "Y" ) {
 			$rsTask = self::getList(
 				["filter" => ["TYPE" => "PR", "STATE" => "WT", "ENTITY_ID" => $ID, "PROFILE_ID" => $PROFILE_ID]]
 			);
@@ -108,7 +93,7 @@ class Task
 	public static function addStockUpdateTask($ID, $PROFILE_ID)
 	{
 		$mod = new Control($PROFILE_ID);
-		if((int)$mod->arProfile["STORE"] > 0 && Option::get(self::$moduleID, "send_stocks") == "Y") {
+		if( (int)$mod->arProfile["STORE"] > 0 && Option::get(self::$moduleID, "send_stocks") == "Y" ) {
 			$rsTask = self::getList(
 				["filter" => ["TYPE" => "ST", "STATE" => "WT", "ENTITY_ID" => $ID, "PROFILE_ID" => $PROFILE_ID]]
 			);

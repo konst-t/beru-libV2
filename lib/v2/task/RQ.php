@@ -1,4 +1,5 @@
 <?php
+
 namespace Iplogic\Beru\V2\Task;
 
 use \Iplogic\Beru\V2\ORM\ApiLogTable;
@@ -17,7 +18,7 @@ class RQ extends \Iplogic\Beru\V2\ApiRequest implements TaskInterface
 
 	public function execute($arTask): void
 	{
-		if(!isset($arTask["ID"])) {
+		if( !isset($arTask["ID"]) ) {
 			return;
 		}
 		$arLog = ApiLogTable::getRowById($arTask["ENTITY_ID"]);

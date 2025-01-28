@@ -80,6 +80,17 @@ class BusinessTable extends DataManager
 					'title'      => Loc::getMessage('BUSINESS_ENTITY_API_KEY_FIELD'),
 				]
 			),
+			new IntegerField(
+				'BASE_PROFILE',
+				[
+					'validation' => function() {
+						return [
+							new LengthValidator(null, 11),
+						];
+					},
+					'title'      => Loc::getMessage('BUSINESS_ENTITY_BASE_PROFILE_FIELD'),
+				]
+			),
 		];
 	}
 

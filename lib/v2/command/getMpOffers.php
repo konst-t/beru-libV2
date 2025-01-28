@@ -22,7 +22,7 @@ class getMpOffers implements CommandInterface
 	/**
 	 * @var bool
 	 */
-	protected $DEBUG = true;
+	protected $DEBUG = false;
 
 	/**
 	 * @var string
@@ -182,10 +182,6 @@ class getMpOffers implements CommandInterface
 				$this->pageToken = "";
 			}
 		}
-		/*file_put_contents(__DIR__."/1.txt", "[".date('d.m.Y H:i:s')."] https://" . Option::get(self::$moduleID, "domen") .
-			"/bitrix/services/iplogic/mkpapi/getmpoffers.php?param=" . $this->businessId . "__" . $this->pageToken . "
-			
-", FILE_APPEND );*/
 		exec(
 			"wget --no-check-certificate -b -q -O - https://" . Option::get(self::$moduleID, "domen") .
 			"/bitrix/services/iplogic/mkpapi/getmpoffers.php?param=" . $this->businessId . "__" . $this->pageToken

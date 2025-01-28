@@ -1,0 +1,161 @@
+<?
+$MESS["DB_ERROR"] = "Ошибка обновления базы данных";
+$MESS["NAME_ERROR_EMP"] = "Поле Имя обязательно для заполнения";
+$MESS["BASE_URL_ERROR_SYM"] = "Поле Базовый URL API содержит недопустимые символы. Допустимы латинские буквы, цифры, символы - и _.";
+$MESS["BASE_URL_ERROR_EMP"] = "Поле Базовый URL API обязательно для заполнения";
+$MESS["IBLOCK_ID_ERROR_EMP"] = "Не выбран инфоблок каталога товаров";
+$MESS["CMS_NAME"] = "1С-Битрикс: Управление сайтом";
+
+$MESS["PRODUCT_ENTITY_ID_FIELD"] = "ID";
+$MESS["PRODUCT_ENTITY_PROFILE_ID_FIELD"] = "ID профиля";
+$MESS["PRODUCT_ENTITY_PRODUCT_ID_FIELD"] = "ID на сайте";
+$MESS["PRODUCT_ENTITY_SKU_ID_FIELD"] = "SKU ID";
+$MESS["PRODUCT_ENTITY_MARKET_SKU_FIELD"] = "ID на маркете";
+$MESS["PRODUCT_ENTITY_NAME_FIELD"] = "Название";
+$MESS["PRODUCT_ENTITY_VENDOR_FIELD"] = "Вендор";
+$MESS["PRODUCT_ENTITY_AVAILABILITY_FIELD"] = "Доступность";
+$MESS["PRODUCT_ENTITY_STATE_FIELD"] = "Статус";
+$MESS["PRODUCT_ENTITY_REJECT_REASON_FIELD"] = "Причина отклонения";
+$MESS["PRODUCT_ENTITY_REJECT_NOTES_FIELD"] = "Описание причин отклонения";
+$MESS["PRODUCT_ENTITY_DETAILS_FIELD"] = "Подробности";
+$MESS["PRODUCT_ENTITY_PRICE_FIELD"] = "Цена";
+$MESS["PRODUCT_ENTITY_OLD_PRICE_FIELD"] = "Старая цена";
+$MESS["PRODUCT_ENTITY_STOCK_FIT_FIELD"] = "Остаток";
+$MESS["PRODUCT_ENTITY_HIDDEN_FIELD"] = "Скрыт";
+$MESS["PRODUCT_ENTITY_PRICE_TIME_FIELD"] = "Время отправки цены";
+$MESS["PRODUCT_ENTITY_STOCK_TIME_FIELD"] = "Время отправки остатка";
+
+$MESS["TASK_ENTITY_ID_FIELD"] = "ID";
+$MESS["TASK_ENTITY_PROFILE_ID_FIELD"] = "ID профиля";
+$MESS["TASK_ENTITY_UNIX_TIMESTAMP_FIELD"] = "Время создания UNIX";
+$MESS["TASK_ENTITY_TYPE_FIELD"] = "Тип";
+$MESS["TASK_ENTITY_STATE_FIELD"] = "Состояние";
+$MESS["TASK_ENTITY_ENTITY_ID_FIELD"] = "ID сущности";
+$MESS["TASK_ENTITY_TRYING_FIELD"] = "Попыток";
+
+$MESS["PROFILE_ENTITY_ID_FIELD"] = "ID";
+$MESS["PROFILE_ENTITY_NAME_FIELD"] = "Название";
+$MESS["PROFILE_ENTITY_ACTIVE_FIELD"] = "Активность";
+$MESS["PROFILE_ENTITY_SORT_FIELD"] = "Индекс сортировки";
+$MESS["PROFILE_ENTITY_SITE_FIELD"] = "Сайт";
+$MESS["PROFILE_ENTITY_IBLOCK_TYPE_FIELD"] = "Тип информационного блока";
+$MESS["PROFILE_ENTITY_IBLOCK_ID_FIELD"] = "Информационный блок";
+$MESS["PROFILE_ENTITY_COMPANY_FIELD"] = "Полное название организации";
+$MESS["PROFILE_ENTITY_TAX_SYSTEM_FIELD"] = "Система налогообложения";
+$MESS["PROFILE_ENTITY_VAT_FIELD"] = "Ставка налога";
+$MESS["PROFILE_ENTITY_BASE_URL_FIELD"] = "Базовый URL API сервера магазина";
+$MESS["PROFILE_ENTITY_CLIENT_ID_FIELD"] = "ID клиента";
+$MESS["PROFILE_ENTITY_COMPAIN_ID_FIELD"] = "ID компании";
+$MESS["PROFILE_ENTITY_SEND_TOKEN_FIELD"] = "Авторизационный токен клиента";
+$MESS["PROFILE_ENTITY_GET_TOKEN_FIELD"] = "Авторизационный токен для запроса от маркеплейса";
+$MESS["PROFILE_ENTITY_USER_ID_FIELD"] = "ID пользователя";
+$MESS["PROFILE_ENTITY_DELIVERY_FIELD"] = "Служба доставки";
+$MESS["PROFILE_ENTITY_PAYMENTS_FIELD"] = "Платежная система";
+$MESS["PROFILE_ENTITY_PERSON_TYPE_FIELD"] = "Тип плательщика";
+$MESS["PROFILE_ENTITY_STATUSES_FIELD"] = "Статусы заказа";
+$MESS["PROFILE_ENTITY_SCHEME_FIELD"] = "Схема работы";
+$MESS["PROFILE_ENTITY_PAYMENT_METHODS_FIELD"] = "Методы оплаты";
+$MESS["PROFILE_ENTITY_STORE_FIELD"] = "Склад";
+$MESS["PROFILE_ENTITY_BUSINESS_ID"] = "Идентификатор магазина";
+
+$MESS["ORDER_ENTITY_ID_FIELD"] = "ID";
+$MESS["ORDER_ENTITY_PROFILE_ID_FIELD"] = "ID профиля";
+$MESS["ORDER_ENTITY_EXT_ID_FIELD"] = "ID заказа на маркетплейсе";
+$MESS["ORDER_ENTITY_ORDER_ID_FIELD"] = "ID заказа на сайте";
+$MESS["ORDER_ENTITY_STATE_FIELD"] = "Статус";
+$MESS["ORDER_ENTITY_STATE_CODE_FIELD"] = "Код статуса";
+$MESS["ORDER_ENTITY_UNIX_TIMESTAMP_FIELD"] = "UNIX время";
+$MESS["ORDER_ENTITY_HUMAN_TIME_FIELD"] = "Время создания";
+$MESS["ORDER_ENTITY_FAKE_FIELD"] = "Тестовый";
+$MESS["ORDER_ENTITY_SHIPMENT_ID_FIELD"] = "ID отгрузки";
+$MESS["ORDER_ENTITY_SHIPMENT_DATE_FIELD"] = "Дата отгрузки";
+$MESS["ORDER_ENTITY_SHIPMENT_TIMESTAMP_FIELD"] = "UNIX время отгрузки";
+$MESS["ORDER_ENTITY_DELIVERY_NAME_FIELD"] = "Название службы доставки";
+$MESS["ORDER_ENTITY_DELIVERY_ID_FIELD"] = "ID службы доставки";
+$MESS["ORDER_ENTITY_BOXES_SENT_FIELD"] = "Коробки отосланы";
+$MESS["ORDER_ENTITY_READY_TIME_FIELD"] = "Время установки статуса Готов к отгрузке";
+$MESS["ORDER_ENTITY_COURIER_FIELD"] = "Курьер";
+
+$MESS["API_LOG_ENTITY_ID_FIELD"] = "ID";
+$MESS["API_LOG_ENTITY_PROFILE_ID_FIELD"] = "ID профиля";
+$MESS["API_LOG_ENTITY_UNIX_TIMESTAMP_FIELD"] = "UNIX время";
+$MESS["API_LOG_ENTITY_HUMAN_TIME_FIELD"] = "Человекопонятное время";
+$MESS["API_LOG_ENTITY_TYPE_FIELD"] = "Тип";
+$MESS["API_LOG_ENTITY_STATE_FIELD"] = "Состояние";
+$MESS["API_LOG_ENTITY_URL_FIELD"] = "URL";
+$MESS["API_LOG_ENTITY_REQUEST_TYPE_FIELD"] = "Тип запроса";
+$MESS["API_LOG_ENTITY_REQUEST_FIELD"] = "Запрос";
+$MESS["API_LOG_ENTITY_REQUEST_H_FIELD"] = "Заголовки запроса";
+$MESS["API_LOG_ENTITY_RESPOND_FIELD"] = "Ответ";
+$MESS["API_LOG_ENTITY_RESPOND_H_FIELD"] = "Заголовки ответа";
+$MESS["API_LOG_ENTITY_STATUS_FIELD"] = "Статус";
+$MESS["API_LOG_ENTITY_ERROR_FIELD"] = "Ошибка";
+
+$MESS["BOX_ENTITY_ID_FIELD"] = "ID";
+$MESS["BOX_ENTITY_PROFILE_ID_FIELD"] = "ID профиля";
+$MESS["BOX_ENTITY_ORDER_ID_FIELD"] = "ID заказа";
+$MESS["BOX_ENTITY_EXT_ID_FIELD"] = "ID коробки на маркете";
+$MESS["BOX_ENTITY_NUM_FIELD"] = "Номер";
+$MESS["BOX_ENTITY_WEIGHT_FIELD"] = "Вес";
+$MESS["BOX_ENTITY_WIDTH_FIELD"] = "Ширина";
+$MESS["BOX_ENTITY_HEIGHT_FIELD"] = "Высота";
+$MESS["BOX_ENTITY_DEPTH_FIELD"] = "Глубина";
+
+$MESS["ERROR_ENTITY_ID_FIELD"] = "ID";
+$MESS["ERROR_ENTITY_PROFILE_ID_FIELD"] = "ID профиля";
+$MESS["ERROR_ENTITY_UNIX_TIMESTAMP_FIELD"] = "UNIX время";
+$MESS["ERROR_ENTITY_HUMAN_TIME_FIELD"] = "Человекопонятное время";
+$MESS["ERROR_ENTITY_ERROR_FIELD"] = "Ошибка";
+$MESS["ERROR_ENTITY_DETAILS_FIELD"] = "Детали";
+$MESS["ERROR_ENTITY_STATE_FIELD"] = "Состояние";
+$MESS["ERROR_ENTITY_LOG_FIELD"] = "Запись лога";
+
+$MESS["OUTLET_ENTITY_ID_FIELD"] = "ID";
+$MESS["OUTLET_ENTITY_NAME_FIELD"] = "Название";
+$MESS["OUTLET_ENTITY_CODE_FIELD"] = "Код";
+
+$MESS["INTERVAL_ENTITY_ID_FIELD"] = "ID";
+$MESS["INTERVAL_ENTITY_DAY_FIELD"] = "День";
+$MESS["INTERVAL_ENTITY_TIME_FROM_FIELD"] = "Время от";
+$MESS["INTERVAL_ENTITY_TIME_TO_FIELD"] = "Время до";
+$MESS["INTERVAL_ENTITY_PROFILE_ID_FIELD"] = "ID профиля";
+$MESS["INTERVAL_ENTITY_DELIVERY_ID_FIELD"] = "ID вида доставки";
+
+$MESS["DELIVERY_ENTITY_ID_FIELD"] = "ID";
+$MESS["DELIVERY_ENTITY_PROFILE_ID_FIELD"] = "ID профиля";
+$MESS["DELIVERY_ENTITY_TYPE_FIELD"] = "Тип";
+$MESS["DELIVERY_ENTITY_NAME_FIELD"] = "Название";
+$MESS["DELIVERY_ENTITY_PAYMENT_ALLOW_FIELD"] = "Разрешить предоплату";
+$MESS["DELIVERY_ENTITY_DAY_FROM_FIELD"] = "День доставки от";
+$MESS["DELIVERY_ENTITY_DAY_TO_FIELD"] = "День доставки до";
+$MESS["DELIVERY_ENTITY_ACTIVE_FIELD"] = "Активность";
+$MESS["DELIVERY_ENTITY_SORT_FIELD"] = "Индекс сортировки";
+
+$MESS["HOLIDAY_ENTITY_ID_FIELD"] = "ID";
+$MESS["HOLIDAY_ENTITY_PROFILE_ID_FIELD"] = "ID профиля";
+$MESS["HOLIDAY_ENTITY_DELIVERY_ID_FIELD"] = "ID вида доставки";
+$MESS["HOLIDAY_ENTITY_DATE_FIELD"] = "Дата";
+$MESS["HOLIDAY_ENTITY_TIMESTAMP_FIELD"] = "UNIX время";
+
+$MESS["RIGHTS_ENTITY_ID_FIELD"] = "ID";
+$MESS["RIGHTS_ENTITY_ENTITY_TYPE_FIELD"] = "Тип сущности";
+$MESS["RIGHTS_ENTITY_ENTITY_ID_FIELD"] = "ID сущности";
+$MESS["RIGHTS_ENTITY_GROUP_ID_FIELD"] = "ID группы";
+$MESS["RIGHTS_ENTITY_TASK_ID_FIELD"] = "ID уровня доступа";
+
+$MESS['BOX_LINK_ENTITY_ID_FIELD'] = "ID";
+$MESS['BOX_LINK_ENTITY_PROFILE_ID_FIELD'] = "ID профиля";
+$MESS['BOX_LINK_ENTITY_ORDER_ID_FIELD'] = "ID заказа";
+$MESS['BOX_LINK_ENTITY_BOX_ID_FIELD'] = "ID коробки";
+$MESS['BOX_LINK_ENTITY_SKU_ID_FIELD'] = "ID товарного предложения";
+$MESS['BOX_LINK_ENTITY_ORDER_PROD_ID_FIELD'] = "Идентификатор товара в заказе";
+$MESS['BOX_LINK_ENTITY_IS_PART_FIELD'] = "Является частью товара";
+$MESS['BOX_LINK_ENTITY_QUANTITY_FIELD'] = "Количество";
+$MESS['BOX_LINK_ENTITY_PART_FIELD'] = "Номер части";
+$MESS['BOX_LINK_ENTITY_PARTS_FIELD'] = "Количество частей";
+
+$MESS['BUSINESS_ENTITY_ID_FIELD'] = "ID";
+$MESS['BUSINESS_ENTITY_BID_FIELD'] = "ID магазина";
+$MESS['BUSINESS_ENTITY_NAME_FIELD'] = "Название";
+$MESS['BUSINESS_ENTITY_API_KEY_FIELD'] = "Api-Key";
+$MESS['BUSINESS_ENTITY_BASE_PROFILE_FIELD'] = "Основной профиль";

@@ -36,7 +36,7 @@ class HS implements TaskInterface
 			}
 		}
 		if( count($arProducts) ) {
-			$arResult['hiddenOffers'] = [];
+			$arBody['hiddenOffers'] = [];
 			$unseted = [];
 			foreach( $IDs as $key => $val ) {
 				if( !isset($arProducts[$val]) || !$arProducts[$val]["MARKET_SKU"] ) {
@@ -44,14 +44,14 @@ class HS implements TaskInterface
 					TaskTable::delete($key);
 				}
 				else {
-					$arResult['hiddenOffers'][] = [
+					$arBody['hiddenOffers'][] = [
 						"marketSku"  => (int)$arProducts[$val]["MARKET_SKU"],
 						"comment"    => "",
 						"ttlInHours" => 720,
 					];
 				}
 			}
-			$res = (new ApiRequest\setHidden($arResult))->send();
+			$res = (new ApiRequest\setHidden($arTask["PROFILE_ID"]))->send($arBody);
 			if( $res["status"] == 200 ) {
 				foreach( $IDs as $key => $val ) {
 					if( !in_array($val, $unseted) ) {
@@ -59,9 +59,6 @@ class HS implements TaskInterface
 						TaskTable::delete($key);
 					}
 				}
-			}
-			else {
-				//
 			}
 		}
 		TaskTable::delete($arTask["ID"]);

@@ -59,13 +59,17 @@ abstract class ApiRequest
 	}
 
 
-	public function setProfile($arProfile)
+	public function setProfile($profile)
 	{
-		$this->arProfile = $arProfile;
+		if(is_array($profile)) {
+			$this->arProfile = $profile;
+		}
+		elseif((int)$profile > 0) {
+			$this->arProfile = ProfileTable::getByIdFull($profile);
+		}
 		$this->headers["Authorization"] =
 			'OAuth oauth_token="' . $this->arProfile["SEND_TOKEN"] . '", oauth_client_id="' .
 			$this->arProfile["CLIENT_ID"] . '"';
-		//$this->headers["Authorization"] = 'Bearer '.$this->arProfile["SEND_TOKEN"];
 		foreach( $this->headers as $key => $val ) {
 			$this->cl->setHeader($key, $val);
 		}

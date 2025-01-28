@@ -16,7 +16,8 @@ class getLabel extends \Iplogic\Beru\V2\ApiRequest
 	public function send($arParams = [])
 	{
 		$path = "campaigns/" . $this->arProfile["COMPAIN_ID"] . "/orders/" . $arParams["ORDER_ID"] .
-			"/delivery/shipments/" . $arParams["SHIPMENT_ID"] . "/boxes/" . $arParams["BOX_ID"] . "/label.json";
+			"/delivery/shipments/" . $arParams["SHIPMENT_ID"] . "/boxes/" . $arParams["BOX_ID"] .
+			"/label.json?format=A9";
 		return $this->query("GET", $this->url . $path, null, false, true);
 	}
 

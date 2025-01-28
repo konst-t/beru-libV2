@@ -2,7 +2,7 @@
 
 namespace Iplogic\Beru\V2\ApiRequest;
 
-use \Iplogic\Beru\Control;
+use \Iplogic\Beru\V2\Helper;
 
 class setStocks extends \Iplogic\Beru\V2\ApiRequest
 {
@@ -17,7 +17,7 @@ class setStocks extends \Iplogic\Beru\V2\ApiRequest
 	 */
 	public function send($arRequest = [])
 	{
-		$data = Control::jsonEncode($arRequest);
+		$data = Helper::jsonEncode($arRequest);
 		$path = "campaigns/" . $this->arProfile["COMPAIN_ID"] . "/offers/stocks.json";
 		return $this->query("PUT", $this->url . $path, $data);
 	}

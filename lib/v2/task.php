@@ -5,6 +5,7 @@ namespace Iplogic\Beru\V2;
 use \Bitrix\Main\Loader;
 use \Bitrix\Main\Config\Option;
 use \Bitrix\Main\Application;
+
 use \Iplogic\Beru\V2\ORM\TaskTable;
 
 IncludeModuleLangFile(Application::getDocumentRoot() . BX_ROOT . "/modules/iplogic.beru/lib/lib.php");
@@ -50,7 +51,7 @@ class Task
 	}
 
 
-	public static function scheduleTask($PROFILE_ID, $CODE, $DELAY): void
+	public static function scheduleTask($PROFILE_ID, $CODE, $DELAY, $ENTITY_ID = false): void
 	{
 		$result = TaskTable::getList(
 			["filter" => ["TYPE" => $CODE, "STATE" => "WT", "PROFILE_ID" => $PROFILE_ID]]
@@ -64,84 +65,22 @@ class Task
 				"STATE"          => "WT",
 				"TRYING"         => 0,
 			];
-			TaskTable::add($arFields);
-		}
-	}
-
-
-	public static function addPriceUpdateTask($ID, $PROFILE_ID)
-	{
-		if( Option::get(self::$moduleID, "send_prices") == "Y" ) {
-			$rsTask = TaskTable::getList(
-				["filter" => ["TYPE" => "PR", "STATE" => "WT", "ENTITY_ID" => $ID, "PROFILE_ID" => $PROFILE_ID]]
-			);
-			if( !$rsTask->Fetch() ) {
-				$arFields = [
-					"PROFILE_ID"     => $PROFILE_ID,
-					"UNIX_TIMESTAMP" => time(),
-					"TYPE"           => "PR",
-					"STATE"          => "WT",
-					"ENTITY_ID"      => $ID,
-					"TRYING"         => 0,
-				];
-				TaskTable::add($arFields);
-				self::scheduleTask($PROFILE_ID, "SP", 60);
+			if ($ENTITY_ID !== false) {
+				$arFields["ENTITY_ID"] = $ENTITY_ID;
 			}
-		}
-	}
-
-	public static function addStockUpdateTask($ID, $arProfile)
-	{
-		if( (int)$arProfile["STORE"] > 0 && Option::get(self::$moduleID, "send_stocks") == "Y" ) {
-			$rsTask = TaskTable::getList(
-				["filter" => ["TYPE" => "ST", "STATE" => "WT", "ENTITY_ID" => $ID, "PROFILE_ID" => $arProfile["ID"]]]
-			);
-			if( !$rsTask->Fetch() ) {
-				$arFields = [
-					"PROFILE_ID"     => $arProfile["ID"],
-					"UNIX_TIMESTAMP" => time(),
-					"TYPE"           => "ST",
-					"STATE"          => "WT",
-					"ENTITY_ID"      => $ID,
-					"TRYING"         => 0,
-				];
-				TaskTable::add($arFields);
-				self::scheduleTask($arProfile["ID"], "SP", 60);
-			}
-		}
-	}
-
-	public static function hideProductTask($ID, $PROFILE_ID)
-	{
-		$rsTask = TaskTable::getList(["filter" => ["TYPE" => "HP", "STATE" => "WT", "ENTITY_ID" => $ID]]);
-		if( !$rsTask->Fetch() ) {
-			$arFields = [
-				"PROFILE_ID"     => $PROFILE_ID,
-				"UNIX_TIMESTAMP" => time(),
-				"TYPE"           => "HP",
-				"STATE"          => "WT",
-				"ENTITY_ID"      => $ID,
-				"TRYING"         => 0,
-			];
 			TaskTable::add($arFields);
-			self::scheduleTask($PROFILE_ID, "HS", 60);
 		}
 	}
 
-	public static function showProductTask($ID, $PROFILE_ID)
+
+	public static function scheduleTaskComplex($ID, $PROFILE_ID, $CODE, $SCODE)
 	{
-		$rsTask = TaskTable::getList(["filter" => ["TYPE" => "UP", "STATE" => "WT", "ENTITY_ID" => $ID]]);
+		$rsTask = TaskTable::getList(
+			["filter" => ["TYPE" => "PR", "STATE" => "WT", "ENTITY_ID" => $ID, "PROFILE_ID" => $PROFILE_ID]]
+		);
 		if( !$rsTask->Fetch() ) {
-			$arFields = [
-				"PROFILE_ID"     => $PROFILE_ID,
-				"UNIX_TIMESTAMP" => time(),
-				"TYPE"           => "UP",
-				"STATE"          => "WT",
-				"ENTITY_ID"      => $ID,
-				"TRYING"         => 0,
-			];
-			TaskTable::add($arFields);
-			self::scheduleTask($PROFILE_ID, "US", 60);
+			self::scheduleTask($PROFILE_ID, $CODE, 0, $ID);
+			self::scheduleTask($PROFILE_ID, $SCODE, 60);
 		}
 	}
 

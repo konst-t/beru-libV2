@@ -2,7 +2,7 @@
 
 namespace Iplogic\Beru\V2\ApiRequest;
 
-use \Iplogic\Beru\Control;
+use \Iplogic\Beru\V2\Helper;
 
 class setShown extends \Iplogic\Beru\V2\ApiRequest
 {
@@ -17,7 +17,7 @@ class setShown extends \Iplogic\Beru\V2\ApiRequest
 	 */
 	public function send($offers = [])
 	{
-		$data = Control::jsonEncode($offers);
+		$data = Helper::jsonEncode($offers);
 		$path = "campaigns/" . $this->arProfile["COMPAIN_ID"] . "/hidden-offers/delete.json";
 		return $this->query("POST", $this->url . $path, $data);
 	}

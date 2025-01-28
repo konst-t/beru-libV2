@@ -2,7 +2,7 @@
 
 namespace Iplogic\Beru\V2\ApiRequest;
 
-use \Iplogic\Beru\Control;
+use \Iplogic\Beru\V2\Helper;
 
 class putBoxes extends \Iplogic\Beru\V2\ApiRequest
 {
@@ -23,7 +23,7 @@ class putBoxes extends \Iplogic\Beru\V2\ApiRequest
 		if( $delete ) {
 			$arr["allowRemove"] = true;
 		}
-		$data = Control::jsonEncode($arr);
+		$data = Helper::jsonEncode($arr);
 		$path = "campaigns/" . $this->arProfile["COMPAIN_ID"] . "/orders/" . $orderId . "/boxes.json";
 		return $this->query("PUT", $this->url . $path, $data);
 	}

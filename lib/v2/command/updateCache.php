@@ -4,6 +4,7 @@ namespace Iplogic\Beru\V2\Command;
 
 use \Iplogic\Beru\V2\Product;
 use \Iplogic\Beru\V2\Task;
+use \Iplogic\Beru\V2\Helper;
 use \Iplogic\Beru\V2\ORM\ProfileTable;
 use \Iplogic\Beru\V2\ORM\ProductTable;
 
@@ -69,17 +70,24 @@ class updateCache implements CommandInterface
 					$product["STATE"] == "HAS_CARD_CAN_UPDATE_PROCESSING") &&
 				$product["PRODUCT_ID"] > 0
 			) {
-				if( intval($product["PRICE"]) != intval($set["PRICE"]) && intval($set["PRICE"]) > 0 ) {
-					Task::addPriceUpdateTask($this->ID, $arProfile["ID"]);
+				if(
+					intval($product["PRICE"]) != intval($set["PRICE"]) && intval($set["PRICE"]) > 0 &&
+					Helper::getOption("send_prices") == "Y"
+				) {
+					Task::scheduleTaskComplex($this->ID, $arProfile["ID"], "PR", "SP");
 				}
 				if(
 					intval($product["OLD_PRICE"]) != intval($set["OLD_PRICE"]) &&
-					intval($set["OLD_PRICE"]) > intval($set["PRICE"])
+					intval($set["OLD_PRICE"]) > intval($set["PRICE"]) &&
+					Helper::getOption("send_prices") == "Y"
 				) {
-					Task::addPriceUpdateTask($this->ID, $arProfile["ID"]);
+					Task::scheduleTaskComplex($this->ID, $arProfile["ID"], "PR", "SP");
 				}
-				if( $product["STOCK_FIT"] !== $set["STOCK_FIT"] ) {
-					Task::addStockUpdateTask($this->ID, $arProfile);
+				if(
+					$product["STOCK_FIT"] !== $set["STOCK_FIT"] && (int)$arProfile["STORE"] > 0 &&
+					Helper::getOption("send_stocks") == "Y"
+				) {
+					Task::scheduleTaskComplex($this->ID, $arProfile["ID"], "ST", "SP");
 				}
 			}
 			$eventManager = \Bitrix\Main\EventManager::getInstance();
@@ -95,7 +103,9 @@ class updateCache implements CommandInterface
 			$this->status = "Finished";
 			ProductTable::update($this->ID, $arFields);
 		}
-		$this->status = "Product not found";
+		else {
+			$this->status = "Product not found [" . $this->ID . "]";
+		}
 	}
 
 	public function getStatus(): string

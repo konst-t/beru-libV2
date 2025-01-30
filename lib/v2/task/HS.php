@@ -12,18 +12,20 @@ class HS implements TaskInterface
 
 	public function execute($arTask): void
 	{
-		$rsData = TaskTable::getList(
-			[
-				"filter" => ["TYPE" => "HP", "PROFILE_ID" => $arTask["PROFILE_ID"]],
-				"order"  => ["UNIX_TIMESTAMP" => "ASC"],
-				'limit'  => 500,
-				'offset' => 0,
-			]
-		);
 		$IDs = [];
 		$arProducts = [];
-		while( $arData = $rsData->Fetch() ) {
-			$IDs[$arData["ID"]] = $arData["ENTITY_ID"];
+		if(isset($arTask["PROFILE_ID"])) {
+			$rsData = TaskTable::getList(
+				[
+					"filter" => ["TYPE" => "HP", "PROFILE_ID" => $arTask["PROFILE_ID"]],
+					"order"  => ["UNIX_TIMESTAMP" => "ASC"],
+					'limit'  => 500,
+					'offset' => 0,
+				]
+			);
+			while( $arData = $rsData->Fetch() ) {
+				$IDs[$arData["ID"]] = $arData["ENTITY_ID"];
+			}
 		}
 		if( count($IDs) ) {
 			$rsData = ProductTable::getList(
@@ -61,7 +63,14 @@ class HS implements TaskInterface
 				}
 			}
 		}
-		TaskTable::delete($arTask["ID"]);
+		else {
+			foreach( $IDs as $key => $val ) {
+				TaskTable::delete($key);
+			}
+		}
+		if(isset($arTask["ID"]) && $arTask["ID"] > 0) {
+			TaskTable::delete($arTask["ID"]);
+		}
 		Task::scheduleTask($arTask["PROFILE_ID"], "HS", 60);
 	}
 }

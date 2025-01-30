@@ -6,7 +6,7 @@ namespace Iplogic\Beru\Tests;
  * @runInSeparateProcess
  * @preserveGlobalState disabled
  */
-class HSTest extends BitrixTestCase
+class USTest extends BitrixTestCase
 {
 	/**
 	 * @var Mockery\MockInterface
@@ -44,7 +44,7 @@ class HSTest extends BitrixTestCase
 		parent::setUp();
 
 		$this->taskMock = \Mockery::mock('alias:' . \Iplogic\Beru\V2\Task::class);
-		$this->apiRequestMock = \Mockery::mock("overload:" . \Iplogic\Beru\V2\ApiRequest\setHidden::class);
+		$this->apiRequestMock = \Mockery::mock("overload:" . \Iplogic\Beru\V2\ApiRequest\setShown::class);
 		$this->taskTableMock = \Mockery::mock('alias:' . \Iplogic\Beru\V2\ORM\TaskTable::class);
 		$this->productTableMock = \Mockery::mock('alias:' . \Iplogic\Beru\V2\ORM\ProductTable::class);
 
@@ -79,20 +79,16 @@ class HSTest extends BitrixTestCase
 				"hiddenOffers" => [
 					[
 						"marketSku"  => 777,
-						"comment"    => "",
-						"ttlInHours" => 720,
 					],
 					[
 						"marketSku"  => 888,
-						"comment"    => "",
-						"ttlInHours" => 720,
 					],
 				],
 			]
 		)->once()->andReturn(["status" => 200]);
 		$this->taskMock->shouldReceive('scheduleTask')->once();
 
-		$obj = new \Iplogic\Beru\V2\Task\HS();
+		$obj = new \Iplogic\Beru\V2\Task\US();
 		$obj->execute(["ID" => 111, "PROFILE_ID" => 5555555]);
 	}
 
@@ -111,7 +107,7 @@ class HSTest extends BitrixTestCase
 		$this->apiRequestMock->shouldReceive('send')->never();
 		$this->taskMock->shouldReceive('scheduleTask')->times(2);
 
-		$obj = new \Iplogic\Beru\V2\Task\HS();
+		$obj = new \Iplogic\Beru\V2\Task\US();
 		$obj->execute(null);
 		$obj->execute([]);
 	}
@@ -132,7 +128,7 @@ class HSTest extends BitrixTestCase
 		$this->apiRequestMock->shouldReceive('send')->never();
 		$this->taskMock->shouldReceive('scheduleTask')->once();
 
-		$obj = new \Iplogic\Beru\V2\Task\HS();
+		$obj = new \Iplogic\Beru\V2\Task\US();
 		$obj->execute(["ID" => 111, "PROFILE_ID" => 5555555]);
 	}
 
@@ -162,15 +158,13 @@ class HSTest extends BitrixTestCase
 				"hiddenOffers" => [
 					[
 						"marketSku"  => 777,
-						"comment"    => "",
-						"ttlInHours" => 720,
 					],
 				],
 			]
 		)->once()->andReturn(["status" => 200]);
 		$this->taskMock->shouldReceive('scheduleTask')->once();
 
-		$obj = new \Iplogic\Beru\V2\Task\HS();
+		$obj = new \Iplogic\Beru\V2\Task\US();
 		$obj->execute(["ID" => 111, "PROFILE_ID" => 5555555]);
 	}
 
@@ -195,7 +189,7 @@ class HSTest extends BitrixTestCase
 		$this->apiRequestMock->shouldReceive('send')->never();
 		$this->taskMock->shouldReceive('scheduleTask')->once();
 
-		$obj = new \Iplogic\Beru\V2\Task\HS();
+		$obj = new \Iplogic\Beru\V2\Task\US();
 		$obj->execute(["ID" => 111, "PROFILE_ID" => 5555555]);
 	}
 

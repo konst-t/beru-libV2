@@ -12,18 +12,20 @@ class US implements TaskInterface
 
 	public function execute($arTask): void
 	{
-		$rsData = TaskTable::getList(
-			[
-				"filter" => ["TYPE" => "UP", "PROFILE_ID" => $arTask["PROFILE_ID"]],
-				"order"  => ["UNIX_TIMESTAMP" => "ASC"],
-				'limit'  => 500,
-				'offset' => 0,
-			]
-		);
 		$IDs = [];
 		$arProducts = [];
-		while( $arData = $rsData->Fetch() ) {
-			$IDs[$arData["ID"]] = $arData["ENTITY_ID"];
+		if(isset($arTask["PROFILE_ID"])) {
+			$rsData = TaskTable::getList(
+				[
+					"filter" => ["TYPE" => "UP", "PROFILE_ID" => $arTask["PROFILE_ID"]],
+					"order"  => ["UNIX_TIMESTAMP" => "ASC"],
+					'limit'  => 500,
+					'offset' => 0,
+				]
+			);
+			while( $arData = $rsData->Fetch() ) {
+				$IDs[$arData["ID"]] = $arData["ENTITY_ID"];
+			}
 		}
 		if( count($IDs) ) {
 			$rsData = ProductTable::getList(
@@ -36,7 +38,7 @@ class US implements TaskInterface
 			}
 		}
 		if( count($arProducts) ) {
-			$arResult['hiddenOffers'] = [];
+			$arBody['hiddenOffers'] = [];
 			$unseted = [];
 			foreach( $IDs as $key => $val ) {
 				if( !isset($arProducts[$val]) || !$arProducts[$val]["MARKET_SKU"] ) {
@@ -44,12 +46,12 @@ class US implements TaskInterface
 					TaskTable::delete($key);
 				}
 				else {
-					$arResult['hiddenOffers'][] = [
+					$arBody['hiddenOffers'][] = [
 						"marketSku" => (int)$arProducts[$val]["MARKET_SKU"],
 					];
 				}
 			}
-			$res = (new ApiRequest\setShown($arResult))->send();
+			$res = (new ApiRequest\setShown($arTask["PROFILE_ID"]))->send($arBody);
 			if( $res["status"] == 200 ) {
 				foreach( $IDs as $key => $val ) {
 					if( !in_array($val, $unseted) ) {
@@ -58,11 +60,15 @@ class US implements TaskInterface
 					}
 				}
 			}
-			else {
-				//
+		}
+		else {
+			foreach( $IDs as $key => $val ) {
+				TaskTable::delete($key);
 			}
 		}
-		TaskTable::delete($arTask["ID"]);
+		if(isset($arTask["ID"]) && $arTask["ID"] > 0) {
+			TaskTable::delete($arTask["ID"]);
+		}
 		Task::scheduleTask($arTask["PROFILE_ID"], "US", 60);
 	}
 }

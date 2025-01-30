@@ -54,7 +54,7 @@ class Task
 	public static function scheduleTask($PROFILE_ID, $CODE, $DELAY, $ENTITY_ID = false): void
 	{
 		$result = TaskTable::getList(
-			["filter" => ["TYPE" => $CODE, "STATE" => "WT", "PROFILE_ID" => $PROFILE_ID]]
+			["filter" => ["TYPE" => $CODE, "STATE" => "WT", "PROFILE_ID" => $PROFILE_ID, "ENTITY_ID" => $ENTITY_ID]]
 		);
 		$task = $result->Fetch();
 		if( !$task ) {
